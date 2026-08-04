@@ -50,16 +50,17 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [x] Dexie şeması, sürüm/göç altyapısı
 - [x] Videodaki örnek verinin birebir tohumlanması (Yılmaz/Arslan, Demir İnşaat, Kaya/Nova…)
 - [x] Yedekleme: tüm veriyi JSON+ek olarak dışa/içe aktarma
-- [ ] Repository katmanı (F2'de gösterge paneli sorgularıyla birlikte yazılacak)
+- [x] Repository katmanı (`src/data/sorgular.ts` — canlı Dexie sorguları)
 
 ### F2 — Genel bakış (Dashboard)
-- [ ] Hero kartı + selamlama + tarih
-- [ ] 2×2 istatistik ızgarası (canlı hesaplanan)
-- [ ] Yaklaşan son tarihler
-- [ ] Bugünün programı — Duruşmalar
-- [ ] Bugün yapılacaklar (satır içi tamamlama + yeni görev)
-- [ ] Hazırlık durumu (dosya sağlığı)
-- [ ] Son hareketler + alt güvenlik kartı
+- [x] Hero kartı + selamlama + tarih
+- [x] 2×2 istatistik ızgarası (canlı hesaplanan)
+- [x] Yaklaşan son tarihler
+- [x] Bugünün programı — Duruşmalar
+- [x] Bugün yapılacaklar (satır içi tamamlama)
+- [x] Hazırlık durumu (dosya sağlığı)
+- [x] Son hareketler + alt güvenlik kartı
+- [ ] "Yeni görev ekle" şu an görev sayfasına yönlendiriyor; satır içi ekleme F7'de
 
 ### F3 — Takvim (şartname md. 1)
 - [ ] Ay / hafta / ajanda görünümleri
@@ -157,4 +158,5 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 3 | 2026-08-04 05:50 | **F2 tamam.** Genel bakış artık gerçek: hero, 2×2 istatistik, yaklaşan süreler, günün programı, görev listesi (tıklayınca tamamlanıyor ve hareket günlüğüne yazıyor), hazırlık durumu, son hareketler, güvenlik kartı. Videodaki dört rakam da veriden hesaplanıyor ve tutuyor. Ek olarak: Türkçe tarih/para yardımcıları (`toLocaleUpperCase('tr')` — "NISAN" değil "NİSAN"), ağırlıklı hazırlık motoru, canlı Dexie sorgu katmanı. Varsayım: hazırlık listesi en düşük yüzdeyi değil, **yakında işi olan** dosyalar arasında en düşüğü öne alıyor; duruşması olmayan bir dosyanın eksiği acil değil. Dolgu dosyalarına vekâletname + ödenmiş harç eklendi, yoksa sıralamayı yapay olarak dolduruyorlardı. 31 test yeşil. |
 | 2 | 2026-08-04 02:40 | **F1 (repository hariç) tamam.** 13 tablo, alan modeli, Dexie şeması, tohum verisi ve JSON yedekleme. Varsayım: tohum tarihleri sabit değil **bugüne göre** kuruluyor — sabit tarihler bir hafta sonra ölü demoya döner. Tohum, videodaki rakamları gerçekten üretiyor (24 aktif dosya, bu hafta 8 duruşma / 2'si bugün, 17 bekleyen görev / 4 öncelikli, bu ay 184.500 ₺ / +%12); bu sayılar teste bağlandı. Para birimi kuruş tam sayısı, süreler gün (`IsoDate`) olarak saklanıyor. Tarayıcıda tohumlama doğrulandı, tekrar açılışta veri ezilmiyor. |

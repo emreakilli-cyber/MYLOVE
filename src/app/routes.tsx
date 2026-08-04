@@ -1,6 +1,7 @@
 import { PlaceholderPage } from '../components/PlaceholderPage'
 import { Icon } from '../components/Icon'
 import { Link, type RouteDefinition } from '../router'
+import { GenelBakis } from '../pages/GenelBakis'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -11,18 +12,7 @@ import { Link, type RouteDefinition } from '../router'
 export const routes: readonly RouteDefinition[] = [
   {
     path: '/',
-    render: () => (
-      <PlaceholderPage
-        crumb="Genel bakış"
-        title="Bugün neyin önemli olduğunu görün."
-        description="Yaklaşan süreler, günün duruşmaları, bekleyen görevler ve dosya sağlığı tek ekranda toplanacak."
-        icon="grid"
-        accent="green"
-        phase="F2"
-        showBack={false}
-        showHomeLink={false}
-      />
-    ),
+    render: () => <GenelBakis />,
   },
   {
     path: '/takvim',

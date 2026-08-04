@@ -1,5 +1,6 @@
 import { db, simdi, yeniId } from './db'
 import type {
+  Belge,
   Dosya,
   FinansKaydi,
   Gorev,
@@ -258,8 +259,25 @@ const dolguDosyalar: Array<[string, Dosya['tur'], string, string, number]> = [
   ['Yıldız Ambalaj / Ünal', 'ticaret', 'Marka hakkına tecavüz', 'İstanbul 2. Fikri ve Sınai Haklar', -207],
 ]
 
+/**
+ * Bu ayın ilk günlerinden birine denk gelen, bugünü geçmeyen tarih.
+ * "+3 bu ay" sayacının ayın kaçında olursak olalım doğru çıkmasını sağlar.
+ */
+function buAyAcilis(sira: number): number {
+  const bugun = bugunBaslangic()
+  const hedefGun = Math.min(sira, bugun.getDate())
+  const hedef = new Date(bugun.getFullYear(), bugun.getMonth(), hedefGun)
+  return Math.round((hedef.getTime() - bugun.getTime()) / gun)
+}
+
+// Son üç dosya bu ay açılmış sayılır; kalanlar geçmişte.
+const buAyAcilanlar = new Set([17, 18, 19])
+
 dolguDosyalar.forEach((satir, i) => {
-  const [baslik, tur, konu, mahkeme, acilisOfset] = satir
+  const [baslik, tur, konu, mahkeme, gecmisOfset] = satir
+  const acilisOfset = buAyAcilanlar.has(i)
+    ? buAyAcilis(i - 16)
+    : gecmisOfset
   dosyaTohumlari.push({
     id: `dosya-dolgu-${i + 1}`,
     baslik,
@@ -757,6 +775,24 @@ const giderTohumlari: FinansTohum[] = [
   },
 ]
 
+// Aynı gerekçe harç için: dava açılmışsa harcı yatırılmıştır.
+for (const dosya of dosyalar) {
+  if (dosya.durum === 'kapali') continue
+  const zatenVar = [...finansTohumlari, ...giderTohumlari].some(
+    (f) => f.dosyaId === dosya.id && f.kategori === 'harc',
+  )
+  if (zatenVar) continue
+  giderTohumlari.push({
+    dosyaId: dosya.id,
+    yon: 'gider',
+    kategori: 'harc',
+    baslik: 'Başvurma harcı',
+    tutar: 61_500,
+    tarih: dosya.acilisTarihi,
+    odemeDurumu: 'odendi',
+  })
+}
+
 const finans: FinansKaydi[] = [...finansTohumlari, ...giderTohumlari].map(
   (f) => {
     const dosya = dosyalar.find((d) => d.id === f.dosyaId)
@@ -779,6 +815,71 @@ const finans: FinansKaydi[] = [...finansTohumlari, ...giderTohumlari].map(
     }
   },
 )
+
+/* ------------------------------------------------------------------ *
+ * Belgeler
+ *
+ * İçerikler örnek metin: gerçek bir vekâletname taklidi üretmek yanıltıcı
+ * olurdu. Tür alanı doğru olduğu için hazırlık durumu motoru çalışır, dosyayı
+ * açan kullanıcı da bunun örnek veri olduğunu görür.
+ * ------------------------------------------------------------------ */
+
+function ornekBelge(baslik: string): Blob {
+  return new Blob(
+    [
+      `${baslik}\n\n` +
+        'Bu, JurisCalendar ilk kurulumunda oluşturulan örnek bir belgedir.\n' +
+        'Kendi belgenizi yükleyince bu dosyayı silebilirsiniz.\n',
+    ],
+    { type: 'text/plain' },
+  )
+}
+
+interface BelgeTohum {
+  ad: string
+  tur: Belge['tur']
+  dosyaId: string
+}
+
+const belgeTohumlari: BelgeTohum[] = [
+  { ad: 'Vekâletname (örnek).txt', tur: 'vekaletname', dosyaId: 'dosya-yilmaz-arslan' },
+  { ad: 'Dava dilekçesi (örnek).txt', tur: 'dilekce', dosyaId: 'dosya-yilmaz-arslan' },
+  { ad: 'Vekâletname (örnek).txt', tur: 'vekaletname', dosyaId: 'dosya-demir-insaat' },
+  { ad: 'Bilirkişi raporu (örnek).txt', tur: 'bilirkisi-raporu', dosyaId: 'dosya-demir-insaat' },
+  { ad: 'Vekâletname (örnek).txt', tur: 'vekaletname', dosyaId: 'dosya-ozkan-holding' },
+  { ad: 'Vekâlet ücret makbuzu (örnek).txt', tur: 'makbuz', dosyaId: 'dosya-ozkan-holding' },
+  { ad: 'Sözleşme (örnek).txt', tur: 'sozlesme', dosyaId: 'dosya-dolgu-1' },
+  { ad: 'Vekâletname (örnek).txt', tur: 'vekaletname', dosyaId: 'dosya-dolgu-1' },
+]
+
+// Gerçek bir büroda her açık dosyada vekâletname vardır. Dolgu dosyalarına da
+// eklemezsek hazırlık sıralaması onları yapay olarak "eksik" gösterir.
+for (const dosya of dosyalar) {
+  if (dosya.durum === 'kapali') continue
+  if (belgeTohumlari.some((b) => b.dosyaId === dosya.id)) continue
+  belgeTohumlari.push({
+    ad: 'Vekâletname (örnek).txt',
+    tur: 'vekaletname',
+    dosyaId: dosya.id,
+  })
+}
+
+const belgeler: Belge[] = belgeTohumlari.map((b) => {
+  const dosya = dosyalar.find((d) => d.id === b.dosyaId)
+  const icerik = ornekBelge(b.ad.replace(' (örnek).txt', ''))
+  return {
+    id: yeniId(),
+    ad: b.ad,
+    tur: b.tur,
+    dosyaId: b.dosyaId,
+    ...(dosya ? { muvekkilId: dosya.muvekkilId } : {}),
+    mimeTur: 'text/plain',
+    boyut: icerik.size,
+    icerik,
+    etiketler: [],
+    ...damga(),
+  }
+})
 
 /* ------------------------------------------------------------------ *
  * Son hareketler — referanstaki dört satır
@@ -839,6 +940,7 @@ export const tohumVerisi = {
   sureler,
   gorevler,
   finans,
+  belgeler,
   hareketler,
 } as const
 
@@ -860,6 +962,7 @@ export async function tohumlaGerekiyorsa(): Promise<boolean> {
       db.sureler,
       db.gorevler,
       db.finans,
+      db.belgeler,
       db.hareketler,
       db.ayarlar,
     ],
@@ -871,6 +974,7 @@ export async function tohumlaGerekiyorsa(): Promise<boolean> {
       await db.sureler.bulkAdd(sureler)
       await db.gorevler.bulkAdd(gorevler)
       await db.finans.bulkAdd(finans)
+      await db.belgeler.bulkAdd(belgeler)
       await db.hareketler.bulkAdd(hareketler)
       await db.ayarlar.put({
         id: 'tekil',
