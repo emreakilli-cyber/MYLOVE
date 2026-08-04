@@ -17,6 +17,7 @@ import {
   notEkle,
   notSil,
 } from '../data/dosyaIslemleri'
+import { sureDurumDegistir, sureSil } from '../data/sureIslemleri'
 import { olayGorunumleri } from '../domain/olay'
 import { seviyeMetni } from '../domain/hazirlik'
 import { tutarTam } from '../domain/para'
@@ -190,42 +191,71 @@ function DurusmaSekmesi({ detay }: { detay: Detay }) {
 }
 
 function SureSekmesi({ detay }: { detay: Detay }) {
-  if (detay.sureler.length === 0) {
-    return <BosKart mesaj="Bu dosyada kayıtlı hukuki süre yok." />
-  }
   return (
     <>
-      <section className="card divide-rows">
-        {detay.sureler.map((sure) => (
-          <div
-            key={sure.id}
-            className={`row accent-${
-              sure.durum === 'tamamlandi'
-                ? 'green'
-                : aciliyet(sure.sonTarih) === 'normal'
-                  ? 'blue'
-                  : aciliyet(sure.sonTarih) === 'yakin'
-                    ? 'amber'
-                    : 'red'
-            }`}
-          >
-            <span className="row-tile" aria-hidden="true">
-              <Icon name="calendar-clock" size={19} />
-            </span>
-            <span className="row-main">
-              <span className="row-title truncate">{sure.kuralAdi}</span>
-              <span className="row-sub truncate">
-                {sure.kanunReferansi} · {tamTarih(sure.sonTarih)}
+      <Link to={`/sure?dosya=${detay.dosya.id}`} className="tab-action">
+        <Icon name="plus" size={16} />
+        Süre hesapla
+      </Link>
+
+      {detay.sureler.length === 0 ? (
+        <BosKart mesaj="Bu dosyada kayıtlı hukuki süre yok." />
+      ) : (
+        <section className="card divide-rows">
+          {detay.sureler.map((sure) => (
+            <div
+              key={sure.id}
+              className={`row accent-${
+                sure.durum === 'tamamlandi'
+                  ? 'green'
+                  : aciliyet(sure.sonTarih) === 'normal'
+                    ? 'blue'
+                    : aciliyet(sure.sonTarih) === 'yakin'
+                      ? 'amber'
+                      : 'red'
+              }`}
+            >
+              <button
+                type="button"
+                className="task-check"
+                data-tamam={sure.durum === 'tamamlandi'}
+                aria-pressed={sure.durum === 'tamamlandi'}
+                aria-label={`${sure.kuralAdi} — ${
+                  sure.durum === 'tamamlandi' ? 'geri al' : 'tamamlandı işaretle'
+                }`}
+                onClick={() =>
+                  void sureDurumDegistir(
+                    sure.id,
+                    sure.durum === 'tamamlandi' ? 'acik' : 'tamamlandi',
+                  )
+                }
+              >
+                <Icon name="check" size={13} />
+              </button>
+              <span className="row-main">
+                <span className="row-title truncate">{sure.kuralAdi}</span>
+                <span className="row-sub truncate">
+                  {sure.kanunReferansi} · {tamTarih(sure.sonTarih)}
+                </span>
               </span>
-            </span>
-            <span className="deadline-kalan">
-              {sure.durum === 'tamamlandi'
-                ? 'tamamlandı'
-                : kalanSureMetni(sure.sonTarih)}
-            </span>
-          </div>
-        ))}
-      </section>
+              <span className="deadline-kalan">
+                {sure.durum === 'tamamlandi'
+                  ? 'tamamlandı'
+                  : kalanSureMetni(sure.sonTarih)}
+              </span>
+              <button
+                type="button"
+                className="row-remove"
+                onClick={() => void sureSil(sure.id)}
+                aria-label={`${sure.kuralAdi} süresini sil`}
+              >
+                <Icon name="close" size={16} />
+              </button>
+            </div>
+          ))}
+        </section>
+      )}
+
       <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
         Süre hesapları bilgilendirme amaçlıdır; son günün doğruluğunu teyit
         etmek kullanıcının sorumluluğundadır.

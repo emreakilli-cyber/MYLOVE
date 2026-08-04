@@ -80,14 +80,15 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [x] İlgili kişi ve not ekleme/silme (Notlar sekmesinde satır içi form)
 
 ### F5 — Hukuki süre hesaplama (md. 5)
-- [ ] Resmî tatil takvimi (sabit + dinî bayramlar, çok yıllı)
-- [ ] Adli tatil kuralı (20 Temmuz – 31 Ağustos) ve sürenin uzaması
-- [ ] Süre kataloğu: istinaf, temyiz, cevap dilekçesi, itiraz, karar düzeltme,
-      ödeme emrine itiraz, ihtiyati haciz/tedbire itiraz, tespit, ıslah…
-      (her biri kanun maddesi referansıyla)
-- [ ] Tebligat tarihinden son güne hesaplama + hafta sonu/tatile denk gelirse ilk iş günü
-- [ ] Hesaplanan süreleri takvime ve dosyaya otomatik işleme
-- [ ] Görünür uyarı: bilgilendirme amaçlıdır, sorumluluk kullanıcıdadır
+- [x] Resmî tatil takvimi (sabit + dinî bayramlar, 2024–2030 Diyanet tablosu)
+- [x] Adli tatil kuralı (20 Temmuz – 31 Ağustos) ve sürenin 7 Eylül'e uzaması (HMK m. 104)
+- [x] Süre kataloğu: 17 kural (istinaf, temyiz, cevap, bilirkişi itirazı, tedbire itiraz,
+      ödeme emrine itiraz, ihtiyati hacze itiraz, itirazın iptali, ceza istinaf/temyiz/itiraz,
+      idari iptal/vergi/cevap, işe iade, arabuluculuk) — her biri kanun maddesiyle
+- [x] Tebligat tarihinden son güne hesaplama + hafta sonu/tatile denk gelirse ilk iş günü (HMK m. 92–93)
+- [x] Hesaplanan süreyi dosyaya ve takvime otomatik işleme (`kaynak: sure-hesabi`)
+- [x] Görünür uyarı: bilgilendirme amaçlıdır, sorumluluk kullanıcıdadır (her ekranda)
+- [ ] Süre kataloğunu genişletme (karar düzeltme, tespit, ıslah, temyiz karşı cevap…) — sonraki tur
 
 ### F6 — Müvekkiller (md. 8)
 - [ ] Müvekkil profili: iletişim, TCKN/vergi no, adres, etiketler
@@ -165,6 +166,7 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 10 | 2026-08-04 09:40 | **F5 — süre motoru tamam.** `domain/tatil.ts`: sabit resmî tatiller + 2024–2030 dinî bayram tablosu (Diyanet) + adli tatil. `domain/sureHesabi.ts`: 17 kurallı katalog ve hesaplama (tebliğ günü sayılmaz, hafta/ay/yıl, ay sonu sabitleme, tatil→ilk iş günü, adli tatil→7 Eylül). Arayüz: süre türü + tarih seç → son gün, ham son gün, gerekçeler, uyarı; dosyaya + takvime kaydediyor. **14 yeni test** (toplam 45): bilinen tarihler elle doğrulanıp sabitlendi, ayrıca tüm katalog×başlangıç kombinasyonlarında son günün her zaman çalışma günü olduğu taranıyor. Varsayımlar: (1) arefe ve 28 Ekim öğleden sonrası tam tatil sayılmadı — o günlerde süre "tatil saatinde" hâlâ dolabilir, kaydırma yönü hep ileri olduğu için kullanıcıya fazladan zaman göstermemek güvenli taraf; (2) dinî bayram tarihleri ±1 gün kayabilir, kapsam dışı yıllarda kullanıcı uyarılıyor. Tarayıcıda uçtan uca doğrulandı (istinaf 20 Tem → 7 Eylül; ödeme emri hafta sonu kaydırması). |
 | 9 | 2026-08-04 09:30 | **F4 tamamlandı.** Dosya oluştur/düzenle/sil formu: dosya açarken müvekkil kaydı yoksa aynı ekranda "Yeni müvekkil ekle" ile oluşturuluyor (şirket eklerinden — A.Ş./Ltd./Şti. — tüzel kişi sezgisi). Dosya silmede bağlı tüm kayıtlar (olay, süre, görev, finans, belge, kişi, not) tek işlemde temizleniyor, yetim kayıt kalmıyor. Not ve ilgili kişi Notlar sekmesinde satır içi formla eklenip siliniyor. Tarayıcıda uçtan uca doğrulandı. Not: yerel önizleme base'siz derleme ister (`BASE_PATH` yalnızca Pages dağıtımında). |
 | 8 | 2026-08-04 06:30 | **iOS ana ekran ikonu düzeltildi** (kullanıcı bildirdi: logo yerine "J" harfi çıkıyor). Sebep: `index.html`'de ikon yolları göreli (`./apple-touch-icon.png`) yazılmıştı; sayfa sondaki eğik çizgi olmadan (`…/MYLOVE`) açıldığında bu, alan adı köküne çözülüyor, dosya 404 dönüyor ve iOS uygulama adının ilk harfinden yedek ikon üretiyordu. Kök-mutlak yola (`/apple-touch-icon.png`) çevrildi; Vite bunu base ile `/MYLOVE/…` olarak yeniden yazıyor (derlemede doğrulandı). Ayrıca apple-touch-icon alfa kanalından arındırılıp düz RGB yapıldı (eski iOS saydamlık uyumu) ve `sizes="180x180"` eklendi. **Not: ana ekran ikonu ekleme anında sabitlenir; kullanıcının kısayolu silip yeniden eklemesi gerekiyor — sürüm yenileme düğmesi içeriği tazeler ama ikonu değiştirmez.** |
 | 7 | 2026-08-04 06:25 | **Geçici sürüm yenileme düğmesi** eklendi (kullanıcı isteği). Üst çubukta derleme kimliğini gösteriyor; dokununca service worker'ı güncelletiyor, Cache Storage'ı boşaltıyor ve sorgu parametresiyle yeniden yüklüyor. Ana ekrana eklenmiş PWA'nın eski sürümde takılıp kalması silip yeniden ekleme gerektiriyordu, artık gerektirmiyor. Ayrıca workbox'a açıkça `skipWaiting` + `clientsClaim` eklendi — takılmanın asıl sebebi buydu. Cache Storage temizliği IndexedDB'ye dokunmuyor; tarayıcıda doğrulandı, 27 dosya yenileme sonrası yerinde. F16'ya silme maddesi eklendi. |

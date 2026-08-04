@@ -419,3 +419,20 @@
   background: var(--surface-sunken);
   color: var(--cat-red-fg);
 }
+
+/* Sekme üstündeki tekil eylem düğmesi (ör. Süre hesapla) */
+.tab-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--brand-ink);
+  color: var(--text-on-inverse);
+  font-size: var(--text-small);
+}
+
+.tab-action:active {
+  opacity: 0.9;
+}

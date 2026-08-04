@@ -239,3 +239,103 @@
 .fab-spacer {
   height: 76px;
 }
+
+/* Süre hesabı sonuç kartı */
+.sonuc-card {
+  padding: var(--space-5) var(--card-padding);
+}
+
+.sonuc-eyebrow {
+  color: var(--acc-fg);
+  margin-bottom: var(--space-2);
+}
+
+.sonuc-tarih {
+  font-family: var(--font-serif);
+  font-size: var(--text-display);
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.sonuc-kalan {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  letter-spacing: var(--tracking-mono);
+  color: var(--acc-fg);
+  margin-top: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.sonuc-satir {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border-hairline);
+  font-size: var(--text-small);
+}
+
+.sonuc-satir-etiket {
+  color: var(--text-muted);
+  flex: none;
+}
+
+.sonuc-satir-deger {
+  color: var(--text-secondary);
+  text-align: end;
+}
+
+.sonuc-gerekce {
+  margin-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sonuc-gerekce li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  line-height: var(--leading-snug);
+}
+
+.sonuc-gerekce li svg {
+  color: var(--acc-fg);
+  flex: none;
+  margin-top: 2px;
+}
+
+.sonuc-uyari {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--cat-amber-bg);
+  color: var(--cat-amber-fg);
+  font-size: var(--text-small);
+  line-height: var(--leading-snug);
+}
+
+/* Takvimde iki düğmeli kayan küme */
+.fab-cluster {
+  position: fixed;
+  right: max(var(--space-5), var(--safe-right));
+  bottom: calc(var(--space-6) + var(--safe-bottom));
+  z-index: var(--z-topbar);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.fab-cluster .fab {
+  position: static;
+}
+
+.fab-secondary {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-hairline);
+}

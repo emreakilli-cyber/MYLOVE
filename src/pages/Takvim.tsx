@@ -434,10 +434,16 @@ export function Takvim() {
         etmek kullanıcının sorumluluğundadır.
       </p>
 
-      <Link to={`/takvim/yeni?gun=${secili}`} className="fab">
-        <Icon name="plus" size={18} />
-        Ekle
-      </Link>
+      <div className="fab-cluster">
+        <Link to="/sure" className="fab fab-secondary">
+          <Icon name="calendar-clock" size={17} />
+          Süre hesapla
+        </Link>
+        <Link to={`/takvim/yeni?gun=${secili}`} className="fab">
+          <Icon name="plus" size={18} />
+          Ekle
+        </Link>
+      </div>
       <div className="fab-spacer" aria-hidden="true" />
     </>
   )

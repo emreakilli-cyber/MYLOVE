@@ -7,6 +7,7 @@ import { OlayForm } from '../pages/OlayForm'
 import { Dosyalar } from '../pages/Dosyalar'
 import { DosyaDetay } from '../pages/DosyaDetay'
 import { DosyaForm } from '../pages/DosyaForm'
+import { SureHesapla } from '../pages/SureHesapla'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -26,6 +27,10 @@ export const routes: readonly RouteDefinition[] = [
   {
     path: '/takvim/yeni',
     render: () => <OlayForm />,
+  },
+  {
+    path: '/sure',
+    render: () => <SureHesapla />,
   },
   {
     path: '/takvim/olay/:id',
