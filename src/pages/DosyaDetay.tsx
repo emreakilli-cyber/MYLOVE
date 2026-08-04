@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { SatirIskeleti } from '../components/BolumKarti'
 import { Link } from '../router'
@@ -18,6 +18,7 @@ import {
   notSil,
 } from '../data/dosyaIslemleri'
 import { sureDurumDegistir, sureSil } from '../data/sureIslemleri'
+import { belgeSil, belgeYukle } from '../data/belgeIslemleri'
 import { olayGorunumleri } from '../domain/olay'
 import { seviyeMetni } from '../domain/hazirlik'
 import { tutarTam } from '../domain/para'
@@ -301,33 +302,83 @@ function GorevSekmesi({ detay }: { detay: Detay }) {
 }
 
 function BelgeSekmesi({ detay }: { detay: Detay }) {
-  if (detay.belgeler.length === 0) {
-    return <BosKart mesaj="Bu dosyaya henüz belge eklenmemiş." />
+  const girisRef = useRef<HTMLInputElement>(null)
+  const [yukleniyor, setYukleniyor] = useState(false)
+  const [hata, setHata] = useState<string | null>(null)
+
+  const yukle = async (dosya: File | undefined) => {
+    if (!dosya) return
+    setYukleniyor(true)
+    setHata(null)
+    try {
+      await belgeYukle({ dosya, dosyaId: detay.dosya.id })
+    } catch (e) {
+      setHata(e instanceof Error ? e.message : 'Belge yüklenemedi.')
+    } finally {
+      setYukleniyor(false)
+      if (girisRef.current) girisRef.current.value = ''
+    }
   }
+
   return (
-    <section className="card divide-rows">
-      {detay.belgeler.map((belge) => (
-        <button
-          key={belge.id}
-          type="button"
-          className="row accent-blue"
-          onClick={() => belgeyiIndir(belge)}
-        >
-          <span className="row-tile" aria-hidden="true">
-            <Icon name="folder" size={18} />
-          </span>
-          <span className="row-main">
-            <span className="row-title truncate">{belge.ad}</span>
-            <span className="row-sub truncate">
-              {belgeTuruEtiketleri[belge.tur]} · {boyutMetni(belge.boyut)}
-            </span>
-          </span>
-          <span className="deadline-kalan" style={{ color: 'var(--text-muted)' }}>
-            {goreliZaman(belge.olusturmaTarihi)}
-          </span>
-        </button>
-      ))}
-    </section>
+    <>
+      <input
+        ref={girisRef}
+        type="file"
+        accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,audio/*"
+        style={{ display: 'none' }}
+        onChange={(e) => void yukle(e.target.files?.[0])}
+      />
+      <button
+        type="button"
+        className="tab-action"
+        disabled={yukleniyor}
+        onClick={() => girisRef.current?.click()}
+      >
+        <Icon name="plus" size={16} />
+        {yukleniyor ? 'Yükleniyor…' : 'Belge yükle'}
+      </button>
+
+      {hata ? (
+        <p className="field-error" style={{ padding: '0 var(--space-1)' }}>
+          {hata}
+        </p>
+      ) : null}
+
+      {detay.belgeler.length === 0 ? (
+        <BosKart mesaj="Bu dosyaya henüz belge eklenmemiş." />
+      ) : (
+        <section className="card divide-rows">
+          {detay.belgeler.map((belge) => (
+            <div key={belge.id} className="row accent-blue">
+              <button
+                type="button"
+                className="row-tile"
+                aria-label={`${belge.ad} indir`}
+                onClick={() => belgeyiIndir(belge)}
+              >
+                <Icon name="folder" size={18} />
+              </button>
+              <span className="row-main">
+                <span className="row-title truncate">{belge.ad}</span>
+                <span className="row-sub truncate">
+                  {belgeTuruEtiketleri[belge.tur]} · {boyutMetni(belge.boyut)} ·{' '}
+                  {goreliZaman(belge.olusturmaTarihi)}
+                </span>
+              </span>
+              <button
+                type="button"
+                className="row-remove"
+                onClick={() => void belgeSil(belge.id)}
+                aria-label="Belgeyi sil"
+              >
+                <Icon name="close" size={16} />
+              </button>
+            </div>
+          ))}
+        </section>
+      )}
+    </>
   )
 }
 
