@@ -10,6 +10,13 @@ import {
   type DosyaDetayi as Detay,
 } from '../data/dosyaSorgulari'
 import { gorevDurumunuDegistir } from '../data/sorgular'
+import {
+  kisiEkle,
+  kisiRolEtiketleri,
+  kisiSil,
+  notEkle,
+  notSil,
+} from '../data/dosyaIslemleri'
 import { olayGorunumleri } from '../domain/olay'
 import { seviyeMetni } from '../domain/hazirlik'
 import { tutarTam } from '../domain/para'
@@ -22,7 +29,7 @@ import {
   tamTarih,
   tarihRozeti,
 } from '../domain/tarih'
-import type { Belge, HazirlikOzeti } from '../domain/types'
+import type { Belge, HazirlikOzeti, KisiRolu } from '../domain/types'
 
 type Sekme =
   | 'genel'
@@ -357,18 +364,85 @@ function FinansSekmesi({ detay }: { detay: Detay }) {
   )
 }
 
+const kisiRolSirasi: KisiRolu[] = [
+  'karsi-taraf',
+  'karsi-vekil',
+  'hakim',
+  'bilirkisi',
+  'tanik',
+  'arabulucu',
+  'icra-muduru',
+  'diger',
+]
+
 function NotSekmesi({ detay }: { detay: Detay }) {
-  const { notlar, kisiler } = detay
+  const { notlar, kisiler, dosya } = detay
+  const [notMetni, setNotMetni] = useState('')
+  const [kisiFormu, setKisiFormu] = useState(false)
+  const [kisiAdi, setKisiAdi] = useState('')
+  const [kisiRol, setKisiRol] = useState<KisiRolu>('karsi-taraf')
+
+  const notKaydet = async () => {
+    if (!notMetni.trim()) return
+    await notEkle(dosya.id, notMetni)
+    setNotMetni('')
+  }
+
+  const kisiKaydet = async () => {
+    if (!kisiAdi.trim()) return
+    await kisiEkle(dosya.id, kisiAdi, kisiRol)
+    setKisiAdi('')
+    setKisiFormu(false)
+  }
+
   return (
     <>
-      {kisiler.length > 0 ? (
-        <section className="card section-card">
-          <div className="section-head">
-            <div>
-              <p className="t-label section-eyebrow">Dosyada</p>
-              <h2 className="t-title">İlgili kişiler</h2>
-            </div>
+      <section className="card section-card">
+        <div className="section-head">
+          <div>
+            <p className="t-label section-eyebrow">Dosyada</p>
+            <h2 className="t-title">İlgili kişiler</h2>
           </div>
+          <button
+            type="button"
+            className="section-link"
+            onClick={() => setKisiFormu((a) => !a)}
+          >
+            {kisiFormu ? 'Vazgeç' : 'Ekle'}
+            <Icon name={kisiFormu ? 'close' : 'plus'} size={14} />
+          </button>
+        </div>
+
+        {kisiFormu ? (
+          <div className="inline-form">
+            <input
+              className="input"
+              value={kisiAdi}
+              placeholder="Kişi adı"
+              onChange={(e) => setKisiAdi(e.target.value)}
+            />
+            <select
+              className="select"
+              value={kisiRol}
+              onChange={(e) => setKisiRol(e.target.value as KisiRolu)}
+            >
+              {kisiRolSirasi.map((r) => (
+                <option key={r} value={r}>
+                  {kisiRolEtiketleri[r]}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className="button-primary"
+              onClick={() => void kisiKaydet()}
+            >
+              Kişiyi ekle
+            </button>
+          </div>
+        ) : null}
+
+        {kisiler.length > 0 ? (
           <div className="divide-rows">
             {kisiler.map((kisi) => (
               <div key={kisi.id} className="row accent-slate">
@@ -377,34 +451,82 @@ function NotSekmesi({ detay }: { detay: Detay }) {
                 </span>
                 <span className="row-main">
                   <span className="row-title truncate">{kisi.ad}</span>
-                  <span className="row-sub truncate">{kisi.rol}</span>
+                  <span className="row-sub truncate">
+                    {kisiRolEtiketleri[kisi.rol]}
+                  </span>
                 </span>
+                <button
+                  type="button"
+                  className="row-remove"
+                  onClick={() => void kisiSil(kisi.id)}
+                  aria-label={`${kisi.ad} kaydını sil`}
+                >
+                  <Icon name="close" size={16} />
+                </button>
               </div>
             ))}
           </div>
-        </section>
-      ) : null}
+        ) : !kisiFormu ? (
+          <p className="section-empty">Henüz ilgili kişi eklenmemiş.</p>
+        ) : null}
+      </section>
 
-      {notlar.length === 0 ? (
-        <BosKart mesaj="Bu dosyada not yok." />
-      ) : (
-        <section className="card divide-rows">
-          {notlar.map((not) => (
-            <div key={not.id} className="row accent-purple">
-              <span className="row-tile" aria-hidden="true">
-                <Icon name="sparkles" size={18} />
-              </span>
-              <span className="row-main">
-                <span className="row-title">{not.baslik ?? 'Not'}</span>
-                <span className="row-sub">{not.icerik}</span>
-              </span>
-              <span className="deadline-kalan" style={{ color: 'var(--text-muted)' }}>
-                {goreliZaman(not.olusturmaTarihi)}
-              </span>
-            </div>
-          ))}
-        </section>
-      )}
+      <section className="card section-card">
+        <div className="section-head">
+          <div>
+            <p className="t-label section-eyebrow">Dosyada</p>
+            <h2 className="t-title">Notlar</h2>
+          </div>
+        </div>
+
+        <div className="inline-form">
+          <textarea
+            className="textarea"
+            value={notMetni}
+            placeholder="Görüşme özeti, hazırlık notu…"
+            onChange={(e) => setNotMetni(e.target.value)}
+          />
+          <button
+            type="button"
+            className="button-primary"
+            onClick={() => void notKaydet()}
+            disabled={!notMetni.trim()}
+          >
+            Not ekle
+          </button>
+        </div>
+
+        {notlar.length > 0 ? (
+          <div className="divide-rows">
+            {notlar.map((not) => (
+              <div key={not.id} className="row accent-purple">
+                <span className="row-tile" aria-hidden="true">
+                  <Icon name="sparkles" size={18} />
+                </span>
+                <span className="row-main">
+                  {not.baslik ? (
+                    <span className="row-title">{not.baslik}</span>
+                  ) : null}
+                  <span className="row-sub">{not.icerik}</span>
+                  <span className="row-sub t-muted">
+                    {goreliZaman(not.olusturmaTarihi)}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="row-remove"
+                  onClick={() => void notSil(not.id)}
+                  aria-label="Notu sil"
+                >
+                  <Icon name="close" size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="section-empty">Bu dosyada not yok.</p>
+        )}
+      </section>
     </>
   )
 }
@@ -466,10 +588,16 @@ export function DosyaDetay({ id }: { id?: string }) {
 
   return (
     <>
-      <Link to="/dosyalar" className="page-back">
-        <Icon name="arrow-left" size={17} />
-        Dosyalara dön
-      </Link>
+      <div className="detail-topline">
+        <Link to="/dosyalar" className="page-back">
+          <Icon name="arrow-left" size={17} />
+          Dosyalara dön
+        </Link>
+        <Link to={`/dosyalar/${dosya.id}/duzenle`} className="detail-edit">
+          <Icon name="settings" size={15} />
+          Düzenle
+        </Link>
+      </div>
 
       <section className={`card detail-hero accent-${accent}`}>
         <p className="t-label">{dosyaTuruEtiketleri[dosya.tur]} dosyası</p>

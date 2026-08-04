@@ -134,6 +134,12 @@ export function Dosyalar() {
           </section>
         </>
       )}
+
+      <Link to="/dosyalar/yeni" className="fab">
+        <Icon name="plus" size={18} />
+        Yeni dosya
+      </Link>
+      <div className="fab-spacer" aria-hidden="true" />
     </>
   )
 }

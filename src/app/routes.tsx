@@ -6,6 +6,7 @@ import { Takvim } from '../pages/Takvim'
 import { OlayForm } from '../pages/OlayForm'
 import { Dosyalar } from '../pages/Dosyalar'
 import { DosyaDetay } from '../pages/DosyaDetay'
+import { DosyaForm } from '../pages/DosyaForm'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -33,6 +34,16 @@ export const routes: readonly RouteDefinition[] = [
   {
     path: '/dosyalar',
     render: () => <Dosyalar />,
+  },
+  // "yeni" ve ":id/duzenle" literal segmentleri, ":id" kalıbından önce
+  // eşlenmeli; matchPath sıralı denediği için sıralama önemli.
+  {
+    path: '/dosyalar/yeni',
+    render: () => <DosyaForm />,
+  },
+  {
+    path: '/dosyalar/:id/duzenle',
+    render: (params) => <DosyaForm id={params['id']} />,
   },
   {
     path: '/dosyalar/:id',
