@@ -338,3 +338,62 @@
   font-size: var(--text-small);
   color: var(--text-on-inverse-muted);
 }
+
+/* ---------------------------------------------------------------- *
+ * GEÇİCİ: sürüm yenileme düğmesi (bkz. src/components/SurumYenile.tsx)
+ * Ürün sürümünden önce bu blok da silinecek.
+ * ---------------------------------------------------------------- */
+
+.surum-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 38px;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-hairline);
+  flex: none;
+}
+
+.surum-button:active {
+  background: var(--surface-sunken);
+}
+
+.surum-button:disabled {
+  opacity: 0.6;
+}
+
+.surum-id {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: var(--tracking-mono);
+}
+
+.surum-icon[data-donuyor='true'] {
+  animation: donen 700ms linear infinite;
+}
+
+.surum-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--space-8) + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--surface-inverse);
+  color: var(--text-on-inverse);
+  font-size: var(--text-small);
+  box-shadow: var(--shadow-overlay);
+  white-space: nowrap;
+}
+
+.surum-toast[data-hata='true'] {
+  background: var(--cat-red-fg);
+  white-space: normal;
+  max-width: 80vw;
+  text-align: center;
+}

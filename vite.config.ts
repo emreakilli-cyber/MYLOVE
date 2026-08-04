@@ -1,6 +1,20 @@
+import { execSync } from 'node:child_process'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+
+/**
+ * Derlemeyi tanımlayan kısa kimlik. Ana ekrana eklenmiş uygulamada hangi
+ * sürümde olduğumuzu gözle görebilmek için arayüzde gösteriliyor.
+ */
+function derlemeKimligi(): string {
+  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7)
+  try {
+    return execSync('git rev-parse --short HEAD').toString().trim()
+  } catch {
+    return 'yerel'
+  }
+}
 
 // GitHub Pages serves this repo from /MYLOVE/. Local dev and Capacitor builds
 // want a relative base instead, so the deploy workflow sets BASE_PATH.
@@ -8,6 +22,10 @@ const base = process.env.BASE_PATH ?? '/'
 
 export default defineConfig({
   base,
+  define: {
+    __BUILD_ID__: JSON.stringify(derlemeKimligi()),
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
   plugins: [
     react(),
     VitePWA({
@@ -43,6 +61,10 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         cleanupOutdatedCaches: true,
         navigateFallback: 'index.html',
+        // Yeni service worker beklemeden devralsın: ana ekrana eklenmiş
+        // uygulamada eski sürümde takılı kalmanın başlıca sebebi budur.
+        skipWaiting: true,
+        clientsClaim: true,
       },
     }),
   ],

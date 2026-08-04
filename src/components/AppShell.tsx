@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Icon } from './Icon'
 import { Drawer } from './Drawer'
+import { SurumYenile } from './SurumYenile'
 import { useLocation, useNavigate } from '../router'
 
 interface AppShellProps {
@@ -38,6 +39,8 @@ export function AppShell({ children }: AppShellProps) {
         </button>
 
         <div className="topbar-actions">
+          {/* GEÇİCİ: test sırasında sürümü tıkla-yenile. Ürün öncesi silinecek. */}
+          <SurumYenile />
           <button
             type="button"
             className="icon-button"
