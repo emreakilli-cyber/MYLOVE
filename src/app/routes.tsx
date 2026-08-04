@@ -16,6 +16,7 @@ import { GorevForm } from '../pages/GorevForm'
 import { Finans } from '../pages/Finans'
 import { FinansForm } from '../pages/FinansForm'
 import { Raporlar } from '../pages/Raporlar'
+import { Asistan } from '../pages/Asistan'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -104,16 +105,7 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/asistan',
-    render: () => (
-      <PlaceholderPage
-        crumb="Asistan"
-        title="Eksiği o fark etsin."
-        description="Yaklaşan süreleri ve dosyadaki eksik işlemleri kendiliğinden tespit eden asistan hazırlanıyor."
-        icon="sparkles"
-        accent="green"
-        phase="F12"
-      />
-    ),
+    render: () => <Asistan />,
   },
   {
     path: '/raporlar',

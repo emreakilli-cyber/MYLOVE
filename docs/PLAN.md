@@ -134,10 +134,11 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [ ] Sessiz saatler, tekrar erteleme (snooze)
 
 ### F12 — Asistan (md. 10)
-- [ ] Kural motoru: yaklaşan süreler, eksik işlemler, ödenmemiş kalemler, boş alanlar
-- [ ] Dosya özeti üretimi
-- [ ] Soru–cevap arayüzü ("Bu dosyada eksik bir işlem var mı?")
-- [ ] Opsiyonel LLM katmanı (kullanıcının kendi anahtarı, yerelde saklanır, varsayılan kapalı)
+- [x] Kural motoru: yaklaşan süreler, ödenmemiş kalemler, yaklaşan duruşma, geciken görev, eksik vekâletname, düşük hazırlık
+- [x] Büro geneli "Gündem" — bulgular önceliğe göre (kritik/uyarı/bilgi)
+- [x] Dosya özeti üretimi ("durumunu özetle")
+- [x] Soru–cevap arayüzü (niyet çıkarımı + önerilen sorular); şartname örneklerini birebir veriyor
+- [ ] Opsiyonel LLM katmanı (kullanıcının kendi anahtarı, varsayılan kapalı) — arayüzde belirtildi, sonraki tur
 
 ### F13 — Raporlar (md. 14)
 - [x] Aylık duruşma / görüşme / tamamlanan görev sayıları
@@ -178,6 +179,7 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 16 | 2026-08-04 17:25 | **F12 — Asistan tamam (kural motoru).** `domain/asistan.ts`: dosya bağlamından deterministik bulgular (açık süre aciliyeti, ödenmemiş gider, yaklaşan duruşma, geciken görev, eksik vekâletname, düşük hazırlık) + dosya özeti + niyet-çıkarımlı soru-cevap. Ekran: büro geneli öncelik sıralı "Gündem" + dosya seçip danışma. **8 yeni test** (toplam 53): şartname örnekleri birebir doğrulandı — "Bu dosyada eksik bir işlem var mı?" → "Bilirkişi ücreti henüz yatırılmadı (vade 9 Ağustos)."; istinaf 2 gün kritik bulgu. Karar: LLM değil kural motoru — örnekler veriden çıkıyor, çevrimdışı çalışır, yanlış üretmez, müvekkil verisi dışarı gitmez; LLM ileride opsiyonel/kapalı gelecek (arayüzde yazılı). Yakalanan hata: sabit "nın" iyelik eki "süresinın" gibi ünlü uyumu bozuyordu — ek kaldırılıp yeniden ifade edildi. Tarayıcıda doğrulandı. |
 | 15 | 2026-08-04 13:45 | **F13 — Raporlar tamam.** Tümü elle çizilmiş SVG (tasarım kısıtı, harici grafik kütüphanesi yok): bu ay aktivite (duruşma/görüşme/tamamlanan görev), son 6 ay gelir-gider sütun grafiği, açık süreler aciliyet halkası (donut), kategori bazlı gider yatay çubukları, dosya bazlı gelir-gider listesi. CSV dışa aktarma UTF-8 BOM + noktalı virgül ayraçla (Excel Türkçe yerel ayarında düzgün açılsın). Yakalanan hata: yatay çubuk dolgusu `span` olduğu için `display:block` olmadan genişlik uygulanmıyordu — düzeltildi, oranlar doğrulandı (316/27/19/9 px). Grafikler token renklerini kullanıyor. **/loop 1h** geldi ama jenerik otonom vekil moduna geçmek yerine mevcut saatlik geliştirme cron'u (`e79b4057`) korundu — kullanıcının net isteği özellik geliştirme. Tarayıcıda doğrulandı. |
 | 14 | 2026-08-04 13:30 | **F9 çekirdeği tamam.** Dosya detayı Belgeler sekmesi artık salt-okunur değil: PDF/Word/Excel/görsel/ses yükleniyor (Blob, IndexedDB, 25 MB sınır), indiriliyor, siliniyor; tür ad/MIME'den otomatik tahmin ediliyor. Ortak `belgeIslemleri.ts` (F8 dekont arşiviyle paylaşılan) kullanıldı. Tarayıcıda sahte PDF yükleme doğrulandı. Kalan F9: etiketleme + global belge arama, gömülü önizleme, depolama göstergesi — sonraki turlara. |
 | 13 | 2026-08-04 13:20 | **F8 — Finans tamam.** Genel finans ekranı: büro özeti (bu ay tahsilat/gider, toplam bekleyen, 7 gün içi yaklaşan ödeme sayısı) + süzgeçli liste; tahsilat yeşil +, gider −. Form: 11 kategori (kategori seçince gelir/gider yönü otomatik), Türkçe tutar girişi (`metindenKurus`: "7.500,50"→750050 kuruş, canlı önizleme), ödeme durumu (bekliyor/kısmi/ödendi — kısmide ödenen tutar ayrı), vade. **Dekont/makbuz arşivi:** ortak `belgeIslemleri.ts` katmanı (F9'da da kullanılacak) ile PDF/görsel Blob olarak IndexedDB'ye yükleniyor, kalemle ilişkilendiriliyor, indirilebiliyor (25 MB sınır). Dosya detayı Finans sekmesi de tıklanabilir + kayıt ekleme bağlandı. Özet bu ay ₺184.500 tahsilat gösteriyor (referansla tutarlı). Tarayıcıda uçtan uca doğrulandı. |

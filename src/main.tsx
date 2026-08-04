@@ -11,6 +11,7 @@ import './styles/takvim.css'
 import './styles/form.css'
 import './styles/dosya.css'
 import './styles/rapor.css'
+import './styles/asistan.css'
 
 import App from './App'
 

@@ -1,0 +1,127 @@
+/* Asistan ekranı. */
+
+.asistan-hero {
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-5) var(--card-padding);
+  background: linear-gradient(150deg, #dcebe1 0%, #cfe3d7 60%, #c3dbcc 100%);
+  border: none;
+}
+
+.asistan-hero .safety-ring {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.asistan-hero-icon {
+  color: #23453a;
+  margin-bottom: var(--space-3);
+}
+
+.asistan-hero-title {
+  color: #16302a;
+  margin-bottom: var(--space-2);
+}
+
+.asistan-hero-text {
+  color: #3f5c4e;
+  font-size: var(--text-small);
+  max-width: 42ch;
+}
+
+/* Bulgu satırı — soldaki renkli nokta önceliği taşır */
+.bulgu {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--card-padding);
+  width: 100%;
+  text-align: start;
+}
+
+.bulgu-nokta {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-pill);
+  flex: none;
+  margin-top: 6px;
+}
+
+.bulgu-nokta[data-oncelik='kritik'] {
+  background: var(--cat-red-fg);
+}
+.bulgu-nokta[data-oncelik='uyari'] {
+  background: var(--cat-amber-fg);
+}
+.bulgu-nokta[data-oncelik='bilgi'] {
+  background: var(--cat-blue-fg);
+}
+
+.bulgu-metin {
+  flex: 1;
+  min-width: 0;
+}
+
+.bulgu-mesaj {
+  display: block;
+  font-size: var(--text-body);
+  color: var(--text-primary);
+  line-height: var(--leading-snug);
+}
+
+.bulgu-dosya {
+  display: block;
+  font-size: var(--text-small);
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Soru–cevap */
+.qa-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--card-padding) var(--space-4);
+}
+
+.qa-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.qa-chip {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-page);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  text-align: start;
+}
+
+.qa-chip:active {
+  background: var(--surface-sunken);
+}
+
+.qa-answer {
+  margin: 0 var(--card-padding) var(--card-padding);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-inverse);
+  color: var(--text-on-inverse);
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+  white-space: pre-line;
+}
+
+.qa-answer-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--brand-teal);
+  margin-bottom: var(--space-2);
+}
