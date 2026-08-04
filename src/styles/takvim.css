@@ -1,0 +1,294 @@
+/* Takvim ekranı — ay ızgarası, hafta şeridi ve ajanda. */
+
+.cal-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--space-1) var(--space-1);
+}
+
+.cal-month {
+  text-transform: capitalize;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+
+.cal-nav-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+}
+
+.cal-nav-button:active {
+  background: var(--surface-sunken);
+}
+
+.cal-today {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+}
+
+/* Görünüm seçici: Ay / Hafta / Ajanda */
+.cal-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-hairline);
+}
+
+.cal-tab {
+  padding: var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  text-align: center;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.cal-tab[aria-selected='true'] {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-hairline);
+}
+
+/* ---------------------------------------------------------------- *
+ * Ay ızgarası
+ * ---------------------------------------------------------------- */
+
+.cal-grid-card {
+  padding: var(--space-4) var(--space-3) var(--space-3);
+}
+
+.cal-weekdays,
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.cal-weekdays {
+  margin-bottom: var(--space-2);
+}
+
+.cal-weekday {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-bottom: var(--space-2);
+}
+
+/* Hafta sonu sütunları hafifçe soluk — iş günü ayrımı gözle görünsün. */
+.cal-weekday[data-haftasonu='true'] {
+  color: var(--cat-red-fg);
+  opacity: 0.75;
+}
+
+.cal-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.cal-day-num {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.cal-day[data-baskaAy='true'] .cal-day-num {
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+.cal-day[data-bugun='true'] .cal-day-num {
+  color: var(--brand-teal);
+  font-weight: var(--weight-medium);
+}
+
+.cal-day[data-secili='true'] {
+  background: var(--brand-ink);
+}
+
+.cal-day[data-secili='true'] .cal-day-num {
+  color: var(--text-on-inverse);
+}
+
+.cal-day:active {
+  background: var(--surface-sunken);
+}
+
+.cal-day[data-secili='true']:active {
+  background: var(--brand-ink);
+}
+
+/* Gün altındaki olay noktaları */
+.cal-dots {
+  display: flex;
+  gap: 2px;
+  height: 5px;
+  align-items: center;
+}
+
+.cal-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--acc-fg);
+}
+
+.cal-day[data-secili='true'] .cal-dot {
+  background: var(--brand-sage);
+}
+
+/* ---------------------------------------------------------------- *
+ * Hafta şeridi
+ * ---------------------------------------------------------------- */
+
+.cal-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-3);
+}
+
+.cal-strip-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.cal-strip-day[data-secili='true'] {
+  background: var(--brand-ink);
+}
+
+.cal-strip-day[data-bugun='true']:not([data-secili='true']) {
+  border-color: var(--brand-sage);
+}
+
+.cal-strip-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cal-strip-num {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.cal-strip-day[data-secili='true'] .cal-strip-label,
+.cal-strip-day[data-secili='true'] .cal-strip-num {
+  color: var(--text-on-inverse);
+}
+
+/* ---------------------------------------------------------------- *
+ * Gün başlığı ve ajanda grupları
+ * ---------------------------------------------------------------- */
+
+.cal-day-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0 var(--card-padding) var(--space-3);
+}
+
+.cal-day-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  letter-spacing: var(--tracking-mono);
+  color: var(--text-muted);
+  flex: none;
+}
+
+.agenda-group + .agenda-group {
+  margin-top: var(--space-2);
+  border-top: 1px solid var(--border-hairline);
+  padding-top: var(--space-4);
+}
+
+.agenda-date {
+  padding: 0 var(--card-padding) var(--space-2);
+}
+
+.agenda-date-gun {
+  font-family: var(--font-serif);
+  font-size: var(--text-subtitle);
+  color: var(--text-primary);
+}
+
+.agenda-date-alt {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-left: var(--space-2);
+}
+
+/* Takvim satırındaki saat sütunu */
+.cal-time {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  letter-spacing: var(--tracking-mono);
+  color: var(--text-secondary);
+  width: 54px;
+  flex: none;
+  text-align: end;
+}
+
+.cal-time[data-gunboyu='true'] {
+  color: var(--text-muted);
+}
+
+.row[data-tamamlandi='true'] .row-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Süre satırlarını olaylardan ayıran ince sol şerit */
+.cal-marker {
+  width: 3px;
+  align-self: stretch;
+  border-radius: var(--radius-pill);
+  background: var(--acc-fg);
+  flex: none;
+}

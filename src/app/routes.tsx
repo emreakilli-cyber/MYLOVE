@@ -2,6 +2,7 @@ import { PlaceholderPage } from '../components/PlaceholderPage'
 import { Icon } from '../components/Icon'
 import { Link, type RouteDefinition } from '../router'
 import { GenelBakis } from '../pages/GenelBakis'
+import { Takvim } from '../pages/Takvim'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -16,16 +17,7 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/takvim',
-    render: () => (
-      <PlaceholderPage
-        crumb="Takvim"
-        title="Takvim, sizin ritminizde."
-        description="Duruşmalar, son tarihler ve önemli hatırlatmalar tek bir zaman çizelgesinde yakında burada."
-        icon="calendar"
-        accent="blue"
-        phase="F3"
-      />
-    ),
+    render: () => <Takvim />,
   },
   {
     path: '/dosyalar',
