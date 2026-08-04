@@ -15,6 +15,7 @@ import { Gorevler } from '../pages/Gorevler'
 import { GorevForm } from '../pages/GorevForm'
 import { Finans } from '../pages/Finans'
 import { FinansForm } from '../pages/FinansForm'
+import { Raporlar } from '../pages/Raporlar'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -116,16 +117,7 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/raporlar',
-    render: () => (
-      <PlaceholderPage
-        crumb="Raporlar"
-        title="İşinizin resmini görün."
-        description="Dosya performansı, iş yükü ve takvim sağlığı için sade raporlar hazırlanıyor."
-        icon="chart"
-        accent="amber"
-        phase="F13"
-      />
-    ),
+    render: () => <Raporlar />,
   },
   {
     path: '/ayarlar',

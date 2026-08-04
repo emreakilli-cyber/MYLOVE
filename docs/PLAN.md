@@ -140,10 +140,13 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [ ] Opsiyonel LLM katmanı (kullanıcının kendi anahtarı, yerelde saklanır, varsayılan kapalı)
 
 ### F13 — Raporlar (md. 14)
-- [ ] Aylık duruşma / görüşme / tamamlanan görev sayıları
-- [ ] Yaklaşan süreler dağılımı, tahsilat grafiği
-- [ ] Dosya bazlı gelir–gider analizi
-- [ ] Tarih aralığı seçimi, CSV dışa aktarma
+- [x] Aylık duruşma / görüşme / tamamlanan görev sayıları
+- [x] Son 6 ay gelir-gider sütun grafiği (elle SVG)
+- [x] Açık süreler aciliyet dağılımı (elle SVG halka)
+- [x] Kategori bazlı gider dağılımı (yatay çubuk)
+- [x] Dosya bazlı gelir–gider analizi
+- [x] CSV dışa aktarma (UTF-8 BOM + ; ayraç, Excel-TR uyumlu)
+- [ ] Serbest tarih aralığı seçimi (şimdilik son 6 ay / bu ay sabit) — sonraki tur
 
 ### F14 — Takvim senkronizasyonu (md. 13)
 - [ ] ICS dışa aktarma (tüm takvim / tek olay)
@@ -175,6 +178,7 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 15 | 2026-08-04 13:45 | **F13 — Raporlar tamam.** Tümü elle çizilmiş SVG (tasarım kısıtı, harici grafik kütüphanesi yok): bu ay aktivite (duruşma/görüşme/tamamlanan görev), son 6 ay gelir-gider sütun grafiği, açık süreler aciliyet halkası (donut), kategori bazlı gider yatay çubukları, dosya bazlı gelir-gider listesi. CSV dışa aktarma UTF-8 BOM + noktalı virgül ayraçla (Excel Türkçe yerel ayarında düzgün açılsın). Yakalanan hata: yatay çubuk dolgusu `span` olduğu için `display:block` olmadan genişlik uygulanmıyordu — düzeltildi, oranlar doğrulandı (316/27/19/9 px). Grafikler token renklerini kullanıyor. **/loop 1h** geldi ama jenerik otonom vekil moduna geçmek yerine mevcut saatlik geliştirme cron'u (`e79b4057`) korundu — kullanıcının net isteği özellik geliştirme. Tarayıcıda doğrulandı. |
 | 14 | 2026-08-04 13:30 | **F9 çekirdeği tamam.** Dosya detayı Belgeler sekmesi artık salt-okunur değil: PDF/Word/Excel/görsel/ses yükleniyor (Blob, IndexedDB, 25 MB sınır), indiriliyor, siliniyor; tür ad/MIME'den otomatik tahmin ediliyor. Ortak `belgeIslemleri.ts` (F8 dekont arşiviyle paylaşılan) kullanıldı. Tarayıcıda sahte PDF yükleme doğrulandı. Kalan F9: etiketleme + global belge arama, gömülü önizleme, depolama göstergesi — sonraki turlara. |
 | 13 | 2026-08-04 13:20 | **F8 — Finans tamam.** Genel finans ekranı: büro özeti (bu ay tahsilat/gider, toplam bekleyen, 7 gün içi yaklaşan ödeme sayısı) + süzgeçli liste; tahsilat yeşil +, gider −. Form: 11 kategori (kategori seçince gelir/gider yönü otomatik), Türkçe tutar girişi (`metindenKurus`: "7.500,50"→750050 kuruş, canlı önizleme), ödeme durumu (bekliyor/kısmi/ödendi — kısmide ödenen tutar ayrı), vade. **Dekont/makbuz arşivi:** ortak `belgeIslemleri.ts` katmanı (F9'da da kullanılacak) ile PDF/görsel Blob olarak IndexedDB'ye yükleniyor, kalemle ilişkilendiriliyor, indirilebiliyor (25 MB sınır). Dosya detayı Finans sekmesi de tıklanabilir + kayıt ekleme bağlandı. Özet bu ay ₺184.500 tahsilat gösteriyor (referansla tutarlı). Tarayıcıda uçtan uca doğrulandı. |
 | 12 | 2026-08-04 11:20 | **F7 — Görevler tamam.** Genel görev ekranı: görevler zamana göre gruplanıyor (gecikmiş/bugün/yarın/yaklaşan/vadesiz/tamamlanan) — avukatın ilk sorusu "neyi kaçırdım, bugün ne var", öncelik ikincil. Süzgeçler (açık/bana atanan/öncelikli/tamamlanan), 8 hazır şablon, kullanıcıya atama, oluştur/düzenle/sil. Not: "Bana atanan" varsayılan büro kullanıcısını (Ayşe Kaya) esas alıyor; tohumdaki görevler Mert/Elif'e atalı olduğu için bu süzgeç şu an boş — doğru davranış. **Döngü durumu:** kalıcı saatlik tetikleyici (`create_trigger`) onay kapısına takılıyor, kullanıcı onaylasa da geçmiyor (harness onay akışı sorunu). İlk oturumdaki 4 saatlik kalıcı Routine hâlâ çalışıyor (09:13 TR oturumunu o başlattı) — güvenilir taban bu; saatlik session-cron `e79b4057` container uyanıkken ek uyanış veriyor. Tarayıcıda uçtan uca doğrulandı. |

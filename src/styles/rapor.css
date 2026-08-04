@@ -1,0 +1,174 @@
+/* Raporlar — elle çizilen SVG grafikler ve düzen. */
+
+.rapor-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.rapor-stat {
+  padding: var(--space-4) var(--space-3);
+  text-align: center;
+}
+
+.rapor-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--acc-fg);
+  line-height: 1.1;
+}
+
+.rapor-stat-label {
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+  line-height: var(--leading-snug);
+}
+
+.chart-card {
+  padding: var(--card-padding);
+}
+
+.chart-title {
+  margin-bottom: var(--space-1);
+}
+
+.chart-sub {
+  font-size: var(--text-small);
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+
+/* Sütun grafiği */
+.bar-chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.bar-chart text {
+  font-family: var(--font-mono);
+  fill: var(--text-muted);
+}
+
+.bar-legend {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+}
+
+.bar-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+/* Yatay çubuk (gider dağılımı) */
+.hbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+}
+
+.hbar-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-2) var(--space-3);
+  align-items: baseline;
+}
+
+.hbar-label {
+  font-size: var(--text-small);
+  color: var(--text-primary);
+}
+
+.hbar-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+  text-align: end;
+}
+
+.hbar-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.hbar-fill {
+  display: block;
+  height: 100%;
+  min-width: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--acc-fg);
+}
+
+/* Halka (donut) */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.donut {
+  flex: none;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+}
+
+.donut-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+}
+
+.donut-center-num {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  fill: var(--text-primary);
+}
+
+.donut-center-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  fill: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.export-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  font-size: var(--text-small);
+}
+
+.export-button:active {
+  background: var(--surface-sunken);
+}
