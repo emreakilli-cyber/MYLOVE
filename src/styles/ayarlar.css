@@ -95,3 +95,34 @@
   font-size: var(--text-body);
   color: var(--text-primary);
 }
+
+
+/* Senkron rehber adımları */
+.rehber-liste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--card-padding) var(--space-2);
+}
+
+.rehber-liste li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  line-height: var(--leading-snug);
+}
+
+.rehber-no {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  flex: none;
+}

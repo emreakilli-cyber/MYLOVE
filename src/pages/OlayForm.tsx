@@ -11,6 +11,7 @@ import {
 } from '../data/olayIslemleri'
 import { olayGorunumleri, olayTurleri } from '../domain/olay'
 import { bugunIso, dateToIsoDate, saat, tamTarih } from '../domain/tarih'
+import { icsIndir, tekOlayIcs } from '../services/ics'
 import type { OlayTuru } from '../domain/types'
 
 /*
@@ -112,6 +113,15 @@ export function OlayForm({ id }: { id?: string }) {
     if (!id) return
     await olaySil(id)
     navigate('/takvim')
+  }
+
+  const takvimeAktar = () => {
+    if (!mevcut) return
+    const dosyaAdi = mevcut.dosyaId
+      ? dosyalar?.find((d) => d.id === mevcut.dosyaId)?.baslik
+      : undefined
+    const ics = tekOlayIcs(mevcut, dosyaAdi, new Date())
+    icsIndir(ics, `olay-${mevcut.baslik.replace(/\s+/g, '-').toLocaleLowerCase('tr')}`)
   }
 
   if (duzenleme && mevcut === null) {
@@ -304,6 +314,22 @@ export function OlayForm({ id }: { id?: string }) {
               Vazgeç
             </button>
           </p>
+        ) : null}
+
+        {duzenleme ? (
+          <button
+            type="button"
+            className="button-quiet"
+            style={{ alignSelf: 'flex-start' }}
+            onClick={takvimeAktar}
+          >
+            <Icon
+              name="arrow-up-right"
+              size={15}
+              style={{ marginRight: '6px', verticalAlign: '-3px' }}
+            />
+            Telefon takvimine ekle (.ics)
+          </button>
         ) : null}
       </section>
     </>

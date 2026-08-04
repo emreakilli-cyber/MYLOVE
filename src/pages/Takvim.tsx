@@ -429,6 +429,11 @@ export function Takvim() {
 
       {gorunum === 'ajanda' ? <AjandaGorunumu /> : null}
 
+      <Link to="/takvim/disa-aktar" className="cal-export-link">
+        <Icon name="arrow-up-right" size={15} />
+        Takvimi dışa aktar (Google / Apple / Outlook)
+      </Link>
+
       <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
         Süre kayıtları bilgilendirme amaçlıdır; son günün doğruluğunu teyit
         etmek kullanıcının sorumluluğundadır.

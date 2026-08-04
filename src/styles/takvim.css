@@ -292,3 +292,15 @@
   background: var(--acc-fg);
   flex: none;
 }
+
+
+/* Dışa aktarma bağlantısı */
+.cal-export-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-1);
+  font-size: var(--text-small);
+  color: var(--brand-teal);
+}

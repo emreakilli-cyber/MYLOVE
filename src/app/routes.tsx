@@ -19,6 +19,7 @@ import { Raporlar } from '../pages/Raporlar'
 import { Asistan } from '../pages/Asistan'
 import { Ayarlar } from '../pages/Ayarlar'
 import { Bildirimler } from '../pages/Bildirimler'
+import { TakvimSenkron } from '../pages/TakvimSenkron'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -38,6 +39,10 @@ export const routes: readonly RouteDefinition[] = [
   {
     path: '/takvim/yeni',
     render: () => <OlayForm />,
+  },
+  {
+    path: '/takvim/disa-aktar',
+    render: () => <TakvimSenkron />,
   },
   {
     path: '/sure',
