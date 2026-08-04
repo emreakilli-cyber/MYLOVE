@@ -11,6 +11,8 @@ import { SureHesapla } from '../pages/SureHesapla'
 import { Muvekkiller } from '../pages/Muvekkiller'
 import { MuvekkilDetay } from '../pages/MuvekkilDetay'
 import { MuvekkilForm } from '../pages/MuvekkilForm'
+import { Gorevler } from '../pages/Gorevler'
+import { GorevForm } from '../pages/GorevForm'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -75,16 +77,15 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/gorevler',
-    render: () => (
-      <PlaceholderPage
-        crumb="Görevler"
-        title="Yapılacaklar, sırasıyla."
-        description="Dosya bazlı görev listeleri, öncelikler ve büro içinde görev atama bu ekrana gelecek."
-        icon="checklist"
-        accent="red"
-        phase="F7"
-      />
-    ),
+    render: () => <Gorevler />,
+  },
+  {
+    path: '/gorevler/yeni',
+    render: () => <GorevForm />,
+  },
+  {
+    path: '/gorevler/:id',
+    render: (params) => <GorevForm id={params['id']} />,
   },
   {
     path: '/finans',
