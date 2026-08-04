@@ -17,6 +17,8 @@ import { Finans } from '../pages/Finans'
 import { FinansForm } from '../pages/FinansForm'
 import { Raporlar } from '../pages/Raporlar'
 import { Asistan } from '../pages/Asistan'
+import { Ayarlar } from '../pages/Ayarlar'
+import { Bildirimler } from '../pages/Bildirimler'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -113,16 +115,7 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/ayarlar',
-    render: () => (
-      <PlaceholderPage
-        crumb="Ayarlar"
-        title="Kendi kurallarınızla."
-        description="Hatırlatma tercihleri, bildirim kanalları, yedekleme ve uygulama kilidi bu ekrandan yönetilecek."
-        icon="settings"
-        accent="slate"
-        phase="F11"
-      />
-    ),
+    render: () => <Ayarlar />,
   },
   {
     path: '/ara',
@@ -139,16 +132,7 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/bildirimler',
-    render: () => (
-      <PlaceholderPage
-        crumb="Bildirimler"
-        title="Kaçırmamanız gerekenler."
-        description="Hatırlatmalar, yaklaşan süreler ve ödeme uyarıları bu kutuda toplanacak."
-        icon="bell"
-        accent="amber"
-        phase="F11"
-      />
-    ),
+    render: () => <Bildirimler />,
   },
 ]
 

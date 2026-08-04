@@ -3,6 +3,7 @@ import { Icon } from './Icon'
 import { Drawer } from './Drawer'
 import { SurumYenile } from './SurumYenile'
 import { useLocation, useNavigate } from '../router'
+import { useAktifHatirlatmaSayisi } from '../data/hatirlatmaSorgulari'
 
 interface AppShellProps {
   readonly children: ReactNode
@@ -13,6 +14,7 @@ export function AppShell({ children }: AppShellProps) {
   const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
   const { path } = useLocation()
+  const hatirlatmaSayisi = useAktifHatirlatmaSayisi() ?? 0
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4)
@@ -54,7 +56,9 @@ export function AppShell({ children }: AppShellProps) {
             onClick={() => navigate('/bildirimler')}
           >
             <Icon name="bell" size={19} title="Bildirimler" />
-            <span className="icon-button-dot" aria-hidden="true" />
+            {hatirlatmaSayisi > 0 ? (
+              <span className="icon-button-dot" aria-hidden="true" />
+            ) : null}
           </button>
         </div>
       </header>

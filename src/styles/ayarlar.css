@@ -1,0 +1,97 @@
+/* Ayarlar ve Bildirimler ekranları. */
+
+.ayar-baslik {
+  font-family: var(--font-serif);
+  font-size: var(--text-subtitle);
+  color: var(--text-primary);
+}
+
+.ayar-mesaj {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--brand-sage-soft);
+  color: #23453a;
+  font-size: var(--text-small);
+}
+
+.ayar-profil + .ayar-profil {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-hairline);
+}
+
+.ayar-profil-baslik {
+  font-size: var(--text-body);
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.ofset-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ofset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-page);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+}
+
+.ofset-chip[aria-pressed='true'] {
+  background: var(--brand-sage-soft);
+  border-color: var(--brand-sage);
+  color: #23453a;
+}
+
+.ofset-chip svg {
+  color: var(--brand-sage-deep);
+}
+
+.kanal-rozet {
+  display: inline-block;
+  margin-left: var(--space-2);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunken);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.switch-row[disabled],
+.switch-row[aria-disabled='true'] {
+  cursor: default;
+}
+
+/* Bildirimler öneri kartı */
+.bildirim-oneri {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--card-padding);
+}
+
+.bildirim-oneri-icon {
+  color: var(--cat-amber-fg);
+  flex: none;
+}
+
+.bildirim-oneri-metin {
+  flex: 1;
+  min-width: 0;
+}
+
+.bildirim-oneri-baslik {
+  font-size: var(--text-body);
+  color: var(--text-primary);
+}
