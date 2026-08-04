@@ -24,8 +24,13 @@
     <meta name="color-scheme" content="light" />
     <meta name="format-detection" content="telephone=no" />
 
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <!--
+      Yollar kök-mutlak: Vite bunları base ile (/MYLOVE/) yeniden yazar.
+      Göreli "./" yol, sayfa sondaki eğik çizgi olmadan açıldığında alan adı
+      köküne çözülüyor ve iOS ikonu bulamayıp "J" harfi uyduruyordu.
+    -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   </head>
   <body>
     <div id="root"></div>
