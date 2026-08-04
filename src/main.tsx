@@ -9,6 +9,16 @@ import './styles/placeholder.css'
 
 import App from './App'
 
+// İlk açılışta örnek veriyi yaz. Dexie'nin canlı sorguları veri gelince
+// kendiliğinden yeniden yayın yaptığı için render'ı beklemeye gerek yok.
+// Tohum modülü ayrı parçaya alındı: ömründe bir kez çalışan ~30 kB veri her
+// açılışta ana pakette taşınmasın.
+void import('./data/seed')
+  .then((modul) => modul.tohumlaGerekiyorsa())
+  .catch((hata) => {
+    console.error('Örnek veri yazılamadı', hata)
+  })
+
 const container = document.getElementById('root')
 if (!container) throw new Error('#root bulunamadı')
 

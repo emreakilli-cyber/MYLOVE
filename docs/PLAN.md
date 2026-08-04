@@ -46,10 +46,11 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [x] GitHub Actions → GitHub Pages dağıtımı
 
 ### F1 — Veri katmanı
-- [ ] Alan modeli: Dosya, Müvekkil, Olay, Görev, Süre, Finans kaydı, Belge, Kişi, Not, Hareket
-- [ ] Dexie şeması, sürüm/göç altyapısı, repository katmanı
-- [ ] Videodaki örnek verinin birebir tohumlanması (Yılmaz/Arslan, Demir İnşaat, Kaya/Nova…)
-- [ ] Yedekleme: tüm veriyi JSON+ek olarak dışa/içe aktarma
+- [x] Alan modeli: Dosya, Müvekkil, Olay, Görev, Süre, Finans kaydı, Belge, Kişi, Not, Hareket
+- [x] Dexie şeması, sürüm/göç altyapısı
+- [x] Videodaki örnek verinin birebir tohumlanması (Yılmaz/Arslan, Demir İnşaat, Kaya/Nova…)
+- [x] Yedekleme: tüm veriyi JSON+ek olarak dışa/içe aktarma
+- [ ] Repository katmanı (F2'de gösterge paneli sorgularıyla birlikte yazılacak)
 
 ### F2 — Genel bakış (Dashboard)
 - [ ] Hero kartı + selamlama + tarih
@@ -156,3 +157,4 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 2 | 2026-08-04 02:40 | **F1 (repository hariç) tamam.** 13 tablo, alan modeli, Dexie şeması, tohum verisi ve JSON yedekleme. Varsayım: tohum tarihleri sabit değil **bugüne göre** kuruluyor — sabit tarihler bir hafta sonra ölü demoya döner. Tohum, videodaki rakamları gerçekten üretiyor (24 aktif dosya, bu hafta 8 duruşma / 2'si bugün, 17 bekleyen görev / 4 öncelikli, bu ay 184.500 ₺ / +%12); bu sayılar teste bağlandı. Para birimi kuruş tam sayısı, süreler gün (`IsoDate`) olarak saklanıyor. Tarayıcıda tohumlama doğrulandı, tekrar açılışta veri ezilmiyor. |
