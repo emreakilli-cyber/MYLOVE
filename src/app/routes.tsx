@@ -4,6 +4,8 @@ import { Link, type RouteDefinition } from '../router'
 import { GenelBakis } from '../pages/GenelBakis'
 import { Takvim } from '../pages/Takvim'
 import { OlayForm } from '../pages/OlayForm'
+import { Dosyalar } from '../pages/Dosyalar'
+import { DosyaDetay } from '../pages/DosyaDetay'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -30,29 +32,11 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/dosyalar',
-    render: () => (
-      <PlaceholderPage
-        crumb="Dosyalar"
-        title="Dosyalarınızın nabzı."
-        description="Her dosyanın durumu, hazırlık seviyesi ve bir sonraki adımı için odaklanmış görünüm hazırlanıyor."
-        icon="folder"
-        accent="purple"
-        phase="F4"
-      />
-    ),
+    render: () => <Dosyalar />,
   },
   {
     path: '/dosyalar/:id',
-    render: (params) => (
-      <PlaceholderPage
-        crumb={`Dosyalar / ${params['id'] ?? ''}`}
-        title="Dosya detayı."
-        description="Duruşmalar, süreler, belgeler, görevler, finans ve notlar bu ekranda birleşecek."
-        icon="folder"
-        accent="purple"
-        phase="F4"
-      />
-    ),
+    render: (params) => <DosyaDetay id={params['id']} />,
   },
   {
     path: '/muvekkiller',
