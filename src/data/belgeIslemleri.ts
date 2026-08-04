@@ -1,0 +1,109 @@
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db, simdi, yeniId } from './db'
+import type { Belge, BelgeTuru } from '../domain/types'
+
+/*
+ * Belge yükleme ve yönetimi. İçerik Blob olarak IndexedDB'de tutulur; cihazdan
+ * çıkmaz. F8 (dekont/makbuz) ve F9 (genel belge) bunu paylaşır.
+ */
+
+/** Dosya uzantısı/MIME'inden makul bir belge türü tahmini. */
+export function belgeTuruTahmini(dosya: File): BelgeTuru {
+  const ad = dosya.name.toLocaleLowerCase('tr')
+  const mime = dosya.type
+  if (mime.startsWith('image/')) return 'foto'
+  if (mime.startsWith('audio/')) return 'ses'
+  if (/vekalet|vekâlet/.test(ad)) return 'vekaletname'
+  if (/dilekce|dilekçe/.test(ad)) return 'dilekce'
+  if (/karar/.test(ad)) return 'karar'
+  if (/bilirki[sş]i/.test(ad)) return 'bilirkisi-raporu'
+  if (/dekont/.test(ad)) return 'dekont'
+  if (/makbuz|fatura/.test(ad)) return 'makbuz'
+  if (/s[oö]zle[sş]me/.test(ad)) return 'sozlesme'
+  return 'diger'
+}
+
+export interface BelgeYuklemeGirdisi {
+  dosya: File
+  tur?: BelgeTuru
+  dosyaId?: string
+  muvekkilId?: string
+  finansKaydiId?: string
+  etiketler?: string[]
+  not?: string
+}
+
+/** 25 MB üstü ekleri reddet — IndexedDB kotasını tek dosyayla doldurmasın. */
+export const MAKS_BELGE_BAYT = 25 * 1024 * 1024
+
+export class BelgeHatasi extends Error {}
+
+export async function belgeYukle(girdi: BelgeYuklemeGirdisi): Promise<string> {
+  const { dosya } = girdi
+  if (dosya.size > MAKS_BELGE_BAYT) {
+    throw new BelgeHatasi('Dosya 25 MB sınırını aşıyor.')
+  }
+  const zaman = simdi()
+  const id = yeniId()
+  // File zaten bir Blob; kopyalayıp saf Blob olarak saklıyoruz.
+  const icerik = dosya.slice(0, dosya.size, dosya.type || 'application/octet-stream')
+
+  await db.belgeler.add({
+    id,
+    ad: dosya.name,
+    tur: girdi.tur ?? belgeTuruTahmini(dosya),
+    ...(girdi.dosyaId ? { dosyaId: girdi.dosyaId } : {}),
+    ...(girdi.muvekkilId ? { muvekkilId: girdi.muvekkilId } : {}),
+    ...(girdi.finansKaydiId ? { finansKaydiId: girdi.finansKaydiId } : {}),
+    mimeTur: dosya.type || 'application/octet-stream',
+    boyut: dosya.size,
+    icerik,
+    etiketler: girdi.etiketler ?? [],
+    ...(girdi.not?.trim() ? { not: girdi.not.trim() } : {}),
+    olusturmaTarihi: zaman,
+    guncellemeTarihi: zaman,
+  })
+
+  if (girdi.dosyaId) {
+    const dosyaKaydi = await db.dosyalar.get(girdi.dosyaId)
+    await db.hareketler.add({
+      id: yeniId(),
+      tur: 'belge-yuklendi',
+      baslik: 'Yeni belge yüklendi',
+      ayrinti: dosyaKaydi ? `${dosya.name} · ${dosyaKaydi.baslik}` : dosya.name,
+      dosyaId: girdi.dosyaId,
+      zaman,
+    })
+  }
+  return id
+}
+
+export async function belgeSil(id: string): Promise<void> {
+  await db.belgeler.delete(id)
+}
+
+/** Belgeyi cihaza indirir (veri yerelde; ağ trafiği yok). */
+export function belgeyiIndir(belge: Belge): void {
+  const adres = URL.createObjectURL(belge.icerik)
+  const baglanti = document.createElement('a')
+  baglanti.href = adres
+  baglanti.download = belge.ad
+  baglanti.click()
+  URL.revokeObjectURL(adres)
+}
+
+/** Bir finans kaydına bağlı dekont/makbuzlar. */
+export function useFinansBelgeleri(
+  finansKaydiId: string | undefined,
+): Belge[] | undefined {
+  return useLiveQuery(async () => {
+    if (!finansKaydiId) return []
+    return db.belgeler.where('finansKaydiId').equals(finansKaydiId).toArray()
+  }, [finansKaydiId])
+}
+
+export function boyutMetni(bayt: number): string {
+  if (bayt < 1024) return `${bayt} B`
+  if (bayt < 1024 * 1024) return `${Math.round(bayt / 1024)} KB`
+  return `${(bayt / (1024 * 1024)).toFixed(1)} MB`
+}

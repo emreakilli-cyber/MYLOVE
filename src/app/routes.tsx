@@ -13,6 +13,8 @@ import { MuvekkilDetay } from '../pages/MuvekkilDetay'
 import { MuvekkilForm } from '../pages/MuvekkilForm'
 import { Gorevler } from '../pages/Gorevler'
 import { GorevForm } from '../pages/GorevForm'
+import { Finans } from '../pages/Finans'
+import { FinansForm } from '../pages/FinansForm'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -89,16 +91,15 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/finans',
-    render: () => (
-      <PlaceholderPage
-        crumb="Finans"
-        title="Harçtan tahsilata, tek defter."
-        description="Gider avansı, bilirkişi ve keşif masrafları, vekâlet ücretleri ve dekont arşivi burada tutulacak."
-        icon="wallet"
-        accent="purple"
-        phase="F8"
-      />
-    ),
+    render: () => <Finans />,
+  },
+  {
+    path: '/finans/yeni',
+    render: () => <FinansForm />,
+  },
+  {
+    path: '/finans/:id',
+    render: (params) => <FinansForm id={params['id']} />,
   },
   {
     path: '/asistan',

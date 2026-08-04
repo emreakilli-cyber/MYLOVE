@@ -106,11 +106,13 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [ ] Tekrar eden görevler (F3 tekrar eden olaylarla birlikte, sonraki tur)
 
 ### F8 — Finans (md. 6, 7)
-- [ ] Gider/gelir kalemleri: harç, gider avansı, bilirkişi, keşif, tebligat,
-      arabuluculuk, noter, icra masrafı, müvekkil avansı, vekâlet ücreti
-- [ ] Ödeme durumu, vade, yaklaşan ödeme hatırlatması
-- [ ] Dosya bazlı gelir–gider özeti ve bakiye
-- [ ] Makbuz/dekont arşivi: PDF/görsel yükleme, önizleme, kalemle ilişkilendirme
+- [x] Gider/gelir kalemleri: 11 kategori (harç, gider avansı, bilirkişi, keşif, tebligat,
+      arabuluculuk, noter, icra masrafı, müvekkil avansı, vekâlet ücreti, diğer)
+- [x] Ödeme durumu (bekliyor/kısmi/ödendi), vade, yaklaşan ödeme (özet: 7 gün içi sayısı)
+- [x] Genel finans ekranı: büro özeti + süzgeçler (tümü/tahsilat/gider/bekleyen)
+- [x] Dosya bazlı gelir–gider özeti ve bakiye (dosya detayı Finans sekmesi)
+- [x] Makbuz/dekont arşivi: PDF/görsel yükleme (Blob, IndexedDB), indirme, kalemle ilişkilendirme
+- [x] Türkçe tutar girişi ("7.500,50" → doğru kuruş) ve kısmi ödeme
 
 ### F9 — Belge yönetimi (md. 12)
 - [ ] PDF / Word / Excel / görsel / ses ekleme, IndexedDB'de saklama
@@ -171,6 +173,7 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 13 | 2026-08-04 13:20 | **F8 — Finans tamam.** Genel finans ekranı: büro özeti (bu ay tahsilat/gider, toplam bekleyen, 7 gün içi yaklaşan ödeme sayısı) + süzgeçli liste; tahsilat yeşil +, gider −. Form: 11 kategori (kategori seçince gelir/gider yönü otomatik), Türkçe tutar girişi (`metindenKurus`: "7.500,50"→750050 kuruş, canlı önizleme), ödeme durumu (bekliyor/kısmi/ödendi — kısmide ödenen tutar ayrı), vade. **Dekont/makbuz arşivi:** ortak `belgeIslemleri.ts` katmanı (F9'da da kullanılacak) ile PDF/görsel Blob olarak IndexedDB'ye yükleniyor, kalemle ilişkilendiriliyor, indirilebiliyor (25 MB sınır). Dosya detayı Finans sekmesi de tıklanabilir + kayıt ekleme bağlandı. Özet bu ay ₺184.500 tahsilat gösteriyor (referansla tutarlı). Tarayıcıda uçtan uca doğrulandı. |
 | 12 | 2026-08-04 11:20 | **F7 — Görevler tamam.** Genel görev ekranı: görevler zamana göre gruplanıyor (gecikmiş/bugün/yarın/yaklaşan/vadesiz/tamamlanan) — avukatın ilk sorusu "neyi kaçırdım, bugün ne var", öncelik ikincil. Süzgeçler (açık/bana atanan/öncelikli/tamamlanan), 8 hazır şablon, kullanıcıya atama, oluştur/düzenle/sil. Not: "Bana atanan" varsayılan büro kullanıcısını (Ayşe Kaya) esas alıyor; tohumdaki görevler Mert/Elif'e atalı olduğu için bu süzgeç şu an boş — doğru davranış. **Döngü durumu:** kalıcı saatlik tetikleyici (`create_trigger`) onay kapısına takılıyor, kullanıcı onaylasa da geçmiyor (harness onay akışı sorunu). İlk oturumdaki 4 saatlik kalıcı Routine hâlâ çalışıyor (09:13 TR oturumunu o başlattı) — güvenilir taban bu; saatlik session-cron `e79b4057` container uyanıkken ek uyanış veriyor. Tarayıcıda uçtan uca doğrulandı. |
 | 11 | 2026-08-04 10:20 | **F6 — Müvekkiller tamam.** Liste (isim/telefon/e-posta/etiket araması, açık dosya sayısı, bekleyen ödeme rozeti), profil (künye, hızlı iletişim tel:/mailto:, dosyalar, görüşme geçmişi satır içi ekleme), oluştur/düzenle formu. Kararlar: (1) "ödeme durumu" müvekkilin **tüm dosyalarındaki** bekleyen kalemlerin toplamı — avukat tek bakışta görsün; (2) bağlı dosyası olan müvekkil **silinmez, arşivlenir** (veri kaybını önlemek için), yalnızca hiç dosyası yoksa tam silinir. İkon setine telefon ve zarf eklendi. Cron `e79b4057` her saat :07'de (= TR :07, UTC+3 tam saat kaymalı) uyanıyor; sıradaki 11:07 TR. Tarayıcıda uçtan uca doğrulandı. |
 | 10 | 2026-08-04 09:40 | **F5 — süre motoru tamam.** `domain/tatil.ts`: sabit resmî tatiller + 2024–2030 dinî bayram tablosu (Diyanet) + adli tatil. `domain/sureHesabi.ts`: 17 kurallı katalog ve hesaplama (tebliğ günü sayılmaz, hafta/ay/yıl, ay sonu sabitleme, tatil→ilk iş günü, adli tatil→7 Eylül). Arayüz: süre türü + tarih seç → son gün, ham son gün, gerekçeler, uyarı; dosyaya + takvime kaydediyor. **14 yeni test** (toplam 45): bilinen tarihler elle doğrulanıp sabitlendi, ayrıca tüm katalog×başlangıç kombinasyonlarında son günün her zaman çalışma günü olduğu taranıyor. Varsayımlar: (1) arefe ve 28 Ekim öğleden sonrası tam tatil sayılmadı — o günlerde süre "tatil saatinde" hâlâ dolabilir, kaydırma yönü hep ileri olduğu için kullanıcıya fazladan zaman göstermemek güvenli taraf; (2) dinî bayram tarihleri ±1 gün kayabilir, kapsam dışı yıllarda kullanıcı uyarılıyor. Tarayıcıda uçtan uca doğrulandı (istinaf 20 Tem → 7 Eylül; ödeme emri hafta sonu kaydırması). |

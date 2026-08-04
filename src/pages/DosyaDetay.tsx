@@ -356,13 +356,22 @@ function FinansSekmesi({ detay }: { detay: Detay }) {
         </div>
       </section>
 
+      <Link
+        to={`/finans/yeni?dosya=${detay.dosya.id}`}
+        className="tab-action"
+      >
+        <Icon name="plus" size={16} />
+        Finans kaydı ekle
+      </Link>
+
       {detay.finans.length === 0 ? (
         <BosKart mesaj="Bu dosyada finans kaydı yok." />
       ) : (
         <section className="card divide-rows">
           {detay.finans.map((kayit) => (
-            <div
+            <Link
               key={kayit.id}
+              to={`/finans/${kayit.id}`}
               className={`row accent-${
                 kayit.odemeDurumu !== 'odendi'
                   ? 'amber'
@@ -386,7 +395,7 @@ function FinansSekmesi({ detay }: { detay: Detay }) {
                 {kayit.yon === 'gelir' ? '+' : '−'}
                 {tutarTam(kayit.tutar)}
               </span>
-            </div>
+            </Link>
           ))}
         </section>
       )}
