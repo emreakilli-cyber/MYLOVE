@@ -16,7 +16,7 @@
 | Konu | Karar | Gerekçe |
 |---|---|---|
 | Çatı | React 18 + TypeScript + Vite | Hızlı, PWA ve Capacitor ile uyumlu |
-| Yönlendirme | `HashRouter` | GitHub Pages'te 404 hilesi gerektirmez, iOS ana ekranda sorunsuz |
+| Yönlendirme | Elle yazılmış hash router (`src/router/`) | GitHub Pages'te 404 hilesi gerektirmez; react-router'ın açık RSC zafiyeti ve ~15 kB yükü taşınmıyor |
 | Depolama | IndexedDB (Dexie) — **local-first** | Belge/dekont ekleri, çevrimdışı çalışma, sunucu bağımlılığı yok |
 | Stil | Elle yazılmış CSS + tasarım token'ları | Editoryal görünüm birebir tutturulacak; framework varsayımı istemiyoruz |
 | Tarih | `date-fns` + `tr` yerel ayarı | Türkçe ay/gün adları, süre aritmetiği |
@@ -25,7 +25,9 @@
 | Dağıtım | GitHub Actions → GitHub Pages, base `/MYLOVE/` | Kullanıcı "github üzerinden ana ekrana ekleyip test edeceğim" dedi |
 
 **Fontlar** (self-host, Türkçe karakter tam): serif `Newsreader`, gövde `Inter`,
-mono `IBM Plex Mono`. Ağ bağımlılığı olmasın diye `public/fonts/` altına gömülecek.
+mono `IBM Plex Mono`. `src/assets/fonts/` altında yalnızca `latin` + `latin-ext`
+altkümeleri tutuluyor (toplam 296 kB); Kiril/Yunan/Vietnam altkümeleri service
+worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıldı.
 
 **Sunucu gerektiren özellikler** (SMS, e-posta, push, LLM, takvim senkronu) bir
 `services/` adaptör katmanı arkasına alınacak: varsayılan uygulama cihaz içi
@@ -38,10 +40,10 @@ mono `IBM Plex Mono`. Ağ bağımlılığı olmasın diye `public/fonts/` altın
 ### F0 — Temel
 - [x] Ekran kaydını çöz, görsel referansı çıkar ve repoya kalıcı kaydet
 - [x] Yol haritası ve döngü durumu dosyası
-- [ ] Vite + React + TS iskeleti, tasarım token'ları, gömülü fontlar
-- [ ] Uygulama kabuğu: üst çubuk, yan menü (drawer), yönlendirme, boş sayfalar
-- [ ] PWA: manifest, ikonlar, service worker, iOS ana ekran meta etiketleri
-- [ ] GitHub Actions → GitHub Pages dağıtımı
+- [x] Vite + React + TS iskeleti, tasarım token'ları, gömülü fontlar
+- [x] Uygulama kabuğu: üst çubuk, yan menü (drawer), yönlendirme, boş sayfalar
+- [x] PWA: manifest, ikonlar, service worker, iOS ana ekran meta etiketleri
+- [x] GitHub Actions → GitHub Pages dağıtımı
 
 ### F1 — Veri katmanı
 - [ ] Alan modeli: Dosya, Müvekkil, Olay, Görev, Süre, Finans kaydı, Belge, Kişi, Not, Hareket
@@ -153,3 +155,4 @@ mono `IBM Plex Mono`. Ağ bağımlılığı olmasın diye `public/fonts/` altın
 | # | Tarih (UTC) | Yapılan |
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
+| 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |

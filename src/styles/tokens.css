@@ -1,0 +1,150 @@
+/*
+ * JurisCalendar tasarım token'ları.
+ * Kaynak: docs/DESIGN-REFERENCE.md — değerler ekran kaydından çıkarıldı.
+ * Buradaki isimler arayüzün her yerinde tek doğruluk kaynağıdır; bileşenlerde
+ * ham renk/ölçü yazılmaz.
+ */
+
+:root {
+  /* ---- Zemin ve yüzeyler ---- */
+  --surface-page: #f7f6f3; /* sıcak kırık beyaz */
+  --surface-card: #ffffff;
+  --surface-sunken: #f2f0ec; /* kart içi ikincil alan, ilerleme çubuğu yatağı */
+  --surface-inverse: #16262e; /* koyu lacivert: yan menü, güvenlik kartı */
+  --surface-inverse-soft: #1e333c; /* koyu yüzey üstü kart */
+
+  --border-hairline: #ece9e4;
+  --border-strong: #ddd8d0;
+  --border-inverse: #2b444f;
+
+  /* ---- Metin ---- */
+  --text-primary: #1c2b2d;
+  --text-secondary: #6b7472;
+  --text-muted: #9aa0a0;
+  --text-on-inverse: #f2f4f3;
+  --text-on-inverse-muted: #9fb1b6;
+
+  /* ---- Marka ---- */
+  --brand-sage: #a8c5b4;
+  --brand-sage-soft: #e4efe7;
+  --brand-sage-deep: #7fa992;
+  --brand-teal: #5fb49c;
+  --brand-ink: #16262e;
+
+  /* ---- Kategori / durum renkleri ----
+   * Her biri üç katman: çizgi rengi (-fg), yumuşak zemin (-bg), kenarlık (-br).
+   */
+  --cat-red-fg: #c96a5b;
+  --cat-red-bg: #f8ecea;
+  --cat-red-br: #f0d9d5;
+
+  --cat-amber-fg: #d9a45b;
+  --cat-amber-bg: #fbf2e4;
+  --cat-amber-br: #f2e4cc;
+
+  --cat-purple-fg: #8e7cc3;
+  --cat-purple-bg: #efecf8;
+  --cat-purple-br: #e2dcf1;
+
+  --cat-blue-fg: #6e93b8;
+  --cat-blue-bg: #eaf1f7;
+  --cat-blue-br: #d9e6f0;
+
+  --cat-green-fg: #5fb49c;
+  --cat-green-bg: #e6f3ef;
+  --cat-green-br: #d3e9e2;
+
+  --cat-slate-fg: #6b7472;
+  --cat-slate-bg: #f0efec;
+  --cat-slate-br: #e4e1db;
+
+  /* ---- Anlamsal eşlemeler ---- */
+  --status-critical: var(--cat-red-fg);
+  --status-warning: var(--cat-amber-fg);
+  --status-ok: var(--cat-green-fg);
+  --status-info: var(--cat-blue-fg);
+  --status-finance: var(--cat-purple-fg);
+
+  /* ---- Tipografi ---- */
+  --font-serif: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman',
+    serif;
+  --font-sans: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Ölçek — mobil öncelikli, 16px tabanlı */
+  --text-display: 2rem; /* 32px — hero başlığı */
+  --text-title: 1.5rem; /* 24px — bölüm serif başlığı */
+  --text-subtitle: 1.125rem; /* 18px */
+  --text-body: 0.9375rem; /* 15px — kart gövdesi */
+  --text-small: 0.8125rem; /* 13px — alt satırlar */
+  --text-tiny: 0.6875rem; /* 11px — mono etiket, rozet */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+
+  /* Mono etiketlerin karakteri: büyük harf + geniş aralık */
+  --tracking-label: 0.16em;
+  --tracking-mono: 0.04em;
+
+  /* ---- Ölçü ve boşluk ---- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px; /* kart standardı */
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  --card-padding: var(--space-5);
+  --section-gap: var(--space-4);
+
+  /* ---- Derinlik ----
+   * Gölge neredeyse yok; derinlik 1px kenarlıkla veriliyor.
+   */
+  --shadow-hairline: 0 1px 2px rgba(28, 43, 45, 0.04);
+  --shadow-raised: 0 4px 16px rgba(28, 43, 45, 0.08);
+  --shadow-overlay: 0 12px 40px rgba(28, 43, 45, 0.18);
+
+  /* ---- Hareket ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 140ms;
+  --duration-base: 220ms;
+  --duration-slow: 320ms;
+
+  /* ---- Yerleşim ---- */
+  --topbar-height: 56px;
+  --content-max: 640px; /* mobil öncelikli tek kolon genişliği */
+  --drawer-width: 296px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  --z-topbar: 40;
+  --z-scrim: 50;
+  --z-drawer: 60;
+  --z-toast: 70;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

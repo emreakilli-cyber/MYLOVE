@@ -1,0 +1,91 @@
+/*
+ * Henüz doldurulmamış bölümlerin tanıtım ekranı.
+ * Referans: docs/design-reference/08-placeholder-reports.jpg ve 09.
+ */
+
+.page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  padding: var(--space-2) 0;
+}
+
+.placeholder {
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-6) var(--card-padding) var(--space-8);
+}
+
+/* Sağ üstte taşarak kırpılan dekoratif halka */
+.placeholder-ring {
+  position: absolute;
+  top: -96px;
+  right: -76px;
+  width: 260px;
+  height: 260px;
+  border-radius: var(--radius-pill);
+  border: 26px solid var(--ring-color, var(--cat-blue-bg));
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.placeholder-body {
+  position: relative;
+}
+
+.placeholder-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--tile-bg, var(--cat-blue-bg));
+  color: var(--tile-fg, var(--cat-blue-fg));
+  margin-bottom: var(--space-6);
+}
+
+.placeholder-crumb {
+  margin-bottom: var(--space-3);
+  color: var(--tile-fg, var(--text-muted));
+}
+
+.placeholder-title {
+  margin-bottom: var(--space-4);
+  max-width: 14ch;
+}
+
+.placeholder-text {
+  color: var(--text-secondary);
+  max-width: 44ch;
+  margin-bottom: var(--space-6);
+}
+
+.placeholder-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.placeholder-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--tile-fg, var(--text-muted));
+  flex: none;
+}
+
+.placeholder-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--brand-teal);
+}

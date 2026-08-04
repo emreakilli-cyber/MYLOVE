@@ -1,0 +1,150 @@
+import { useEffect, useRef } from 'react'
+import { Icon } from './Icon'
+import { Link, useIsActive } from '../router'
+import { navGroups, settingsItem, type NavItem } from '../app/navigation'
+
+interface DrawerProps {
+  readonly open: boolean
+  readonly onClose: () => void
+}
+
+function DrawerLink({
+  item,
+  onNavigate,
+}: {
+  item: NavItem
+  onNavigate: () => void
+}) {
+  const active = useIsActive(item.path, item.exact ?? false)
+  return (
+    <Link
+      to={item.path}
+      className="drawer-link"
+      onNavigate={onNavigate}
+      {...(active ? { ariaCurrent: 'page' as const } : {})}
+    >
+      <Icon name={item.icon} size={19} className="drawer-link-icon" />
+      <span>{item.label}</span>
+      {active ? <span className="drawer-link-dot" aria-hidden="true" /> : null}
+    </Link>
+  )
+}
+
+export function Drawer({ open, onClose }: DrawerProps) {
+  const panelRef = useRef<HTMLElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+
+  // Açıkken arka planın kaymasını durdur, Esc ile kapat, odağı panele al.
+  useEffect(() => {
+    if (!open) return
+
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    closeRef.current?.focus()
+
+    const { overflow } = document.body.style
+    document.body.style.overflow = 'hidden'
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab') return
+
+      // Odağı panel içinde döndür.
+      const focusables = panelRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      )
+      if (!focusables || focusables.length === 0) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      if (!first || !last) return
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = overflow
+      previouslyFocused?.focus()
+    }
+  }, [open, onClose])
+
+  return (
+    <>
+      <div
+        className="scrim"
+        data-open={open}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <nav
+        ref={panelRef}
+        className="drawer"
+        data-open={open}
+        aria-label="Ana gezinme"
+        aria-hidden={!open}
+      >
+        <div className="drawer-header">
+          <span className="drawer-mark" aria-hidden="true">
+            J
+          </span>
+          <span className="drawer-wordmark">
+            <span className="drawer-wordmark-name">Juris</span>
+            <span className="drawer-wordmark-sub">Calendar</span>
+          </span>
+          <button
+            ref={closeRef}
+            type="button"
+            className="drawer-close"
+            onClick={onClose}
+          >
+            <Icon name="close" size={20} title="Menüyü kapat" />
+          </button>
+        </div>
+
+        {navGroups.map((group) => (
+          <div key={group.label} className="drawer-group">
+            <p className="drawer-group-label">{group.label}</p>
+            {group.items.map((item) => (
+              <DrawerLink key={item.path} item={item} onNavigate={onClose} />
+            ))}
+          </div>
+        ))}
+
+        <div className="drawer-status">
+          <p className="drawer-status-title">
+            <span className="drawer-status-dot" aria-hidden="true" />
+            Sistem hazır
+          </p>
+          <p className="drawer-status-body">
+            Verileriniz bu cihazda saklanıyor; çalışmak için bağlantı gerekmiyor.
+          </p>
+        </div>
+
+        <div className="drawer-spacer" />
+        <div className="drawer-divider" />
+
+        <DrawerLink item={settingsItem} onNavigate={onClose} />
+
+        <Link to="/ayarlar" className="drawer-user" onNavigate={onClose}>
+          <span className="drawer-user-avatar" aria-hidden="true">
+            AK
+          </span>
+          <span className="drawer-user-text">
+            <span className="drawer-user-name">Ayşe Kaya</span>
+            <span className="drawer-user-role">Kıdemli avukat</span>
+          </span>
+          <Icon name="chevron-down" size={18} />
+        </Link>
+      </nav>
+    </>
+  )
+}

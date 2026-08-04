@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="JurisCalendar">
+  <rect width="512" height="512" rx="116" fill="#16262E"/>
+  <g fill="none" stroke="#5FB49C" stroke-width="38" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M186 152h150"/>
+    <path d="M286 152v148c0 46-34 74-78 66"/>
+  </g>
+  <circle cx="352" cy="352" r="26" fill="#A8C5B4"/>
+</svg>

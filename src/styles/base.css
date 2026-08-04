@@ -1,0 +1,178 @@
+/* Sıfırlama + tipografi temeli + her yerde kullanılan ilkel sınıflar. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* iOS ana ekran uygulamasında lastik bant kaydırmayı bastır */
+  overscroll-behavior-y: none;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-teal);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Fare/dokunma ile tıklarken halka çizme; klavye ile gezerken çiz. */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ---------------------------------------------------------------- *
+ * Tipografi rolleri — DESIGN-REFERENCE.md §2
+ * ---------------------------------------------------------------- */
+
+/* Serif başlık: editoryal, bölüm adları ve hero */
+.t-display,
+.t-title,
+.t-subtitle {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.t-display {
+  font-size: var(--text-display);
+}
+
+.t-title {
+  font-size: var(--text-title);
+}
+
+.t-subtitle {
+  font-size: var(--text-subtitle);
+}
+
+/* Mono etiket: BÜYÜK HARF, geniş aralık — bölüm üstü ve sayaçlar */
+.t-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Mono sayı/saat: büyük harfe çevirmeden, hafif aralıklı */
+.t-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-mono);
+}
+
+.t-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+}
+
+.t-small {
+  font-size: var(--text-small);
+  line-height: var(--leading-snug);
+  color: var(--text-secondary);
+}
+
+.t-muted {
+  color: var(--text-muted);
+}
+
+/* Ekran okuyucuya görünür, göze görünmez */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Uzun metni tek satırda kes */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+/* ---------------------------------------------------------------- *
+ * Kart — tüm bölümlerin taşıyıcısı
+ * ---------------------------------------------------------------- */
+
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-hairline);
+}
+
+.card-pad {
+  padding: var(--card-padding);
+}
+
+/* Kart içinde satırları ayıran ince çizgi */
+.divide-rows > * + * {
+  border-top: 1px solid var(--border-hairline);
+}
