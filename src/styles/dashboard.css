@@ -7,26 +7,32 @@
 .accent-red {
   --acc-bg: var(--cat-red-bg);
   --acc-fg: var(--cat-red-fg);
+  --acc-br: var(--cat-red-br);
 }
 .accent-amber {
   --acc-bg: var(--cat-amber-bg);
   --acc-fg: var(--cat-amber-fg);
+  --acc-br: var(--cat-amber-br);
 }
 .accent-purple {
   --acc-bg: var(--cat-purple-bg);
   --acc-fg: var(--cat-purple-fg);
+  --acc-br: var(--cat-purple-br);
 }
 .accent-blue {
   --acc-bg: var(--cat-blue-bg);
   --acc-fg: var(--cat-blue-fg);
+  --acc-br: var(--cat-blue-br);
 }
 .accent-green {
   --acc-bg: var(--cat-green-bg);
   --acc-fg: var(--cat-green-fg);
+  --acc-br: var(--cat-green-br);
 }
 .accent-slate {
   --acc-bg: var(--cat-slate-bg);
   --acc-fg: var(--cat-slate-fg);
+  --acc-br: var(--cat-slate-br);
 }
 
 /* ---------------------------------------------------------------- *

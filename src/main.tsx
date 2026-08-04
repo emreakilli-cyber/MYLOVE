@@ -8,6 +8,7 @@ import './styles/shell.css'
 import './styles/placeholder.css'
 import './styles/dashboard.css'
 import './styles/takvim.css'
+import './styles/form.css'
 
 import App from './App'
 

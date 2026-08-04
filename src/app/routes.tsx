@@ -3,6 +3,7 @@ import { Icon } from '../components/Icon'
 import { Link, type RouteDefinition } from '../router'
 import { GenelBakis } from '../pages/GenelBakis'
 import { Takvim } from '../pages/Takvim'
+import { OlayForm } from '../pages/OlayForm'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -18,6 +19,14 @@ export const routes: readonly RouteDefinition[] = [
   {
     path: '/takvim',
     render: () => <Takvim />,
+  },
+  {
+    path: '/takvim/yeni',
+    render: () => <OlayForm />,
+  },
+  {
+    path: '/takvim/olay/:id',
+    render: (params) => <OlayForm id={params['id']} />,
   },
   {
     path: '/dosyalar',

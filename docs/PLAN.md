@@ -68,8 +68,8 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
       arabuluculuk, keşif, son tarih, diğer
 - [x] Gün detayı, dosya bağlantısı
 - [x] Hukuki süreler de takvimde (olaylarla tek zaman çizelgesinde)
-- [ ] Olay oluştur/düzenle/sil formu
-- [ ] Tekrar eden olaylar
+- [x] Olay oluştur/düzenle/sil formu
+- [ ] Tekrar eden olaylar (F3'ten arta kalan tek madde)
 
 ### F4 — Dosyalar (md. 4)
 - [ ] Dosya listesi: durum, esas no, mahkeme, müvekkil, hazırlık yüzdesi ile filtre/arama
@@ -160,6 +160,7 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 5 | 2026-08-04 06:05 | **Pages yayında** (`https://emreakilli-cyber.github.io/MYLOVE/`) — depo sahibi ayarı açtıktan sonra dağıtım zinciri baştan sona geçti. Takvime olay ekleme/düzenleme/silme formu bitti: tür seçici, dosya bağlama, yerel tarih/saat seçicileri, tüm gün anahtarı, silme onayı. Varsayım: tarih ve saat için tarayıcının kendi seçicileri kullanıldı — iOS'ta yerel tekerlek arayüzü bizim yazacağımız her şeyden iyi; ABD biçimli tarih gösterimini dengelemek için altına Türkçe tarih ipucu kondu. Olay satırları artık düzenleme formuna gidiyor; süreler motorun ürettiği kayıt olduğu için elle düzenlenmiyor, dosyasına götürüyor. Uçtan uca tarayıcıda doğrulandı. |
 | 4 | 2026-08-04 06:00 | **Dağıtım engeli bulundu ve F3 büyük ölçüde bitti.** Üç Pages çalışması da `configure-pages` adımında düşmüş; derleme ve testler her seferinde geçmiş, yalnızca yayın engellenmiş. Sebep: depoda Pages hiç açılmamış. `enablement: true` denendi, Actions token'ı Pages sitesi *oluşturma* yetkisine sahip değil ("Resource not accessible by integration") — bu ayarı yalnızca depo sahibi açabiliyor. Takvim ekranı: ay ızgarası, hafta şeridi (telefonda saat ızgarası okunmadığı için 7 günlük şerit tercih edildi), ajanda; olaylar ve hukuki süreler tek listede. |
 | 3 | 2026-08-04 05:50 | **F2 tamam.** Genel bakış artık gerçek: hero, 2×2 istatistik, yaklaşan süreler, günün programı, görev listesi (tıklayınca tamamlanıyor ve hareket günlüğüne yazıyor), hazırlık durumu, son hareketler, güvenlik kartı. Videodaki dört rakam da veriden hesaplanıyor ve tutuyor. Ek olarak: Türkçe tarih/para yardımcıları (`toLocaleUpperCase('tr')` — "NISAN" değil "NİSAN"), ağırlıklı hazırlık motoru, canlı Dexie sorgu katmanı. Varsayım: hazırlık listesi en düşük yüzdeyi değil, **yakında işi olan** dosyalar arasında en düşüğü öne alıyor; duruşması olmayan bir dosyanın eksiği acil değil. Dolgu dosyalarına vekâletname + ödenmiş harç eklendi, yoksa sıralamayı yapay olarak dolduruyorlardı. 31 test yeşil. |
 | 2 | 2026-08-04 02:40 | **F1 (repository hariç) tamam.** 13 tablo, alan modeli, Dexie şeması, tohum verisi ve JSON yedekleme. Varsayım: tohum tarihleri sabit değil **bugüne göre** kuruluyor — sabit tarihler bir hafta sonra ölü demoya döner. Tohum, videodaki rakamları gerçekten üretiyor (24 aktif dosya, bu hafta 8 duruşma / 2'si bugün, 17 bekleyen görev / 4 öncelikli, bu ay 184.500 ₺ / +%12); bu sayılar teste bağlandı. Para birimi kuruş tam sayısı, süreler gün (`IsoDate`) olarak saklanıyor. Tarayıcıda tohumlama doğrulandı, tekrar açılışta veri ezilmiyor. |

@@ -1,0 +1,241 @@
+/* Form ekranları — olay, dosya, müvekkil, finans hepsi bu iskeleti paylaşır. */
+
+.form-head {
+  padding: 0 var(--space-1) var(--space-2);
+}
+
+.form-card {
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.field-hint {
+  font-size: var(--text-small);
+  color: var(--text-muted);
+  line-height: var(--leading-snug);
+}
+
+.field-error {
+  font-size: var(--text-small);
+  color: var(--cat-red-fg);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  font-family: var(--font-sans);
+  /* iOS 16px altındaki alanlarda odaklanınca sayfayı yakınlaştırıyor. */
+  line-height: 1.4;
+  transition: border-color var(--duration-fast) var(--ease-out);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: var(--brand-teal);
+  outline: none;
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--cat-red-fg);
+}
+
+.textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+/* Yerel tarih/saat seçicileri mono görünsün — rakamlar hizalı dursun. */
+.input[type='date'],
+.input[type='time'] {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7472' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5.5 9.5 6.5 6.5 6.5-6.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  background-size: 18px;
+  padding-right: var(--space-8);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+/* Onay kutulu satır */
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-page);
+  width: 100%;
+  text-align: start;
+}
+
+.switch-track {
+  width: 44px;
+  height: 26px;
+  border-radius: var(--radius-pill);
+  background: var(--border-strong);
+  padding: 3px;
+  flex: none;
+  transition: background var(--duration-base) var(--ease-out);
+}
+
+.switch-row[aria-pressed='true'] .switch-track {
+  background: var(--brand-teal);
+}
+
+.switch-thumb {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  box-shadow: var(--shadow-hairline);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.switch-row[aria-pressed='true'] .switch-thumb {
+  transform: translateX(18px);
+}
+
+/* Tür seçici — renkli hap ızgarası */
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+}
+
+.type-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-page);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+  text-align: start;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.type-chip[aria-pressed='true'] {
+  background: var(--acc-bg);
+  border-color: var(--acc-br, var(--acc-fg));
+  color: var(--text-primary);
+}
+
+.type-chip-icon {
+  color: var(--acc-fg);
+  flex: none;
+}
+
+/* Alt eylem çubuğu */
+.form-actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.button-primary {
+  flex: 1;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--brand-ink);
+  color: var(--text-on-inverse);
+  font-size: var(--text-body);
+  text-align: center;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.button-primary:active {
+  opacity: 0.85;
+}
+
+.button-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.button-quiet {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-hairline);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  font-size: var(--text-body);
+  flex: none;
+}
+
+.button-danger {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--cat-red-br);
+  background: var(--cat-red-bg);
+  color: var(--cat-red-fg);
+  font-size: var(--text-body);
+  flex: none;
+}
+
+/* Takvimdeki kayan ekleme düğmesi */
+.fab {
+  position: fixed;
+  right: max(var(--space-5), var(--safe-right));
+  bottom: calc(var(--space-6) + var(--safe-bottom));
+  z-index: var(--z-topbar);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--brand-ink);
+  color: var(--text-on-inverse);
+  font-size: var(--text-small);
+  box-shadow: var(--shadow-raised);
+}
+
+.fab:active {
+  opacity: 0.9;
+}
+
+/* Kayan düğmenin son satırı kapatmaması için bırakılan boşluk. */
+.fab-spacer {
+  height: 76px;
+}

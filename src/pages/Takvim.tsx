@@ -53,12 +53,17 @@ function OgeSatiri({ oge }: { oge: TakvimOgesi }) {
 
   const sinif = `row accent-${oge.accent}`
 
-  return oge.dosyaId ? (
-    <Link
-      to={`/dosyalar/${oge.dosyaId}`}
-      className={sinif}
-      {...({ 'data-tamamlandi': oge.tamamlandi } as Record<string, unknown>)}
-    >
+  // Olaya dokununca düzenleme formu açılır. Süreler motorun ürettiği kayıtlar
+  // olduğu için elle düzenlenmez; onlar dosyasına götürür.
+  const hedef =
+    oge.kaynak === 'olay'
+      ? `/takvim/olay/${oge.id}`
+      : oge.dosyaId
+        ? `/dosyalar/${oge.dosyaId}`
+        : null
+
+  return hedef ? (
+    <Link to={hedef} className={sinif}>
       {icerik}
     </Link>
   ) : (
@@ -428,6 +433,12 @@ export function Takvim() {
         Süre kayıtları bilgilendirme amaçlıdır; son günün doğruluğunu teyit
         etmek kullanıcının sorumluluğundadır.
       </p>
+
+      <Link to={`/takvim/yeni?gun=${secili}`} className="fab">
+        <Icon name="plus" size={18} />
+        Ekle
+      </Link>
+      <div className="fab-spacer" aria-hidden="true" />
     </>
   )
 }
