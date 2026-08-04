@@ -8,6 +8,9 @@ import { Dosyalar } from '../pages/Dosyalar'
 import { DosyaDetay } from '../pages/DosyaDetay'
 import { DosyaForm } from '../pages/DosyaForm'
 import { SureHesapla } from '../pages/SureHesapla'
+import { Muvekkiller } from '../pages/Muvekkiller'
+import { MuvekkilDetay } from '../pages/MuvekkilDetay'
+import { MuvekkilForm } from '../pages/MuvekkilForm'
 
 /*
  * Bölümler sırayla gerçek ekranlara dönüşecek (bkz. docs/PLAN.md).
@@ -56,29 +59,19 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/muvekkiller',
-    render: () => (
-      <PlaceholderPage
-        crumb="Müvekkiller"
-        title="İlişkiler, bağlamını korur."
-        description="Müvekkil listenizi ve onlarla ilgili dosyaları tek bakışta yönetebileceğiniz alan çok yakında."
-        icon="users"
-        accent="green"
-        phase="F6"
-      />
-    ),
+    render: () => <Muvekkiller />,
+  },
+  {
+    path: '/muvekkiller/yeni',
+    render: () => <MuvekkilForm />,
+  },
+  {
+    path: '/muvekkiller/:id/duzenle',
+    render: (params) => <MuvekkilForm id={params['id']} />,
   },
   {
     path: '/muvekkiller/:id',
-    render: (params) => (
-      <PlaceholderPage
-        crumb={`Müvekkiller / ${params['id'] ?? ''}`}
-        title="Müvekkil profili."
-        description="İletişim bilgileri, açık ve kapalı dosyalar, ödeme durumu ve görüşme geçmişi burada toplanacak."
-        icon="users"
-        accent="green"
-        phase="F6"
-      />
-    ),
+    render: (params) => <MuvekkilDetay id={params['id']} />,
   },
   {
     path: '/gorevler',

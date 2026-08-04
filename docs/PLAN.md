@@ -91,9 +91,10 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [ ] Süre kataloğunu genişletme (karar düzeltme, tespit, ıslah, temyiz karşı cevap…) — sonraki tur
 
 ### F6 — Müvekkiller (md. 8)
-- [ ] Müvekkil profili: iletişim, TCKN/vergi no, adres, etiketler
-- [ ] Açık/kapalı dosyalar, ödeme durumu, notlar, görüşme geçmişi
-- [ ] Hızlı iletişim (ara / e-posta / not ekle)
+- [x] Müvekkil profili: iletişim, TCKN/vergi no, adres, etiketler
+- [x] Açık/kapalı dosyalar, ödeme durumu (tüm dosyalardan toplanan bekleyen), görüşme geçmişi
+- [x] Hızlı iletişim (tel: ara / mailto: e-posta / görüşme kaydet)
+- [x] Müvekkil oluştur/düzenle; bağlı dosya varsa silme yerine arşivleme
 
 ### F7 — Görevler (md. 9)
 - [ ] Dosya bazlı ve genel görev listeleri, öncelik, vade
@@ -166,6 +167,7 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 |---|---|---|
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
+| 11 | 2026-08-04 10:20 | **F6 — Müvekkiller tamam.** Liste (isim/telefon/e-posta/etiket araması, açık dosya sayısı, bekleyen ödeme rozeti), profil (künye, hızlı iletişim tel:/mailto:, dosyalar, görüşme geçmişi satır içi ekleme), oluştur/düzenle formu. Kararlar: (1) "ödeme durumu" müvekkilin **tüm dosyalarındaki** bekleyen kalemlerin toplamı — avukat tek bakışta görsün; (2) bağlı dosyası olan müvekkil **silinmez, arşivlenir** (veri kaybını önlemek için), yalnızca hiç dosyası yoksa tam silinir. İkon setine telefon ve zarf eklendi. Cron `e79b4057` her saat :07'de (= TR :07, UTC+3 tam saat kaymalı) uyanıyor; sıradaki 11:07 TR. Tarayıcıda uçtan uca doğrulandı. |
 | 10 | 2026-08-04 09:40 | **F5 — süre motoru tamam.** `domain/tatil.ts`: sabit resmî tatiller + 2024–2030 dinî bayram tablosu (Diyanet) + adli tatil. `domain/sureHesabi.ts`: 17 kurallı katalog ve hesaplama (tebliğ günü sayılmaz, hafta/ay/yıl, ay sonu sabitleme, tatil→ilk iş günü, adli tatil→7 Eylül). Arayüz: süre türü + tarih seç → son gün, ham son gün, gerekçeler, uyarı; dosyaya + takvime kaydediyor. **14 yeni test** (toplam 45): bilinen tarihler elle doğrulanıp sabitlendi, ayrıca tüm katalog×başlangıç kombinasyonlarında son günün her zaman çalışma günü olduğu taranıyor. Varsayımlar: (1) arefe ve 28 Ekim öğleden sonrası tam tatil sayılmadı — o günlerde süre "tatil saatinde" hâlâ dolabilir, kaydırma yönü hep ileri olduğu için kullanıcıya fazladan zaman göstermemek güvenli taraf; (2) dinî bayram tarihleri ±1 gün kayabilir, kapsam dışı yıllarda kullanıcı uyarılıyor. Tarayıcıda uçtan uca doğrulandı (istinaf 20 Tem → 7 Eylül; ödeme emri hafta sonu kaydırması). |
 | 9 | 2026-08-04 09:30 | **F4 tamamlandı.** Dosya oluştur/düzenle/sil formu: dosya açarken müvekkil kaydı yoksa aynı ekranda "Yeni müvekkil ekle" ile oluşturuluyor (şirket eklerinden — A.Ş./Ltd./Şti. — tüzel kişi sezgisi). Dosya silmede bağlı tüm kayıtlar (olay, süre, görev, finans, belge, kişi, not) tek işlemde temizleniyor, yetim kayıt kalmıyor. Not ve ilgili kişi Notlar sekmesinde satır içi formla eklenip siliniyor. Tarayıcıda uçtan uca doğrulandı. Not: yerel önizleme base'siz derleme ister (`BASE_PATH` yalnızca Pages dağıtımında). |
 | 8 | 2026-08-04 06:30 | **iOS ana ekran ikonu düzeltildi** (kullanıcı bildirdi: logo yerine "J" harfi çıkıyor). Sebep: `index.html`'de ikon yolları göreli (`./apple-touch-icon.png`) yazılmıştı; sayfa sondaki eğik çizgi olmadan (`…/MYLOVE`) açıldığında bu, alan adı köküne çözülüyor, dosya 404 dönüyor ve iOS uygulama adının ilk harfinden yedek ikon üretiyordu. Kök-mutlak yola (`/apple-touch-icon.png`) çevrildi; Vite bunu base ile `/MYLOVE/…` olarak yeniden yazıyor (derlemede doğrulandı). Ayrıca apple-touch-icon alfa kanalından arındırılıp düz RGB yapıldı (eski iOS saydamlık uyumu) ve `sizes="180x180"` eklendi. **Not: ana ekran ikonu ekleme anında sabitlenir; kullanıcının kısayolu silip yeniden eklemesi gerekiyor — sürüm yenileme düğmesi içeriği tazeler ama ikonu değiştirmez.** |

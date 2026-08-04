@@ -436,3 +436,48 @@
 .tab-action:active {
   opacity: 0.9;
 }
+
+/* Müvekkil avatarı ve hızlı iletişim */
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  letter-spacing: 0.02em;
+}
+
+.avatar-gercek {
+  background: var(--cat-blue-bg);
+  color: var(--cat-blue-fg);
+}
+
+.avatar-tuzel {
+  background: var(--cat-purple-bg);
+  color: var(--cat-purple-fg);
+}
+
+.quick-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.quick-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+  font-size: var(--text-small);
+}
+
+.quick-action:active {
+  background: var(--surface-sunken);
+}
