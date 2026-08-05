@@ -5,13 +5,16 @@ import {
   gorevEkle,
   gorevGuncelle,
   gorevSablonlari,
+  gorevSeriSil,
   gorevSil,
   oncelikEtiketleri,
   useGorev,
+  useGorevSeriSayisi,
   useKullanicilar,
   type GorevGirdisi,
 } from '../data/gorevIslemleri'
 import { useAcikDosyalar } from '../data/olayIslemleri'
+import { TekrarSecici, type TekrarSecim } from '../components/TekrarSecici'
 import type { GorevOnceligi } from '../domain/types'
 
 interface Durum {
@@ -46,6 +49,9 @@ export function GorevForm({ id }: { id?: string }) {
   const [hata, setHata] = useState<string | null>(null)
   const [silmeOnayi, setSilmeOnayi] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
+  const [tekrar, setTekrar] = useState<TekrarSecim>('yok')
+  const [tekrarAdet, setTekrarAdet] = useState(8)
+  const seriSayisi = useGorevSeriSayisi(mevcut?.seriesId)
 
   useEffect(() => {
     if (!duzenleme || !mevcut || yuklendi) return
@@ -70,6 +76,10 @@ export function GorevForm({ id }: { id?: string }) {
       setHata('Görev başlığı girilmeli.')
       return
     }
+    if (!duzenleme && tekrar !== 'yok' && !durum.vadeTarihi) {
+      setHata('Tekrar eden görev için vade tarihi gerekli.')
+      return
+    }
     const girdi: GorevGirdisi = {
       baslik: durum.baslik,
       dosyaId: durum.dosyaId || undefined,
@@ -77,6 +87,7 @@ export function GorevForm({ id }: { id?: string }) {
       oncelik: durum.oncelik,
       vadeTarihi: durum.vadeTarihi || undefined,
       aciklama: durum.aciklama,
+      ...(!duzenleme && tekrar !== 'yok' ? { tekrar, tekrarAdet } : {}),
     }
     if (duzenleme && id) await gorevGuncelle(id, girdi)
     else await gorevEkle(girdi)
@@ -86,6 +97,12 @@ export function GorevForm({ id }: { id?: string }) {
   const sil = async () => {
     if (!id) return
     await gorevSil(id)
+    navigate('/gorevler')
+  }
+
+  const seriSil = async () => {
+    if (!mevcut?.seriesId) return
+    await gorevSeriSil(mevcut.seriesId)
     navigate('/gorevler')
   }
 
@@ -193,6 +210,21 @@ export function GorevForm({ id }: { id?: string }) {
           </label>
         </div>
 
+        {!duzenleme ? (
+          <TekrarSecici
+            siklik={tekrar}
+            adet={tekrarAdet}
+            onSiklik={setTekrar}
+            onAdet={setTekrarAdet}
+            ipucu="Tekrar için vade tarihi gerekir; her yineleme vadeyi taşır."
+          />
+        ) : mevcut?.seriesId ? (
+          <p className="field-hint">
+            Bu görev {seriSayisi} görevlik bir tekrar serisinin parçası.
+            Değişiklik yalnızca bu görevi etkiler.
+          </p>
+        ) : null}
+
         <label className="field">
           <span className="field-label">Atanan</span>
           <select
@@ -228,14 +260,41 @@ export function GorevForm({ id }: { id?: string }) {
           >
             {duzenleme ? 'Değişikliği kaydet' : 'Görevi ekle'}
           </button>
-          {duzenleme ? (
+          {duzenleme && !silmeOnayi ? (
             <button
               type="button"
               className="button-danger"
-              onClick={() => (silmeOnayi ? void sil() : setSilmeOnayi(true))}
+              onClick={() => setSilmeOnayi(true)}
             >
-              {silmeOnayi ? 'Emin misiniz?' : 'Sil'}
+              Sil
             </button>
+          ) : null}
+          {duzenleme && silmeOnayi ? (
+            <>
+              <button
+                type="button"
+                className="button-danger"
+                onClick={() => void sil()}
+              >
+                {mevcut?.seriesId ? 'Yalnızca bu' : 'Emin misiniz?'}
+              </button>
+              {mevcut?.seriesId ? (
+                <button
+                  type="button"
+                  className="button-danger"
+                  onClick={() => void seriSil()}
+                >
+                  Tüm seri ({seriSayisi})
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className="button-quiet"
+                onClick={() => setSilmeOnayi(false)}
+              >
+                Vazgeç
+              </button>
+            </>
           ) : null}
         </div>
       </section>

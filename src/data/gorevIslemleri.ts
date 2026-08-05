@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, simdi, yeniId } from './db'
+import { tekrarGunleri, type TekrarSikligi } from '../domain/tekrar'
 import type { Gorev, GorevOnceligi, Kullanici } from '../domain/types'
 
 /*
@@ -14,6 +15,9 @@ export interface GorevGirdisi {
   vadeTarihi?: string
   oncelik: GorevOnceligi
   atananKullaniciId?: string
+  /** Ayarlıysa seri olarak maddeleştirilir; vade tarihi gerektirir. */
+  tekrar?: TekrarSikligi
+  tekrarAdet?: number
 }
 
 function bosaCevir(v: string | undefined): string | undefined {
@@ -23,26 +27,40 @@ function bosaCevir(v: string | undefined): string | undefined {
 
 export async function gorevEkle(girdi: GorevGirdisi): Promise<string> {
   const zaman = simdi()
-  const id = yeniId()
   const dosya = girdi.dosyaId ? await db.dosyalar.get(girdi.dosyaId) : undefined
-  await db.gorevler.add({
-    id,
+  const vade = bosaCevir(girdi.vadeTarihi)
+
+  // Tekrar yalnızca vade varsa anlamlı (yinelemeyi tarih taşır).
+  const seri =
+    girdi.tekrar !== undefined && (girdi.tekrarAdet ?? 1) > 1 && vade !== undefined
+  const vadeler = seri
+    ? tekrarGunleri(vade!, girdi.tekrar!, girdi.tekrarAdet ?? 1)
+    : [vade]
+  const seriesId = seri ? yeniId() : undefined
+
+  const ortak = {
     baslik: girdi.baslik.trim(),
     ...(girdi.dosyaId ? { dosyaId: girdi.dosyaId } : {}),
     ...(dosya ? { muvekkilId: dosya.muvekkilId } : {}),
     ...(bosaCevir(girdi.aciklama) ? { aciklama: bosaCevir(girdi.aciklama) } : {}),
-    ...(bosaCevir(girdi.vadeTarihi)
-      ? { vadeTarihi: bosaCevir(girdi.vadeTarihi) }
-      : {}),
     oncelik: girdi.oncelik,
-    durum: 'bekliyor',
+    durum: 'bekliyor' as const,
     ...(girdi.atananKullaniciId
       ? { atananKullaniciId: girdi.atananKullaniciId }
       : {}),
+    ...(seriesId ? { seriesId } : {}),
     olusturmaTarihi: zaman,
     guncellemeTarihi: zaman,
-  })
-  return id
+  }
+
+  const gorevler: Gorev[] = vadeler.map((v) => ({
+    id: yeniId(),
+    ...ortak,
+    ...(v ? { vadeTarihi: v } : {}),
+  }))
+
+  await db.gorevler.bulkAdd(gorevler)
+  return gorevler[0]!.id
 }
 
 export async function gorevGuncelle(
@@ -64,6 +82,26 @@ export async function gorevGuncelle(
 
 export async function gorevSil(id: string): Promise<void> {
   await db.gorevler.delete(id)
+}
+
+/** Serideki tüm görevleri siler. */
+export async function gorevSeriSil(seriesId: string): Promise<void> {
+  const anahtarlar = await db.gorevler
+    .where('seriesId')
+    .equals(seriesId)
+    .primaryKeys()
+  await db.gorevler.bulkDelete(anahtarlar as string[])
+}
+
+/** Bu serideki toplam görev sayısı (silme onayında gösterilir). */
+export function useGorevSeriSayisi(seriesId: string | undefined): number {
+  return (
+    useLiveQuery(
+      async () =>
+        seriesId ? db.gorevler.where('seriesId').equals(seriesId).count() : 0,
+      [seriesId],
+    ) ?? 0
+  )
 }
 
 export function useGorev(id: string | undefined): Gorev | undefined | null {

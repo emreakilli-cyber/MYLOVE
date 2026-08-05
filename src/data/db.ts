@@ -65,6 +65,15 @@ export class JurisDb extends Dexie {
       kullanicilar: 'id, ad, aktif',
       ayarlar: 'id',
     })
+
+    // v2: tekrar eden olay/görev serilerini `seriesId` ile toplu silebilmek
+    // için indeks. Yalnızca değişen tablolar bildirilir; ötekiler devreder.
+    this.version(2).stores({
+      olaylar:
+        'id, baslangic, tur, durum, dosyaId, muvekkilId, sureId, seriesId, [durum+baslangic]',
+      gorevler:
+        'id, vadeTarihi, durum, oncelik, dosyaId, muvekkilId, atananKullaniciId, seriesId, [durum+vadeTarihi]',
+    })
   }
 }
 

@@ -122,6 +122,8 @@ export interface Olay extends Kayit {
   /** Süre motorunun ürettiği olaylar elle silinince süreyle bağı kopmasın. */
   kaynak: 'manuel' | 'sure-hesabi'
   sureId?: Id
+  /** Tekrar eden serinin ortak kimliği; tek yineleme ise yok. */
+  seriesId?: Id
 }
 
 /* ------------------------------------------------------------------ *
@@ -167,6 +169,8 @@ export interface Gorev extends Kayit {
   durum: GorevDurumu
   tamamlanmaTarihi?: IsoDateTime
   atananKullaniciId?: Id
+  /** Tekrar eden serinin ortak kimliği; tek yineleme ise yok. */
+  seriesId?: Id
 }
 
 /* ------------------------------------------------------------------ *

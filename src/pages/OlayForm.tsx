@@ -4,11 +4,14 @@ import { Link, useLocation, useNavigate } from '../router'
 import {
   olayEkle,
   olayGuncelle,
+  olaySeriSil,
   olaySil,
   useAcikDosyalar,
   useOlay,
+  useOlaySeriSayisi,
   type OlayGirdisi,
 } from '../data/olayIslemleri'
+import { TekrarSecici, type TekrarSecim } from '../components/TekrarSecici'
 import { olayGorunumleri, olayTurleri } from '../domain/olay'
 import { bugunIso, dateToIsoDate, saat, tamTarih } from '../domain/tarih'
 import { icsIndir, tekOlayIcs } from '../services/ics'
@@ -50,6 +53,9 @@ export function OlayForm({ id }: { id?: string }) {
   const [hata, setHata] = useState<string | null>(null)
   const [silmeOnayi, setSilmeOnayi] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
+  const [tekrar, setTekrar] = useState<TekrarSecim>('yok')
+  const [tekrarAdet, setTekrarAdet] = useState(8)
+  const seriSayisi = useOlaySeriSayisi(mevcut?.seriesId)
 
   // Düzenleme modunda kayıt gelince formu bir kez doldur.
   useEffect(() => {
@@ -103,7 +109,13 @@ export function OlayForm({ id }: { id?: string }) {
       return
     }
 
-    const girdi: OlayGirdisi = { ...durum, baslik }
+    const girdi: OlayGirdisi = {
+      ...durum,
+      baslik,
+      ...(!duzenleme && tekrar !== 'yok'
+        ? { tekrar, tekrarAdet }
+        : {}),
+    }
     if (duzenleme && id) await olayGuncelle(id, girdi)
     else await olayEkle(girdi)
     navigate('/takvim')
@@ -112,6 +124,12 @@ export function OlayForm({ id }: { id?: string }) {
   const sil = async () => {
     if (!id) return
     await olaySil(id)
+    navigate('/takvim')
+  }
+
+  const seriSil = async () => {
+    if (!mevcut?.seriesId) return
+    await olaySeriSil(mevcut.seriesId)
     navigate('/takvim')
   }
 
@@ -262,6 +280,20 @@ export function OlayForm({ id }: { id?: string }) {
           </div>
         ) : null}
 
+        {!duzenleme ? (
+          <TekrarSecici
+            siklik={tekrar}
+            adet={tekrarAdet}
+            onSiklik={setTekrar}
+            onAdet={setTekrarAdet}
+          />
+        ) : mevcut?.seriesId ? (
+          <p className="field-hint">
+            Bu kayıt {seriSayisi} kayıtlık bir tekrar serisinin parçası.
+            Değişiklik yalnızca bu kaydı etkiler.
+          </p>
+        ) : null}
+
         <label className="field">
           <span className="field-label">Yer</span>
           <input
@@ -292,20 +324,42 @@ export function OlayForm({ id }: { id?: string }) {
           >
             {duzenleme ? 'Değişikliği kaydet' : 'Takvime ekle'}
           </button>
-          {duzenleme ? (
+          {duzenleme && !silmeOnayi ? (
             <button
               type="button"
               className="button-danger"
-              onClick={() => (silmeOnayi ? void sil() : setSilmeOnayi(true))}
+              onClick={() => setSilmeOnayi(true)}
             >
-              {silmeOnayi ? 'Emin misiniz?' : 'Sil'}
+              Sil
             </button>
+          ) : null}
+          {duzenleme && silmeOnayi ? (
+            <>
+              <button
+                type="button"
+                className="button-danger"
+                onClick={() => void sil()}
+              >
+                {mevcut?.seriesId ? 'Yalnızca bu' : 'Emin misiniz?'}
+              </button>
+              {mevcut?.seriesId ? (
+                <button
+                  type="button"
+                  className="button-danger"
+                  onClick={() => void seriSil()}
+                >
+                  Tüm seri ({seriSayisi})
+                </button>
+              ) : null}
+            </>
           ) : null}
         </div>
 
         {silmeOnayi ? (
           <p className="field-hint">
-            Kayıt kalıcı olarak silinecek.{' '}
+            {mevcut?.seriesId
+              ? 'Bu tekrar serisinin tamamını ya da yalnızca bu kaydı silebilirsiniz.'
+              : 'Kayıt kalıcı olarak silinecek.'}{' '}
             <button
               type="button"
               onClick={() => setSilmeOnayi(false)}
