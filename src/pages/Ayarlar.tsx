@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { useAyarlar } from '../data/sorgular'
 import {
@@ -12,8 +12,19 @@ import {
   kanalDurumlari,
   pushIzniIste,
 } from '../services/bildirim'
-import { yedegiIndir, yedektenGeriYukle, YedekHatasi } from '../data/yedek'
+import {
+  sifreliMi,
+  yedegiIndir,
+  yedektenGeriYukle,
+  YedekHatasi,
+} from '../data/yedek'
 import { db } from '../data/db'
+import { pinOzetiUret } from '../services/kripto'
+import { SifreCozmeHatasi } from '../services/kripto'
+import {
+  biyometriDesteklenirMi,
+  biyometriKaydet,
+} from '../services/biyometri'
 import { goreliZaman } from '../domain/tarih'
 import type { HatirlatmaKanali, OlayTuru } from '../domain/types'
 import { VARSAYILAN_HATIRLATMA_OFSETLERI } from '../domain/types'
@@ -69,6 +80,30 @@ export function Ayarlar() {
   const [kanallar, setKanallar] = useState(kanalDurumlari())
   const [mesaj, setMesaj] = useState<string | null>(null)
   const [sifirlamaOnayi, setSifirlamaOnayi] = useState(false)
+  // PIN kurulum durumu
+  const [pinFormu, setPinFormu] = useState(false)
+  const [pin1, setPin1] = useState('')
+  const [pin2, setPin2] = useState('')
+  const [pinHata, setPinHata] = useState<string | null>(null)
+  // Şifreli yedek
+  const [yedekParola, setYedekParola] = useState('')
+  // Geri yükleme için seçilen dosyayı beklet (şifreliyse parola sor)
+  const [bekleyenGeriYukleme, setBekleyenGeriYukleme] = useState<string | null>(
+    null,
+  )
+  const [geriYuklemeParola, setGeriYuklemeParola] = useState('')
+  // Biyometri (WebAuthn) bu cihazda kullanılabilir mi?
+  const [biyometriVar, setBiyometriVar] = useState(false)
+
+  useEffect(() => {
+    let iptal = false
+    void biyometriDesteklenirMi().then((v) => {
+      if (!iptal) setBiyometriVar(v)
+    })
+    return () => {
+      iptal = true
+    }
+  }, [])
 
   if (!ayarlar) {
     return (
@@ -98,15 +133,78 @@ export function Ayarlar() {
 
   const geriYukle = async (dosya: File | undefined) => {
     if (!dosya) return
+    const metin = await dosya.text()
+    if (dosyaGirisRef.current) dosyaGirisRef.current.value = ''
+    // Şifreliyse parola iste; değilse doğrudan yükle.
+    if (sifreliMi(metin)) {
+      setBekleyenGeriYukleme(metin)
+      setMesaj(null)
+      return
+    }
     try {
-      const metin = await dosya.text()
       await yedektenGeriYukle(metin)
       setMesaj('Yedek geri yüklendi.')
     } catch (e) {
       setMesaj(e instanceof YedekHatasi ? e.message : 'Yedek okunamadı.')
-    } finally {
-      if (dosyaGirisRef.current) dosyaGirisRef.current.value = ''
     }
+  }
+
+  const sifreliGeriYukle = async () => {
+    if (!bekleyenGeriYukleme) return
+    try {
+      await yedektenGeriYukle(bekleyenGeriYukleme, geriYuklemeParola)
+      setMesaj('Şifreli yedek geri yüklendi.')
+      setBekleyenGeriYukleme(null)
+      setGeriYuklemeParola('')
+    } catch (e) {
+      setMesaj(
+        e instanceof SifreCozmeHatasi || e instanceof YedekHatasi
+          ? e.message
+          : 'Yedek okunamadı.',
+      )
+    }
+  }
+
+  const pinKur = async () => {
+    if (pin1.length < 4) {
+      setPinHata('PIN en az 4 rakam olmalı.')
+      return
+    }
+    if (pin1 !== pin2) {
+      setPinHata('PIN’ler eşleşmiyor.')
+      return
+    }
+    const ozet = await pinOzetiUret(pin1)
+    await ayarlariGuncelle({ pinOzeti: ozet, kilitEtkin: true })
+    setPinFormu(false)
+    setPin1('')
+    setPin2('')
+    setPinHata(null)
+    setMesaj('Uygulama kilidi açıldı.')
+  }
+
+  const kilidiKaldir = async () => {
+    await ayarlariGuncelle({
+      kilitEtkin: false,
+      pinOzeti: undefined,
+      biyometriKimlikB64: undefined,
+    })
+    setMesaj('Uygulama kilidi kapatıldı.')
+  }
+
+  const biyometriAc = async () => {
+    const kimlik = await biyometriKaydet()
+    if (kimlik) {
+      await ayarlariGuncelle({ biyometriKimlikB64: kimlik })
+      setMesaj('Biyometrik açış etkinleştirildi.')
+    } else {
+      setMesaj('Biyometrik açış kurulamadı ya da iptal edildi.')
+    }
+  }
+
+  const biyometriKapat = async () => {
+    await ayarlariGuncelle({ biyometriKimlikB64: undefined })
+    setMesaj('Biyometrik açış kapatıldı.')
   }
 
   const verileriSifirla = async () => {
@@ -262,15 +360,27 @@ export function Ayarlar() {
         <p className="ayar-baslik">Yedekleme</p>
         <p className="field-hint">
           Tüm veriniz bu cihazda saklanır. Düzenli yedek alın; tarayıcı verisi
-          silinirse yedekten geri yükleyebilirsiniz.
+          silinirse yedekten geri yükleyebilirsiniz. Parola girerseniz yedek
+          şifrelenir — müvekkil verisi cihaz dışına yalnızca şifreli çıkar.
           {ayarlar.sonYedeklemeZamani
             ? ` Son yedek: ${goreliZaman(ayarlar.sonYedeklemeZamani)}.`
             : ''}
         </p>
+        <label className="field">
+          <span className="field-label">Yedek parolası (isteğe bağlı)</span>
+          <input
+            type="password"
+            className="input"
+            value={yedekParola}
+            placeholder="Boş bırakılırsa şifresiz"
+            onChange={(e) => setYedekParola(e.target.value)}
+            autoComplete="new-password"
+          />
+        </label>
         <input
           ref={dosyaGirisRef}
           type="file"
-          accept="application/json"
+          accept="application/json,.jcenc"
           style={{ display: 'none' }}
           onChange={(e) => void geriYukle(e.target.files?.[0])}
         />
@@ -278,9 +388,9 @@ export function Ayarlar() {
           <button
             type="button"
             className="button-primary"
-            onClick={() => void yedegiIndir()}
+            onClick={() => void yedegiIndir(yedekParola || undefined)}
           >
-            Yedek indir
+            {yedekParola ? 'Şifreli yedek indir' : 'Yedek indir'}
           </button>
           <button
             type="button"
@@ -290,23 +400,214 @@ export function Ayarlar() {
             Geri yükle
           </button>
         </div>
+
+        {bekleyenGeriYukleme ? (
+          <div className="inline-form" style={{ padding: 0 }}>
+            <p className="field-hint">Bu yedek şifreli. Parolayı girin:</p>
+            <input
+              type="password"
+              className="input"
+              value={geriYuklemeParola}
+              onChange={(e) => setGeriYuklemeParola(e.target.value)}
+              autoComplete="off"
+            />
+            <div className="form-actions">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={() => void sifreliGeriYukle()}
+              >
+                Çöz ve geri yükle
+              </button>
+              <button
+                type="button"
+                className="button-quiet"
+                onClick={() => {
+                  setBekleyenGeriYukleme(null)
+                  setGeriYuklemeParola('')
+                }}
+              >
+                Vazgeç
+              </button>
+            </div>
+          </div>
+        ) : null}
       </section>
 
-      {/* Uygulama kilidi (F15 — yakında) */}
+      {/* Güvenlik — uygulama kilidi */}
       <section className="card form-card">
         <p className="ayar-baslik">Güvenlik</p>
-        <div className="switch-row" aria-disabled="true" style={{ opacity: 0.6 }}>
-          <span>
-            <span style={{ display: 'block' }}>Uygulama kilidi</span>
-            <span className="field-hint">
-              PIN ve biyometri ile kilit yakında eklenecek.
-            </span>
-          </span>
-          <span className="kanal-rozet">Yakında</span>
-        </div>
+
+        {!ayarlar.kilitEtkin && !pinFormu ? (
+          <>
+            <p className="field-hint">
+              Uygulama kilidi, telefonunuz başkasının eline geçtiğinde meslek
+              sırrınız için bir engeldir: açılışta ve arka planda kaldıktan sonra
+              PIN sorar, arka plandayken içerik maskelenir.
+            </p>
+            <button
+              type="button"
+              className="button-primary"
+              style={{ alignSelf: 'flex-start' }}
+              onClick={() => setPinFormu(true)}
+            >
+              PIN belirle
+            </button>
+          </>
+        ) : null}
+
+        {pinFormu ? (
+          <>
+            <label className="field">
+              <span className="field-label">PIN (en az 4 rakam)</span>
+              <input
+                type="password"
+                inputMode="numeric"
+                className="input"
+                value={pin1}
+                onChange={(e) =>
+                  setPin1(e.target.value.replace(/\D/g, '').slice(0, 8))
+                }
+                autoComplete="new-password"
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">PIN tekrar</span>
+              <input
+                type="password"
+                inputMode="numeric"
+                className="input"
+                value={pin2}
+                onChange={(e) =>
+                  setPin2(e.target.value.replace(/\D/g, '').slice(0, 8))
+                }
+                autoComplete="new-password"
+              />
+            </label>
+            {pinHata ? <p className="field-error">{pinHata}</p> : null}
+            <div className="form-actions">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={() => void pinKur()}
+              >
+                Kilidi aç
+              </button>
+              <button
+                type="button"
+                className="button-quiet"
+                onClick={() => {
+                  setPinFormu(false)
+                  setPin1('')
+                  setPin2('')
+                  setPinHata(null)
+                }}
+              >
+                Vazgeç
+              </button>
+            </div>
+          </>
+        ) : null}
+
+        {ayarlar.kilitEtkin && !pinFormu ? (
+          <>
+            <div className="switch-row" aria-disabled="true">
+              <span>
+                <span style={{ display: 'block' }}>Uygulama kilidi açık</span>
+                <span className="field-hint">
+                  Açılışta ve arka plandan {ayarlar.oturumZamanAsimiDk ?? 5} dk
+                  sonra PIN sorulur.
+                </span>
+              </span>
+              <span
+                className="kanal-rozet"
+                style={{
+                  background: 'var(--cat-green-bg)',
+                  color: 'var(--cat-green-fg)',
+                }}
+              >
+                Açık
+              </span>
+            </div>
+            <label className="field">
+              <span className="field-label">Arka planda kilitlenme süresi</span>
+              <select
+                className="select"
+                value={ayarlar.oturumZamanAsimiDk ?? 5}
+                onChange={(e) =>
+                  void ayarlariGuncelle({
+                    oturumZamanAsimiDk: Number(e.target.value),
+                  })
+                }
+              >
+                <option value={0}>Hemen</option>
+                <option value={1}>1 dakika</option>
+                <option value={5}>5 dakika</option>
+                <option value={15}>15 dakika</option>
+              </select>
+            </label>
+
+            {ayarlar.biyometriKimlikB64 ? (
+              <div className="switch-row">
+                <span>
+                  <span style={{ display: 'block' }}>
+                    Face ID / Touch ID ile açış
+                  </span>
+                  <span className="field-hint">
+                    Kilit ekranında yüzünüz ya da parmağınızla hızlı açış açık.
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="button-quiet"
+                  onClick={() => void biyometriKapat()}
+                >
+                  Kapat
+                </button>
+              </div>
+            ) : biyometriVar ? (
+              <div className="switch-row">
+                <span>
+                  <span style={{ display: 'block' }}>
+                    Face ID / Touch ID ile açış
+                  </span>
+                  <span className="field-hint">
+                    Her seferinde PIN yerine cihazınızın biyometrisiyle açın.
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  className="button-quiet"
+                  onClick={() => void biyometriAc()}
+                >
+                  Etkinleştir
+                </button>
+              </div>
+            ) : null}
+
+            <div className="form-actions">
+              <button
+                type="button"
+                className="button-quiet"
+                onClick={() => setPinFormu(true)}
+              >
+                PIN’i değiştir
+              </button>
+              <button
+                type="button"
+                className="button-danger"
+                onClick={() => void kilidiKaldir()}
+              >
+                Kilidi kaldır
+              </button>
+            </div>
+          </>
+        ) : null}
+
         <p className="field-hint">
           Uygulama KVKK’ya uygun tasarlanmıştır: müvekkil verisi cihazdan dışarı
-          çıkmaz, üçüncü taraf analitiği yoktur.
+          çıkmaz, üçüncü taraf analitiği yoktur. Cihazınızın kendi disk
+          şifrelemesi (iOS’ta varsayılan açık) verinizi donanım düzeyinde korur.
         </p>
       </section>
 

@@ -1,4 +1,5 @@
 import { db } from './db'
+import { sifrele, sifreCoz, type SifreliZarf } from '../services/kripto'
 import type {
   Ayarlar,
   Belge,
@@ -134,19 +135,36 @@ export async function yedekOlustur(): Promise<Yedek> {
   }
 }
 
-/** Yedeği indirilebilir bir dosya olarak kullanıcıya verir. */
-export async function yedegiIndir(): Promise<void> {
-  const yedek = await yedekOlustur()
-  const blob = new Blob([JSON.stringify(yedek)], { type: 'application/json' })
+function indir(icerik: string, mime: string, ad: string): void {
+  const blob = new Blob([icerik], { type: mime })
   const adres = URL.createObjectURL(blob)
-
-  const damga = new Date().toISOString().slice(0, 10)
   const baglanti = document.createElement('a')
   baglanti.href = adres
-  baglanti.download = `juriscalendar-yedek-${damga}.json`
+  baglanti.download = ad
   baglanti.click()
-
   URL.revokeObjectURL(adres)
+}
+
+/**
+ * Yedeği indirir. Parola verilirse dosya AES-GCM ile şifrelenir — müvekkil
+ * verisi cihaz dışına yalnızca şifreli çıkar.
+ */
+export async function yedegiIndir(parola?: string): Promise<void> {
+  const yedek = await yedekOlustur()
+  const damga = new Date().toISOString().slice(0, 10)
+  const govde = JSON.stringify(yedek)
+
+  if (parola?.trim()) {
+    const zarf = await sifrele(govde, parola)
+    indir(
+      JSON.stringify(zarf),
+      'application/json',
+      `juriscalendar-yedek-${damga}.jcenc`,
+    )
+  } else {
+    indir(govde, 'application/json', `juriscalendar-yedek-${damga}.json`)
+  }
+
   await db.ayarlar.update('tekil', {
     sonYedeklemeZamani: yedek.olusturmaZamani,
   })
@@ -172,14 +190,36 @@ function dogrula(veri: unknown): asserts veri is Yedek {
   }
 }
 
+/** Metin şifreli bir yedek zarfı mı? */
+export function sifreliMi(metin: string): boolean {
+  try {
+    const j = JSON.parse(metin) as Partial<SifreliZarf>
+    return j.bicim === 'juriscalendar-sifreli-yedek'
+  } catch {
+    return false
+  }
+}
+
 /**
  * Yedeği geri yükler. **Mevcut tüm veriyi siler** — çağıran taraf kullanıcıdan
- * açık onay almadan bunu çağırmamalı.
+ * açık onay almadan bunu çağırmamalı. Dosya şifreliyse `parola` gerekir.
  */
-export async function yedektenGeriYukle(metin: string): Promise<void> {
+export async function yedektenGeriYukle(
+  metin: string,
+  parola?: string,
+): Promise<void> {
+  let hamMetin = metin
+  if (sifreliMi(metin)) {
+    if (!parola?.trim()) {
+      throw new YedekHatasi('Bu yedek şifreli; parola gerekli.')
+    }
+    const zarf = JSON.parse(metin) as SifreliZarf
+    hamMetin = await sifreCoz(zarf, parola) // yanlış parolada SifreCozmeHatasi
+  }
+
   let cozulmus: unknown
   try {
-    cozulmus = JSON.parse(metin)
+    cozulmus = JSON.parse(hamMetin)
   } catch {
     throw new YedekHatasi('Dosya geçerli bir JSON değil.')
   }

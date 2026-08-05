@@ -363,6 +363,10 @@ export interface Ayarlar {
   /** Uygulama kilidi açıksa PIN'in türetilmiş özeti. */
   pinOzeti?: string
   kilitEtkin: boolean
+  /** Arka planda kalınca kaç dakika sonra yeniden kilitlensin (0 = hemen). */
+  oturumZamanAsimiDk?: number
+  /** Biyometri (WebAuthn) ile açma kayıtlı mı. */
+  biyometriKimlikB64?: string
   /** LLM katmanı varsayılan olarak kapalı — müvekkil verisi cihazdan çıkmasın. */
   llmEtkin: boolean
   sonYedeklemeZamani?: IsoDateTime

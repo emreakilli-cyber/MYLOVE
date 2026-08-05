@@ -33,6 +33,7 @@ export type IconName =
   | 'calendar-clock'
   | 'phone'
   | 'mail'
+  | 'lock'
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'children'> {
   readonly name: IconName
@@ -186,6 +187,13 @@ const paths: Record<IconName, ReactElement> = {
     <>
       <rect x="3.5" y="5.5" width="17" height="13" rx="2.5" />
       <path d="m4.5 7.5 7.5 5.5 7.5-5.5" />
+    </>
+  ),
+  lock: (
+    <>
+      <rect x="4.5" y="10.5" width="15" height="10" rx="2.2" />
+      <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+      <circle cx="12" cy="15.5" r="1.2" />
     </>
   ),
   check: <path d="m5 12.5 4.5 4.5L19 7" />,

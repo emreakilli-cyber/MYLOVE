@@ -1,0 +1,128 @@
+/* Uygulama kilidi ve arka plan maskesi. */
+
+.kilit-ekran,
+.kilit-maske {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-inverse);
+  color: var(--text-on-inverse);
+  padding: calc(var(--space-8) + var(--safe-top)) var(--space-6)
+    calc(var(--space-8) + var(--safe-bottom));
+}
+
+.kilit-maske {
+  /* İçerik gizli; yalnızca marka. Uygulama değiştirici önizlemesi için. */
+  z-index: calc(var(--z-toast) + 1);
+}
+
+.kilit-maske-mark,
+.kilit-mark {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-lg);
+  background: var(--brand-teal);
+  color: var(--brand-ink);
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.kilit-baslik {
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+  margin-top: var(--space-5);
+}
+
+.kilit-alt {
+  font-size: var(--text-small);
+  color: var(--text-on-inverse-muted);
+  margin-top: var(--space-2);
+}
+
+.pin-noktalar {
+  display: flex;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.pin-nokta {
+  width: 13px;
+  height: 13px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--text-on-inverse-muted);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.pin-nokta[data-dolu='true'] {
+  background: var(--brand-teal);
+  border-color: var(--brand-teal);
+}
+
+.kilit-hata {
+  font-size: var(--text-small);
+  color: #e7a79c;
+  margin-bottom: var(--space-2);
+  min-height: 1.2em;
+}
+
+.kilit-biyometri {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--surface-inverse-soft);
+  border: 1px solid var(--border-inverse);
+  color: var(--text-on-inverse);
+  font-size: var(--text-small);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.kilit-biyometri:active {
+  background: var(--brand-teal);
+  color: var(--brand-ink);
+}
+
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+.pin-tus {
+  height: 72px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-inverse-soft);
+  border: 1px solid var(--border-inverse);
+  color: var(--text-on-inverse);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  display: grid;
+  place-items: center;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.pin-tus:active {
+  background: var(--brand-teal);
+  color: var(--brand-ink);
+}
+
+.pin-tus-sil {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-on-inverse-muted);
+}
+
+.pin-tus-sil:active {
+  background: var(--surface-inverse-soft);
+  color: var(--text-on-inverse);
+}
