@@ -32,7 +32,7 @@ hatırlatır ve her dosyanın eksiğini önünüze koyar.
 | **Asistan** | Yaklaşan süreleri ve eksik işlemleri kendiliğinden tespit eder, sorularınızı yanıtlar |
 | **Raporlar** | Aylık duruşma, görev, tahsilat ve dosya bazlı gelir–gider analizi |
 | **Takvim senkronu** | Google, Apple ve Outlook takvimlerine ICS ile aktarım |
-| **Güvenlik** | Cihazda şifreli saklama, uygulama kilidi, KVKK'ya uygun tasarım |
+| **Güvenlik** | Uygulama kilidi (PIN + Face ID / Touch ID), şifreli yedek, KVKK'ya uygun tasarım |
 
 ## Durum
 
@@ -44,7 +44,79 @@ Arayüzün tasarım kaynağı: **[`docs/DESIGN-REFERENCE.md`](docs/DESIGN-REFERE
 Local-first bir PWA. Veriler cihazın kendi IndexedDB'sinde tutulur; sunucuya
 müvekkil verisi gönderilmez.
 
-React 18 · TypeScript · Vite · Dexie · date-fns
+React 18 · TypeScript · Vite · Dexie · date-fns · vite-plugin-pwa
+
+## Kurulum ve geliştirme
+
+Node 20+ gerekir.
+
+```bash
+npm install       # bağımlılıklar
+npm run dev       # geliştirme sunucusu (http://localhost:5173)
+npm run build     # üretim derlemesi (tsc + vite) → dist/
+npm run preview   # derlenmiş çıktıyı yerelde çalıştır (http://localhost:4173)
+npm test          # birim testleri (Vitest)
+```
+
+> **Not:** Yerel `npm run build`/`preview`, uygulamayı sitenin kökünden
+> (base yok) yayımlar. GitHub Pages dağıtımı ise alt yolda çalıştığı için
+> `BASE_PATH=/MYLOVE/` ile derlenir — bunu iş akışı otomatik yapar, elle
+> ayarlamanıza gerek yok.
+
+## GitHub Pages'te yayınlama
+
+Depo, `main` dalına her push'ta `.github/workflows/deploy.yml` ile kendini
+GitHub Pages'e yayınlar.
+
+1. Depo **Settings → Pages → Build and deployment → Source** kısmını
+   **GitHub Actions** yapın (ilk kurulumda bir kez; site oluşturma yetkisi
+   yalnızca depo sahibinde olduğu için bu adım gereklidir).
+2. `main`'e push edin; **Actions** sekmesinden dağıtımı izleyin.
+3. Yayın adresi: `https://<kullanici-adi>.github.io/MYLOVE/`
+
+Uygulama tamamen istemci tarafında çalıştığından (HashRouter) Pages'in tek
+sayfa uygulamaları için 404 hilesine ihtiyaç duymaz.
+
+## iPhone ana ekrana ekleme
+
+1. Safari ile yukarıdaki yayın adresini açın.
+2. **Paylaş** düğmesine (kare + yukarı ok) dokunun.
+3. **Ana Ekrana Ekle**'yi seçin, adı onaylayın.
+4. Uygulama artık kendi simgesiyle tam ekran açılır ve çevrimdışı çalışır.
+
+> Ana ekran simgesi **ekleme anında** sabitlenir. Yeni bir sürümde simge
+> değişirse, kısayolu silip yeniden eklemek gerekir; içerik güncellemeleri
+> için buna gerek yoktur (service worker kendini tazeler).
+
+## App Store yolu (Capacitor)
+
+PWA hazır olduğunda aynı kod tabanı [Capacitor](https://capacitorjs.com) ile
+yerel bir iOS paketine sarılır — yeniden yazım yok:
+
+```bash
+npm i -D @capacitor/cli @capacitor/core @capacitor/ios
+npx cap init JurisCalendar app.juriscalendar --web-dir=dist
+npm run build
+npx cap add ios
+npx cap sync ios
+npx cap open ios     # Xcode açılır
+```
+
+Xcode'da imzalama profilini seçip **Product → Archive** ile derleyin ve
+App Store Connect'e yükleyin. Uygulama sunucu gerektirmediğinden yerel
+bildirim, ICS dışa aktarma ve tüm veri cihazda kalır; App Store inceleme
+notlarında "local-first, sunucusuz" olduğunu belirtmek gözden geçirmeyi
+kolaylaştırır.
+
+## Güvenlik ve gizlilik
+
+- Müvekkil verisi **cihazdan dışarı çıkmaz**; üçüncü taraf analitiği yoktur.
+- Uygulama kilidi PIN'i PBKDF2 ile özetlenip yalnızca özeti saklar; ham PIN
+  hiçbir yerde durmaz. İsteğe bağlı Face ID / Touch ID (WebAuthn) desteklenir.
+- Dışa aktarılan yedek, parola verilirse AES-GCM ile şifrelenir (`.jcenc`) —
+  cihaz dışına çıkan tek veri budur ve şifresiz çıkmaz.
+- Cihaz içi veriler IndexedDB'de tutulur; disk düzeyinde asıl korumayı
+  işletim sisteminin cihaz şifrelemesi (iOS'ta varsayılan açık) sağlar.
 
 ## Uyarı
 
