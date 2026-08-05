@@ -481,3 +481,75 @@
 .quick-action:active {
   background: var(--surface-sunken);
 }
+
+/* ---------------------------------------------------------------- *
+ * Belge satırı (önizleme + etiketleme) — Belgeler sekmesi
+ * ---------------------------------------------------------------- */
+
+.belge-satir {
+  padding: var(--space-3) var(--card-padding);
+}
+
+.belge-satir-ust {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* row-main görünümlü ama tıklanabilir buton (önizlemeyi açar). */
+.belge-ac {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.belge-ac:active {
+  opacity: 0.6;
+}
+
+.belge-etiketler {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  /* Tile genişliği + gap kadar içeri: etiketler başlığın altına hizalansın. */
+  padding-left: calc(38px + var(--space-3));
+  margin-top: var(--space-2);
+}
+
+.belge-etiket {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.belge-etiket-sil {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.belge-etiket-sil:active {
+  opacity: 1;
+}
+
+.belge-etiket-giris {
+  min-width: 76px;
+  max-width: 120px;
+  padding: 2px var(--space-2);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-size: var(--text-tiny);
+  color: var(--text-primary);
+}
+
+.belge-etiket-giris:focus {
+  outline: none;
+  border-style: solid;
+  border-color: var(--brand-teal);
+}

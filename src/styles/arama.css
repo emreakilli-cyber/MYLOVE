@@ -1,0 +1,182 @@
+/* Genel arama ekranı, depolama göstergesi ve belge önizleme penceresi. */
+
+.arama-grup {
+  margin-top: var(--space-5);
+}
+
+.arama-grup-baslik {
+  font-size: var(--text-tiny);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 var(--space-2) var(--space-2);
+}
+
+/* Belge satırındaki etiket şeridi (arama sonucu). */
+.etiket-serit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+/* ---------------------------------------------------------------- *
+ * Depolama göstergesi
+ * ---------------------------------------------------------------- */
+
+.depolama-kart {
+  margin-top: var(--space-4);
+  padding: var(--space-4) var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.depolama-ust {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.depolama-etiket {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--text-primary);
+}
+
+.depolama-deger {
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+  color: var(--text-muted);
+}
+
+.depolama-bar {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.depolama-dolu {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--brand-teal);
+  transition: width var(--duration-slow) var(--ease-out);
+}
+
+.depolama-dolu[data-dolu='true'] {
+  background: var(--cat-red-fg);
+}
+
+.depolama-not {
+  font-size: var(--text-tiny);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------- *
+ * Belge önizleme penceresi
+ * ---------------------------------------------------------------- */
+
+.onizleme-katman {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-toast) - 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--space-4) + var(--safe-top)) var(--space-4)
+    calc(var(--space-4) + var(--safe-bottom));
+  background: rgba(16, 26, 30, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.onizleme-pencere {
+  display: flex;
+  flex-direction: column;
+  width: min(720px, 100%);
+  max-height: 100%;
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  overflow: hidden;
+}
+
+.onizleme-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.onizleme-baslik {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-body);
+  color: var(--text-primary);
+}
+
+.onizleme-kapat {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  flex: none;
+}
+
+.onizleme-kapat:active {
+  background: var(--surface-sunken);
+}
+
+.onizleme-govde {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-sunken);
+  overflow: auto;
+}
+
+.onizleme-gorsel {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
+
+.onizleme-pdf {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  background: #fff;
+}
+
+.onizleme-ses {
+  width: 90%;
+  margin: var(--space-6) 0;
+}
+
+.onizleme-bos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-4);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.onizleme-alt {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border-hairline);
+}

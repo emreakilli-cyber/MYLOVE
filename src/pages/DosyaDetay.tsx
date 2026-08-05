@@ -18,7 +18,12 @@ import {
   notSil,
 } from '../data/dosyaIslemleri'
 import { sureDurumDegistir, sureSil } from '../data/sureIslemleri'
-import { belgeSil, belgeYukle } from '../data/belgeIslemleri'
+import {
+  belgeEtiketleriGuncelle,
+  belgeSil,
+  belgeYukle,
+} from '../data/belgeIslemleri'
+import { BelgeOnizleme } from '../components/BelgeOnizleme'
 import { olayGorunumleri } from '../domain/olay'
 import { seviyeMetni } from '../domain/hazirlik'
 import { tutarTam } from '../domain/para'
@@ -80,16 +85,6 @@ function boyutMetni(bayt: number): string {
   if (bayt < 1024) return `${bayt} B`
   if (bayt < 1024 * 1024) return `${Math.round(bayt / 1024)} KB`
   return `${(bayt / (1024 * 1024)).toFixed(1)} MB`
-}
-
-/** Belgeyi cihaza indirir. Veri zaten yerelde; ağ üzerinden bir şey gitmez. */
-function belgeyiIndir(belge: Belge): void {
-  const adres = URL.createObjectURL(belge.icerik)
-  const baglanti = document.createElement('a')
-  baglanti.href = adres
-  baglanti.download = belge.ad
-  baglanti.click()
-  URL.revokeObjectURL(adres)
 }
 
 /* ------------------------------------------------------------------ *
@@ -305,6 +300,7 @@ function BelgeSekmesi({ detay }: { detay: Detay }) {
   const girisRef = useRef<HTMLInputElement>(null)
   const [yukleniyor, setYukleniyor] = useState(false)
   const [hata, setHata] = useState<string | null>(null)
+  const [onizlenen, setOnizlenen] = useState<Belge | null>(null)
 
   const yukle = async (dosya: File | undefined) => {
     if (!dosya) return
@@ -350,35 +346,97 @@ function BelgeSekmesi({ detay }: { detay: Detay }) {
       ) : (
         <section className="card divide-rows">
           {detay.belgeler.map((belge) => (
-            <div key={belge.id} className="row accent-blue">
-              <button
-                type="button"
-                className="row-tile"
-                aria-label={`${belge.ad} indir`}
-                onClick={() => belgeyiIndir(belge)}
-              >
-                <Icon name="folder" size={18} />
-              </button>
-              <span className="row-main">
-                <span className="row-title truncate">{belge.ad}</span>
-                <span className="row-sub truncate">
-                  {belgeTuruEtiketleri[belge.tur]} · {boyutMetni(belge.boyut)} ·{' '}
-                  {goreliZaman(belge.olusturmaTarihi)}
-                </span>
-              </span>
-              <button
-                type="button"
-                className="row-remove"
-                onClick={() => void belgeSil(belge.id)}
-                aria-label="Belgeyi sil"
-              >
-                <Icon name="close" size={16} />
-              </button>
+            <div key={belge.id} className="belge-satir accent-blue">
+              <div className="belge-satir-ust">
+                <button
+                  type="button"
+                  className="row-tile"
+                  aria-label={`${belge.ad} önizle`}
+                  onClick={() => setOnizlenen(belge)}
+                >
+                  <Icon name="folder" size={18} />
+                </button>
+                <button
+                  type="button"
+                  className="row-main belge-ac"
+                  onClick={() => setOnizlenen(belge)}
+                >
+                  <span className="row-title truncate">{belge.ad}</span>
+                  <span className="row-sub truncate">
+                    {belgeTuruEtiketleri[belge.tur]} · {boyutMetni(belge.boyut)}{' '}
+                    · {goreliZaman(belge.olusturmaTarihi)}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="row-remove"
+                  onClick={() => void belgeSil(belge.id)}
+                  aria-label="Belgeyi sil"
+                >
+                  <Icon name="close" size={16} />
+                </button>
+              </div>
+              <BelgeEtiketEditor belge={belge} />
             </div>
           ))}
         </section>
       )}
+
+      {onizlenen ? (
+        <BelgeOnizleme belge={onizlenen} onKapat={() => setOnizlenen(null)} />
+      ) : null}
     </>
+  )
+}
+
+/** Bir belgenin etiketlerini satır içinde düzenler (ekle/sil). */
+function BelgeEtiketEditor({ belge }: { belge: Belge }) {
+  const [yeni, setYeni] = useState('')
+
+  const ekle = () => {
+    const t = yeni.trim()
+    if (!t) return
+    void belgeEtiketleriGuncelle(belge.id, [...belge.etiketler, t])
+    setYeni('')
+  }
+
+  const sil = (etiket: string) => {
+    void belgeEtiketleriGuncelle(
+      belge.id,
+      belge.etiketler.filter((e) => e !== etiket),
+    )
+  }
+
+  return (
+    <div className="belge-etiketler">
+      {belge.etiketler.map((e) => (
+        <span key={e} className="tag tag-quiet belge-etiket">
+          {e}
+          <button
+            type="button"
+            className="belge-etiket-sil"
+            onClick={() => sil(e)}
+            aria-label={`${e} etiketini kaldır`}
+          >
+            <Icon name="close" size={12} />
+          </button>
+        </span>
+      ))}
+      <input
+        className="belge-etiket-giris"
+        value={yeni}
+        onChange={(evt) => setYeni(evt.target.value)}
+        onKeyDown={(evt) => {
+          if (evt.key === 'Enter') {
+            evt.preventDefault()
+            ekle()
+          }
+        }}
+        placeholder="+ etiket"
+        aria-label={`${belge.ad} için etiket ekle`}
+        maxLength={24}
+      />
+    </div>
   )
 }
 

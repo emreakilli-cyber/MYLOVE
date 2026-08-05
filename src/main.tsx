@@ -14,6 +14,7 @@ import './styles/rapor.css'
 import './styles/asistan.css'
 import './styles/ayarlar.css'
 import './styles/kilit.css'
+import './styles/arama.css'
 
 import App from './App'
 

@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, simdi, yeniId } from './db'
 import type { Belge, BelgeTuru } from '../domain/types'
@@ -6,6 +7,21 @@ import type { Belge, BelgeTuru } from '../domain/types'
  * Belge yükleme ve yönetimi. İçerik Blob olarak IndexedDB'de tutulur; cihazdan
  * çıkmaz. F8 (dekont/makbuz) ve F9 (genel belge) bunu paylaşır.
  */
+
+/** Belge türlerinin Türkçe etiketleri (paylaşılan). */
+export const belgeTuruEtiketleri: Record<BelgeTuru, string> = {
+  vekaletname: 'Vekâletname',
+  dilekce: 'Dilekçe',
+  karar: 'Karar',
+  'bilirkisi-raporu': 'Bilirkişi raporu',
+  dekont: 'Dekont',
+  makbuz: 'Makbuz',
+  sozlesme: 'Sözleşme',
+  kimlik: 'Kimlik',
+  foto: 'Fotoğraf',
+  ses: 'Ses kaydı',
+  diger: 'Diğer',
+}
 
 /** Dosya uzantısı/MIME'inden makul bir belge türü tahmini. */
 export function belgeTuruTahmini(dosya: File): BelgeTuru {
@@ -82,6 +98,18 @@ export async function belgeSil(id: string): Promise<void> {
   await db.belgeler.delete(id)
 }
 
+/** Belgenin etiketlerini günceller (tekilleştirir, boşları atar). */
+export async function belgeEtiketleriGuncelle(
+  id: string,
+  etiketler: string[],
+): Promise<void> {
+  const temiz = [...new Set(etiketler.map((e) => e.trim()).filter(Boolean))]
+  await db.belgeler.update(id, {
+    etiketler: temiz,
+    guncellemeTarihi: simdi(),
+  })
+}
+
 /** Belgeyi cihaza indirir (veri yerelde; ağ trafiği yok). */
 export function belgeyiIndir(belge: Belge): void {
   const adres = URL.createObjectURL(belge.icerik)
@@ -106,4 +134,57 @@ export function boyutMetni(bayt: number): string {
   if (bayt < 1024) return `${bayt} B`
   if (bayt < 1024 * 1024) return `${Math.round(bayt / 1024)} KB`
   return `${(bayt / (1024 * 1024)).toFixed(1)} MB`
+}
+
+/** Belgelerin toplam kapladığı yer (Blob boyutlarından). */
+export function useBelgelerToplamBoyut(): number | undefined {
+  return useLiveQuery(async () => {
+    const belgeler = await db.belgeler.toArray()
+    return belgeler.reduce((t, b) => t + (b.boyut ?? 0), 0)
+  }, [])
+}
+
+export interface DepolamaDurumu {
+  /** Tarayıcının bildirdiği toplam kullanım (tüm site verisi). */
+  kullanilan: number
+  /** Ayrılan kota. 0 = tarayıcı bildirmedi. */
+  kota: number
+  /** kullanilan/kota, 0–1. Kota yoksa 0. */
+  oran: number
+  /** Kota bilgisi bu tarayıcıda var mı? */
+  destekleniyor: boolean
+}
+
+/**
+ * Cihazın bu site için ayırdığı depolamanın ne kadarının dolu olduğunu okur
+ * (`navigator.storage.estimate`). `yenileme` değeri değişince yeniden ölçülür —
+ * belge eklendikçe göstergenin güncellenmesi için toplam boyutu geçin.
+ */
+export function useDepolamaDurumu(yenileme?: number): DepolamaDurumu | null {
+  const [durum, setDurum] = useState<DepolamaDurumu | null>(null)
+  useEffect(() => {
+    let iptal = false
+    const est = navigator.storage?.estimate
+    if (!est) {
+      if (!iptal) {
+        setDurum({ kullanilan: 0, kota: 0, oran: 0, destekleniyor: false })
+      }
+      return
+    }
+    void navigator.storage.estimate().then((e) => {
+      if (iptal) return
+      const kullanilan = e.usage ?? 0
+      const kota = e.quota ?? 0
+      setDurum({
+        kullanilan,
+        kota,
+        oran: kota > 0 ? Math.min(1, kullanilan / kota) : 0,
+        destekleniyor: true,
+      })
+    })
+    return () => {
+      iptal = true
+    }
+  }, [yenileme])
+  return durum
 }

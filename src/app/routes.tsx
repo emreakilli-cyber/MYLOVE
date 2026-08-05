@@ -1,4 +1,3 @@
-import { PlaceholderPage } from '../components/PlaceholderPage'
 import { Icon } from '../components/Icon'
 import { Link, type RouteDefinition } from '../router'
 import { GenelBakis } from '../pages/GenelBakis'
@@ -18,6 +17,7 @@ import { FinansForm } from '../pages/FinansForm'
 import { Raporlar } from '../pages/Raporlar'
 import { Asistan } from '../pages/Asistan'
 import { Ayarlar } from '../pages/Ayarlar'
+import { Arama } from '../pages/Arama'
 import { Bildirimler } from '../pages/Bildirimler'
 import { TakvimSenkron } from '../pages/TakvimSenkron'
 
@@ -124,16 +124,7 @@ export const routes: readonly RouteDefinition[] = [
   },
   {
     path: '/ara',
-    render: () => (
-      <PlaceholderPage
-        crumb="Arama"
-        title="Aradığınız her yerde."
-        description="Dosya, müvekkil, görev ve belgelerde tek kutudan arama yakında burada."
-        icon="search"
-        accent="slate"
-        phase="F4"
-      />
-    ),
+    render: () => <Arama />,
   },
   {
     path: '/bildirimler',
