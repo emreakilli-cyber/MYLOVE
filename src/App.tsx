@@ -2,6 +2,7 @@ import { AppShell } from './components/AppShell'
 import { KilitKapisi } from './components/KilitKapisi'
 import { Onboarding } from './onboarding/Onboarding'
 import { HukukiOnay } from './onboarding/HukukiOnay'
+import { KayitEkrani } from './onboarding/KayitEkrani'
 import { RouterProvider, Routes } from './router'
 import { NotFound, routes } from './app/routes'
 import { useAyarlar } from './data/sorgular'
@@ -26,6 +27,11 @@ export default function App() {
   // Hukuki onay: kayıt yoksa ya da metin sürümü değiştiyse; atlanamaz.
   if (onayGerekli(ayarlar)) {
     return <HukukiOnay onOnaylandi={() => undefined} />
+  }
+
+  // Kayıt / profil: ad-soyad-ünvan alınmadıysa.
+  if (!ayarlar.profilKuruldu) {
+    return <KayitEkrani onTamam={() => undefined} />
   }
 
   return (

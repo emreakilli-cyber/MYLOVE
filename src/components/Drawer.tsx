@@ -2,6 +2,16 @@ import { useEffect, useRef } from 'react'
 import { Icon } from './Icon'
 import { Link, useIsActive } from '../router'
 import { navGroups, settingsItem, type NavItem } from '../app/navigation'
+import { useAyarlar } from '../data/sorgular'
+
+/** Ad-soyaddan iki harfli baş harf (avatar). */
+function basHarfleri(ad: string): string {
+  const p = ad.trim().split(/\s+/).filter(Boolean)
+  if (p.length === 0) return 'JC'
+  const ilk = p[0]![0] ?? ''
+  const son = p.length > 1 ? (p[p.length - 1]![0] ?? '') : ''
+  return (ilk + son).toLocaleUpperCase('tr')
+}
 
 interface DrawerProps {
   readonly open: boolean
@@ -33,6 +43,9 @@ function DrawerLink({
 export function Drawer({ open, onClose }: DrawerProps) {
   const panelRef = useRef<HTMLElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
+  const ayarlar = useAyarlar()
+  const ad = ayarlar?.kullaniciAdi?.trim() || 'JurisCalendar'
+  const unvan = ayarlar?.unvan?.trim() || 'Kullanıcı'
 
   // Açıkken arka planın kaymasını durdur, Esc ile kapat, odağı panele al.
   useEffect(() => {
@@ -136,11 +149,11 @@ export function Drawer({ open, onClose }: DrawerProps) {
 
         <Link to="/ayarlar" className="drawer-user" onNavigate={onClose}>
           <span className="drawer-user-avatar" aria-hidden="true">
-            AK
+            {basHarfleri(ad)}
           </span>
           <span className="drawer-user-text">
-            <span className="drawer-user-name">Ayşe Kaya</span>
-            <span className="drawer-user-role">Kıdemli avukat</span>
+            <span className="drawer-user-name">{ad}</span>
+            <span className="drawer-user-role">{unvan}</span>
           </span>
           <Icon name="chevron-down" size={18} />
         </Link>

@@ -394,6 +394,14 @@ export interface Ayarlar {
     surum: string
     hash: string
   }
+  /** Kayıt sırasında alınan profil alanları. */
+  ad?: string
+  soyad?: string
+  eposta?: string
+  /** Seçilen giriş yöntemi (yerel profil; OAuth entegrasyonu ayrı). */
+  girisYontemi?: 'eposta' | 'google' | 'apple'
+  /** Kayıt/profil adımı tamamlandı mı. */
+  profilKuruldu?: boolean
 }
 
 /* ------------------------------------------------------------------ *
