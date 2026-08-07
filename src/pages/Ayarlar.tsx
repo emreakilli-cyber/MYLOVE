@@ -28,6 +28,7 @@ import {
 import { goreliZaman } from '../domain/tarih'
 import type { HatirlatmaKanali, OlayTuru } from '../domain/types'
 import { VARSAYILAN_HATIRLATMA_OFSETLERI } from '../domain/types'
+import { YAZI_OLCEKLERI } from '../domain/yaziOlcegi'
 
 const profilTurleri: Array<{ tur: OlayTuru; etiket: string }> = [
   { tur: 'durusma', etiket: 'Duruşma' },
@@ -241,6 +242,30 @@ export function Ayarlar() {
             onBlur={(e) => void ayarlariGuncelle({ unvan: e.target.value })}
           />
         </label>
+      </section>
+
+      {/* Erişilebilirlik — yazı boyutu */}
+      <section className="card form-card">
+        <div>
+          <p className="ayar-baslik">Yazı boyutu</p>
+          <p className="field-hint">
+            Arayüzü daha rahat okumak için yazıyı büyütebilirsiniz; tüm ekranlar
+            birlikte ölçeklenir.
+          </p>
+        </div>
+        <div className="chip-row" role="group" aria-label="Yazı boyutu">
+          {YAZI_OLCEKLERI.map((o) => (
+            <button
+              key={o.deger}
+              type="button"
+              className="chip"
+              aria-pressed={(ayarlar.yaziOlcegi ?? 'normal') === o.deger}
+              onClick={() => void ayarlariGuncelle({ yaziOlcegi: o.deger })}
+            >
+              {o.etiket}
+            </button>
+          ))}
+        </div>
       </section>
 
       {/* Hatırlatma profilleri */}

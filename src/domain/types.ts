@@ -404,6 +404,8 @@ export interface Ayarlar {
   profilKuruldu?: boolean
   /** Uygulama içi rehberli tur görüldü/atlandı mı. */
   turGoruldu?: boolean
+  /** Erişilebilirlik: arayüz yazı boyutu ölçeği (kök font-size). */
+  yaziOlcegi?: 'normal' | 'buyuk' | 'cokBuyuk'
 }
 
 /* ------------------------------------------------------------------ *

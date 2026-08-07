@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { AppShell } from './components/AppShell'
 import { KilitKapisi } from './components/KilitKapisi'
 import { HukukiOnay } from './onboarding/HukukiOnay'
@@ -8,9 +9,16 @@ import { NotFound, routes } from './app/routes'
 import { useAyarlar } from './data/sorgular'
 import { ayarlariGuncelle } from './data/ayarlarIslemleri'
 import { onayGerekli } from './data/onayIslemleri'
+import { yaziOlcegiCss } from './domain/yaziOlcegi'
 
 export default function App() {
   const ayarlar = useAyarlar()
+
+  // Erişilebilirlik: seçilen yazı boyutunu köke uygula (tüm ekranlar ölçeklenir).
+  // Kanca koşulsuz çalışmalı, o yüzden erken dönüşten ÖNCE.
+  useEffect(() => {
+    document.documentElement.style.fontSize = yaziOlcegiCss(ayarlar?.yaziOlcegi)
+  }, [ayarlar?.yaziOlcegi])
 
   // Ayarlar yüklenene kadar kısa boşluk (dönen kullanıcıda kapı ekranı parlamasın).
   if (ayarlar === undefined) return null
