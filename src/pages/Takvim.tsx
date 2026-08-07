@@ -355,7 +355,7 @@ export function Takvim() {
 
   return (
     <>
-      <div className="cal-head">
+      <div className="cal-head" data-tur="takvim">
         <h1 className="t-title cal-month">
           {gorunum === 'ajanda' ? 'Ajanda' : baslik}
         </h1>

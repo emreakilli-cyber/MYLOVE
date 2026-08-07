@@ -26,6 +26,16 @@ export function AppShell({ children }: AppShellProps) {
   // Sayfa değişince menü kapanmalı (tarayıcı geri tuşu dahil).
   useEffect(() => setDrawerOpen(false), [path])
 
+  // Rehberli tur menüyü açıp kapatabilsin (juris-drawer olayı).
+  useEffect(() => {
+    const dinle = (e: Event) => {
+      const detay = (e as CustomEvent<{ open?: boolean }>).detail
+      setDrawerOpen(Boolean(detay?.open))
+    }
+    window.addEventListener('juris-drawer', dinle)
+    return () => window.removeEventListener('juris-drawer', dinle)
+  }, [])
+
   const closeDrawer = useCallback(() => setDrawerOpen(false), [])
 
   return (
@@ -34,6 +44,7 @@ export function AppShell({ children }: AppShellProps) {
         <button
           type="button"
           className="topbar-menu"
+          data-tur="menu"
           onClick={() => setDrawerOpen(true)}
           aria-expanded={drawerOpen}
         >

@@ -79,7 +79,7 @@ function Hero({ ad, onYenile }: { ad: string; onYenile: () => void }) {
   const [yenileniyor, setYenileniyor] = useState(false)
 
   return (
-    <section className="card hero">
+    <section className="card hero" data-tur="panel">
       <div className="hero-ring hero-ring-1" aria-hidden="true" />
       <div className="hero-ring hero-ring-2" aria-hidden="true" />
       <div className="hero-body">

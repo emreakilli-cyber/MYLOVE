@@ -402,6 +402,8 @@ export interface Ayarlar {
   girisYontemi?: 'eposta' | 'google' | 'apple'
   /** Kayıt/profil adımı tamamlandı mı. */
   profilKuruldu?: boolean
+  /** Uygulama içi rehberli tur görüldü/atlandı mı. */
+  turGoruldu?: boolean
 }
 
 /* ------------------------------------------------------------------ *

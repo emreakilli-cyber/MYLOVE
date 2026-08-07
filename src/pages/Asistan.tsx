@@ -154,7 +154,7 @@ export function Asistan() {
       </section>
 
       {/* Soru–cevap */}
-      <section className="card section-card">
+      <section className="card section-card" data-tur="asistan">
         <div className="section-head">
           <div>
             <p className="t-label section-eyebrow">Sorun</p>

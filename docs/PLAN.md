@@ -183,26 +183,25 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 
 ---
 
-### F17 — İlk açılış öğretici modu (onboarding)
-- [x] `src/onboarding/` altında akış; ilk açılışta otomatik başlar, tamamlanınca/atlanınca bir daha açılmaz (`ayarlar.onboardingTamam` kalıcı bayrak; App.tsx gating)
-- [x] Sahne metinleri ve zamanlamalar `src/onboarding/script.ts` içinde **veri** olarak durur; bileşen script'i okuyup oynatır
-- [x] Demo verisi yalnızca bellekte; gerçek Dexie tablolarına yazılmaz (tarayıcıda doğrulandı: `db.dosyalar` 27 → 27)
-- [x] Maskeleme animasyonu tamamen hardcoded script; hiçbir gerçek modülü (LLM, kripto, db) çağırmaz
-- [x] Her sahnede "Atla" var *(atlanınca şu an app'e girer; hukuki onaya yönlendirme F18'de eklenecek — bkz. günlük)*
-- [x] **S0** Açılış: logo + "Verileriniz bu cihazdan çıkmaz"; bulut ikonu belirir → üstü çizilir → telefon ikonuna döner
-- [x] **S1** Müvekkil kaydı: form kendi kendine yazılır (Kemal Arslan / 2026/1184 E. / Kira Alacağı / karşı taraf Nuray Öztürk / duruşma 14 Eylül 2026 / 45.000 TL tahsil edilmedi)
-- [x] **S2** Bildirim: "Duruşmaya 38 gün, cevap dilekçesi süresi 9 gün"; geri sayım halkası dolar
-- [x] **S3** Ücret takibi: kırmızı "62 gündür tahsil edilmedi"; telefon ikonu parlar, KULLANICI dokunur → arama simülasyonu + dosyaya not düşme
-- [x] **S4** Acil iş: turuncu "karşı taraf cevap dilekçesi sundu, beyan için 6 gün"; "AI Asistan'a Yaz" butonuna KULLANICI dokunur
-- [x] **S5** AI Asistan tanıtımı: mesaj kendi kendine yazılır, dosya eklenir, KULLANICI GÖNDER'e dokunur
-- [x] **S6a** Maskeleme: isim, TCKN, adres, işyeri, IBAN, dosya no tek tek maskeye döner (her biri "tık" sesiyle); "İzmir" ve "14 Eylül 2026" yeşil çerçeveli kalır + "yetkili mahkeme için"/"süre hesabı için" etiketi
-- [x] **S6b** Onay ekranı: "7 bilgi maskelendi, kontrol edin" + "Orijinali Göster" tuşu (basılı tutunca gerçek metin)
-- [x] **S6c** Bölünmüş ekran: sol "Cihazınız" / sağ "Yapay Zekâ"; hattan yalnızca maskeli metin akar; kasa ikonundaki eşleme tablosu yerinde titrer; alt yazı "Sağa giden: maskelenmiş metin. Cihazda kalan: kim olduğu."
-- [x] **S6d** "Gerçek bilgilerle değiştir" tuşuna KULLANICI dokunur, maskeler sırayla açılır; son satır "Dilekçe hazır. Kimliği hiç dışarı çıkmadı."
-- [x] **"Neyi nerede yaparsınız?"** sahnesi: iki sütun; maddeler sırayla telefon tarafa düşer, çoğunluk solda; altta "Bilgisayarınız kapalıyken de çalışır." (≤ 8 sn)
-- [x] **S7** Özet: 📵 bulut yok · 🎭 AI'a giden metinde kimlik yok · ⏱ süreler kendiliğinden · 📶 internetsiz çalışır · 💻 AI kendi cihazınızda
-- [x] Dil denetimi: yasak ifadeler ("hiçbir veri paylaşılmıyor"/"hacklenemez"/"%100 güvenli") **geçmez** — testle korunuyor (`script.test.ts`)
-- [x] Erişilebilirlik temeli: dokunma hedefleri ≥ 44pt, `prefers-reduced-motion` animasyonları kapatır, ses/titreşim `efektler.ts` içinde kapatılabilir (tam F23'te)
+### F17 — Uygulama içi rehberli tur (in-app guided tour)
+> **Yön değişikliği (kullanıcı isteği):** Eski F17 animasyonlu bir tanıtım
+> slaytıydı (sahte ekranlar; S0–S7). Kullanıcı bunu istemedi: "gerçekten
+> uygulamanın içinde tutorial yapıp senaryoya göre eğitim… dilekçe kısmını
+> menüden AI asistana tıklayıp sen götürüp gerçek panelden göstereceksin."
+> Slayt gösterisi kaldırıldı (`Onboarding.tsx`, `script.ts`, `script.test.ts`,
+> `efektler.ts` silindi) ve yerine **gerçek panelleri gezen** bir koç-işaretli
+> tur kondu. Sahte ekran yok; her durak gerçek öğeyi spotlight ile işaret eder.
+- [x] `src/tur/` altında tur motoru: SVG maske spotlight (delik) + halka + konumlanan balon; çalışan uygulamanın ÜZERİNE binen katman (`Tur.tsx`)
+- [x] Adımlar `src/tur/turAdimlari.ts` içinde **veri** olarak durur (rota + gerçek öğe seçicisi + başlık + metin + gerekiyorsa `drawer`); test korur (`turAdimlari.test.ts`)
+- [x] Tur gerçek rotalara **kendisi gider** (`useNavigate`) ve gerçek öğeleri ölçer; öğe bulunamazsa balon ortada gösterilir, tur takılmaz
+- [x] Yan menüyü açıp kapatmak için `juris-drawer` CustomEvent'i yayınlar; `AppShell` dinler (tur menüden Asistan'a geçişi gerçekten yapar)
+- [x] Kayıt tamamlanınca (F18+F19 sonrası) ilk girişte otomatik başlar; bir kez görülünce/kapatılınca tekrar açılmaz (`ayarlar.turGoruldu` kalıcı bayrak; `App.tsx` içinde RouterProvider altında mount)
+- [x] Her adımda "Turu kapat", adım sayacı (n/8) ve "İleri/Bitir"; dokunma hedefleri ≥ 44pt; `prefers-reduced-motion` parıltıyı kapatır
+- [x] Menü/sayfa geçişi (~320ms) boyunca birkaç kez yeniden ölçüm → spotlight öğeyi kayarken de takip eder, son konumda oturur
+- [x] Ayarlar → "Yardım" altında **"Uygulama turunu yeniden başlat"** düğmesi (`turGoruldu:false`)
+- [x] Duraklar (kullanıcı seçimi): **Genel bakış + menü**, **AI Asistan + maskeleme**, **Dosya ekleme**, **Takvim + süre hesabı** — tarayıcıda uçtan uca doğrulandı (Playwright: 8 durak, hepsi gerçek panelde spotlight; tur bitince kapanıyor, reload'da açılmıyor)
+- [x] AI Asistan durağı gerçek `/asistan` panelinde "Dosyaya danışın" alanını işaret eder; maskeleme açıklaması balonda: "kimlik bilgileri maskelenir; sağlayıcıya yalnızca maskeli metin gider"
+- [x] Dil denetimi: yasak ifadeler ("hiçbir veri paylaşılmıyor"/"hacklenemez"/"%100 güvenli") tur metinlerinde **yok**
 
 ### F18 — Hukuki onay akışı (onboarding S8)
 - [x] Onay ekranında 5 kutucuk; hepsi başta işaretsiz; "Kabul et ve başla" yalnızca 5'i de işaretliyken aktif olur
@@ -261,6 +260,7 @@ adımları gerektirir; otonom döngü bunları `[!]` sayıp atlar.
 
 | # | Tarih (UTC) | Yapılan |
 |---|---|---|
+| 35 | 2026-08-07 17:42 | **F17 yeniden yazıldı — animasyonlu slayt yerine gerçek uygulama içi rehberli tur (kullanıcı isteği).** Kullanıcı sahte ekranlı tanıtım slaytını istemedi; "gerçekten uygulamanın içinde tutorial… dilekçe kısmını menüden AI asistana tıklayıp sen götürüp gerçek panelden göstereceksin." Slayt gösterisi silindi (`onboarding/Onboarding.tsx`, `script.ts`, `script.test.ts`, `efektler.ts`) — `HukukiOnay`/`KayitEkrani`/`hukukiMetin.ts` ve `onboarding.css` kaldı. Yeni `src/tur/`: `Tur.tsx` (SVG maske spotlight + halka + konumlanan balon; RouterProvider altında, çalışan uygulamanın üzerinde katman; `useNavigate` ile gerçek rotalara kendi gidiyor; `juris-drawer` CustomEvent'iyle yan menüyü açıp Asistan'a geçiyor; ~320ms geçiş boyunca yeniden ölçüp spotlight'ı kayarken takip ediyor) ve `turAdimlari.ts` (8 durak veri). Duraklar (kullanıcı seçimi): Genel bakış+menü → menüden Asistan'a geçiş (drawer açık, "Asistan" öğesi spotlight) → gerçek `/asistan` panelinde "Dosyaya danışın" + maskeleme açıklaması ("kimlik bilgileri maskelenir; sağlayıcıya yalnızca maskeli metin gider") → `/dosyalar` FAB → `/takvim` → `/sure` → kapanış. Gate sırası artık onay → kayıt → app+tur; `ayarlar.turGoruldu` kalıcı bayrak, Ayarlar → Yardım → "Uygulama turunu yeniden başlat". Yakalanan hata: router `Link` yalnızca belirli prop'ları geçirdiği için FAB'daki `data-tur` düşüyordu → hedef `.fab` sınıfına çevrildi. **8 yeni test** (`turAdimlari.test.ts`, toplam 120). Playwright ile uçtan uca doğrulandı: onay→kayıt→tur 8 durakta gerçek panellerde spotlight (fab dâhil), Bitir'de kapanıyor, reload'da açılmıyor; konsol temiz. `npm run build` geçti. |
 | 0 | 2026-08-03 22:45 | Video çözümlendi, görsel referans + yol haritası repoya işlendi. 3 saatlik bekleme kuruldu. |
 | 1 | 2026-08-04 02:30 | **F0 tamam.** Vite+React+TS iskeleti, token'lar, gömülü fontlar, ikon seti, kabuk (üst çubuk + drawer), 13 yol, PWA (manifest/SW/ikonlar), Pages iş akışı. Varsayım: react-router yerine kendi hash router'ımız — kalan iki yüksek zafiyet yalnızca RSC modunda ve düzeltmesi yok, bizim kullanmadığımız kod yolu. `npm audit` sıfır. Derleme 157 kB JS (50 kB gzip). |
 | 34 | 2026-08-05 08:20 | **F17 düzeltme (kullanıcı bildirimi).** S6 maskeleme onay ekranında iki hata giderildi: (1) maskeler siyah blok yerine artık **etiket** gösteriyor (MÜVEKKİL/TCKN/ADRES/KARŞI TARAF/İŞYERİ/IBAN/DOSYA NO) — `Parca` ham blok yerine `parca.etiket`, `maskeliMetin` `[ETİKET]` biçimi, `.ob-maske` koyu etiket çipi; (2) "Orijinali Göster" artık çalışıyor — basılı-tut yerine spec'teki gibi **dokun → 1 sn gerçek metni göster → geri dön** (`orijinaliGoster` + timer, `pm` adım 'b'de `!orijinal`). Tarayıcıda doğrulandı: 7 etiket görünüyor; "Orijinali Göster"→"Kemal Arslan" 1 sn açılıp maskeye dönüyor; konsol temiz. 117 test yeşil. |

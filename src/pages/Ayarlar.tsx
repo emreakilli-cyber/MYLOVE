@@ -660,6 +660,27 @@ export function Ayarlar() {
         </p>
       </section>
 
+      {/* Yardım — uygulama turu */}
+      <section className="card form-card">
+        <p className="ayar-baslik">Yardım</p>
+        <p className="field-hint">
+          Uygulamayı ilk açtığınızda gösterilen rehberli turu istediğiniz zaman
+          yeniden başlatabilirsiniz; tur gerçek panelleri gezerek özellikleri
+          doğal konumlarında gösterir.
+        </p>
+        <button
+          type="button"
+          className="button-quiet"
+          style={{ alignSelf: 'flex-start' }}
+          onClick={() => {
+            void ayarlariGuncelle({ turGoruldu: false })
+            setMesaj('Uygulama turu yeniden başlatıldı.')
+          }}
+        >
+          Uygulama turunu yeniden başlat
+        </button>
+      </section>
+
       {/* Veri sıfırlama */}
       <section className="card form-card">
         <p className="ayar-baslik">Verileri sıfırla</p>

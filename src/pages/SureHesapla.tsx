@@ -73,7 +73,7 @@ export function SureHesapla() {
         <h1 className="t-title">Süre hesapla</h1>
       </div>
 
-      <section className="card form-card">
+      <section className="card form-card" data-tur="sure">
         <label className="field">
           <span className="field-label">Süre türü</span>
           <select

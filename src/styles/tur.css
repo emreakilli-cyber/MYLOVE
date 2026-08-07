@@ -1,0 +1,106 @@
+/* Uygulama içi rehberli tur (koç işaretleri): spotlight + balon. */
+
+.tur {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-toast) + 2);
+  /* Katman tüm tıklamaları yakalar; kullanıcı turu balondan yönetir. */
+  pointer-events: auto;
+}
+
+.tur-svg {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+/* Hedefsiz adımlarda (kapanış / bulunamadı) düz karartma. */
+.tur-perde {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 26, 30, 0.66);
+}
+
+.tur-halka {
+  position: fixed;
+  border: 2px solid var(--brand-teal);
+  border-radius: 12px;
+  box-shadow: 0 0 0 3px rgba(95, 180, 156, 0.35);
+  pointer-events: none;
+}
+
+.tur-balon {
+  position: fixed;
+  width: min(340px, calc(100vw - 24px));
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--space-4) var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tur-balon-orta {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.tur-balon-ust {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tur-adim {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  letter-spacing: var(--tracking-mono);
+  color: var(--text-muted);
+}
+
+.tur-atla {
+  min-height: 36px;
+  padding: 0 var(--space-2);
+  font-size: var(--text-small);
+  color: var(--text-secondary);
+}
+
+.tur-baslik {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--text-primary);
+}
+
+.tur-metin {
+  font-size: var(--text-small);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+.tur-alt {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+.tur-ileri {
+  min-height: 44px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--brand-ink);
+  color: #fff;
+  font-size: var(--text-body);
+}
+
+.tur-ileri:active {
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tur-halka {
+    box-shadow: none;
+  }
+}

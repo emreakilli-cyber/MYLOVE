@@ -16,6 +16,7 @@ import './styles/ayarlar.css'
 import './styles/kilit.css'
 import './styles/arama.css'
 import './styles/onboarding.css'
+import './styles/tur.css'
 
 import App from './App'
 
