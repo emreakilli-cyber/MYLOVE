@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import {
   demoDava,
@@ -327,6 +327,20 @@ function MaskeSahnesi({ ilerle, tikla }: { ilerle: () => void; tikla: () => void
   const [maskeli, setMaskeli] = useState(0) // a: kaç parça maskelendi
   const [orijinal, setOrijinal] = useState(false) // b: geçici göster
   const [acilan, setAcilan] = useState(maskeParcalari.length) // d: kaçı ham (başta hepsi ham)
+  const orijinalTimer = useRef<number | null>(null)
+
+  // "Orijinali Göster": dokununca 1 sn gerçek metni gösterir, sonra geri döner.
+  const orijinaliGoster = () => {
+    setOrijinal(true)
+    if (orijinalTimer.current) clearTimeout(orijinalTimer.current)
+    orijinalTimer.current = window.setTimeout(() => setOrijinal(false), 1000)
+  }
+  useEffect(
+    () => () => {
+      if (orijinalTimer.current) clearTimeout(orijinalTimer.current)
+    },
+    [],
+  )
 
   // Adım a: parçaları tek tek maskele.
   useEffect(() => {
@@ -346,6 +360,7 @@ function MaskeSahnesi({ ilerle, tikla }: { ilerle: () => void; tikla: () => void
   const pm = (p: number): boolean => {
     if (adim === 'a') return p < maskeli
     if (adim === 'd') return p >= maskeParcalari.length - acilan
+    if (adim === 'b') return !orijinal // b: orijinal gösterilirken ham
     return true
   }
 
@@ -368,20 +383,20 @@ function MaskeSahnesi({ ilerle, tikla }: { ilerle: () => void; tikla: () => void
   if (adim === 'b') {
     return (
       <div className="ob-maske-alan">
-        {orijinal ? govde : <p className="ob-dilekce ob-dilekce-maskeli">{maskeliMetin()}</p>}
+        {govde}
         <div className="ob-onay">
           <p className="ob-onay-baslik">
-            <Icon name="lock" size={15} /> 7 bilgi maskelendi, kontrol edin
+            <Icon name="lock" size={15} />{' '}
+            {orijinal
+              ? 'Orijinal gösteriliyor…'
+              : '7 bilgi maskelendi, kontrol edin'}
           </p>
           <div className="ob-onay-tuslar">
             <button
               type="button"
               className="button-quiet"
-              onMouseDown={() => setOrijinal(true)}
-              onMouseUp={() => setOrijinal(false)}
-              onMouseLeave={() => setOrijinal(false)}
-              onTouchStart={() => setOrijinal(true)}
-              onTouchEnd={() => setOrijinal(false)}
+              aria-pressed={orijinal}
+              onClick={orijinaliGoster}
             >
               Orijinali Göster
             </button>
@@ -469,8 +484,8 @@ function Parca({ p, masked }: { p: number; masked: boolean }) {
   const parca = maskeParcalari[p]
   if (!parca) return null
   return masked ? (
-    <span className="ob-maske" title={parca.etiket}>
-      {parca.maske}
+    <span className="ob-maske" title={`${parca.etiket} maskelendi`}>
+      {parca.etiket}
     </span>
   ) : (
     <span className="ob-ham">{parca.ham}</span>
@@ -487,7 +502,8 @@ function Korunan({ metin, neden }: { metin: string; neden: string }) {
 }
 
 function maskeliMetin(): string {
-  return `Müvekkilim ${maskeParcalari[0]?.maske} (T.C. ${maskeParcalari[1]?.maske}, ${maskeParcalari[2]?.maske}) adına; karşı taraf ${maskeParcalari[3]?.maske} ve ${maskeParcalari[4]?.maske} hakkında, ${korunanParcalar[0]?.metin} 3. Sulh Hukuk Mahkemesi’nin ${maskeParcalari[6]?.maske} dosyasında; alacağın ${maskeParcalari[5]?.maske} hesabına yatırılması ve ${korunanParcalar[1]?.metin} duruşmasında…`
+  const e = (i: number) => `[${maskeParcalari[i]?.etiket ?? ''}]`
+  return `Müvekkilim ${e(0)} (T.C. ${e(1)}, ${e(2)}) adına; karşı taraf ${e(3)} ve ${e(4)} hakkında, ${korunanParcalar[0]?.metin} 3. Sulh Hukuk Mahkemesi’nin ${e(6)} dosyasında; alacağın ${e(5)} hesabına yatırılması ve ${korunanParcalar[1]?.metin} duruşmasında…`
 }
 
 /* ---- "Neyi nerede yaparsınız?" ---- */

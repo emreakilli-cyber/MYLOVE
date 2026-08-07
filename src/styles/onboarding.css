@@ -313,11 +313,16 @@
   color: var(--text-primary);
 }
 .ob-maske {
-  color: var(--brand-ink);
-  background: var(--surface-sunken);
-  border-radius: 3px;
-  padding: 0 3px;
-  letter-spacing: 1px;
+  display: inline-block;
+  background: var(--brand-ink);
+  color: var(--surface-page);
+  border-radius: 4px;
+  padding: 0 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  vertical-align: baseline;
 }
 .ob-korunan {
   position: relative;
