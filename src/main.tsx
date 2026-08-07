@@ -26,7 +26,9 @@ import App from './App'
 void import('./data/seed')
   .then((modul) => modul.tohumlaGerekiyorsa())
   .catch((hata) => {
-    console.error('Örnek veri yazılamadı', hata)
+    void import('./services/gunluk').then((g) =>
+      g.gunlukHata(hata, 'Örnek veri yazılamadı'),
+    )
   })
 
 const container = document.getElementById('root')
