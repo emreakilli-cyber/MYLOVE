@@ -102,7 +102,10 @@ function assemble(
   let cursor = 0
   for (const entity of resolved) {
     output += escaped.slice(cursor, entity.start)
-    output += table.tokenFor(entity.type, entity.key, entity.text, entity.start)
+    const token = table.tokenFor(entity.type, entity.key, entity.text, entity.start)
+    // SPEC §7/7: belirsizlik tahmin edilmez, tabloya taşınır ve sorulur.
+    if (entity.ambiguous) table.markAmbiguous(token, entity.candidates ?? [])
+    output += token
     cursor = entity.end
   }
   output += escaped.slice(cursor)

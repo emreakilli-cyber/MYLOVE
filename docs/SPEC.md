@@ -19,6 +19,7 @@ geri dönüşün nasıl garanti edildiğini tanımlar.
 | **S4** | Aynı girdi + aynı seçenekler → aynı çıktı (deterministik) | M5.2 |
 | **S5** | Kural katmanı her zaman NER katmanından **önce** koşar | M3.7 |
 | **S6** | Bir kökün tüm çekimli biçimleri **aynı** maske token'ına düşer | M4.6 |
+| **S7** | Belirsizlik tahmin edilmez; işaretlenir ve kullanıcıya sorulur | M5.3 |
 
 ---
 
@@ -204,8 +205,16 @@ Bu bölüm dürüstlük bölümüdür. Aşağıdakiler **yakalanamaz veya güven
    yanlış pozitif oranı yüksektir.
 7. **Aynı soyisimli kişilerin tekil geçişi.** `Ahmet Yılmaz` ve `Mehmet Yılmaz`
    ayrı token alır; ama metinde yalnız `Yılmaz` geçtiğinde hangisi olduğu
-   belirsizdir. Bu durum **belirsiz** olarak işaretlenir ve kullanıcıya sorulur
-   (M5.3) — tahmin edilmez.
+   belirsizdir. Davranış (M5.3):
+   - Soyismi taşıyan **tek** kişi varsa o kişiye bağlanır, güven düşürülür.
+   - **Birden çok** kişi varsa çıplak soyisim, tam adlardan ayrı, kendi
+     token'ını alır; kayıt `ambiguous` işaretlenir ve `candidates` listesi
+     doldurulur. Onay ekranı bunu kullanıcıya sorar, `linkToExisting` ile
+     doğru kişiye bağlanır. **Tahmin edilmez.**
+   - Tam ad geçişleri daha uzun olduğu için §6.1 gereği çıplak soyismi yener;
+     `Ahmet Yılmaz` içindeki `Yılmaz` ayrıca işaretlenmez.
+   - Bir kayıt bir kez belirsiz işaretlendiyse geri alınmaz; kararı kullanıcı
+     verir.
 8. **Tarih maskelemenin yan etkisi.** Tüm tarihler maskelendiğinde kronoloji
    okunmaz hâle gelebilir. `TARIH` bu yüzden **kapatılabilir** tek tiptir;
    kapatma kararı kullanıcınındır ve onay ekranında görünür.
@@ -230,4 +239,28 @@ taşınır. `MAJOR` birebir eşleşmezse devir yapılmaz (`6002`).
 | Öncelik tablosunu değiştirmek | `MAJOR` |
 | Normalleştirme kuralını değiştirmek | `MAJOR` |
 
-§1'deki değişmezler (S1–S6) sürüm artışıyla bile değiştirilemez.
+§1'deki değişmezler (S1–S7) sürüm artışıyla bile değiştirilemez.
+
+---
+
+## 9. Tablonun yaşam döngüsü
+
+Varsayılan **bellek içidir**: tablo oturumla doğar, `clear()` ile ölür. Diske
+düz metin yazılmaz.
+
+Bir iş birden çok oturuma yayılıyorsa (aşamalı işlem, kuyruğa alınmış belge)
+tablonun yaşaması gerekir. O zaman da yalnız **şifreli** yaşar:
+
+| | |
+|---|---|
+| Biçim | `hukuk-ai.masktable.v1` |
+| Anahtar türetme | PBKDF2-SHA256, varsayılan 310.000 tur, 16 bayt tuz |
+| Şifreleme | AES-GCM 256, 12 bayt IV |
+| Asgari parola | 8 karakter |
+
+Yanlış parola ile bozulmuş veri **ayırt edilmez ve edilmemelidir** — ikisi de
+aynı hatayı verir (AES-GCM kimlik doğrulaması).
+
+Şifreli olmak onu ağa çıkarılabilir yapmaz: S2 ve `PROTOCOL.md` G1 hâlâ
+geçerlidir. Çıktı **cihazda saklanmak** içindir; ağa çıkabilen tek şey
+`digest()` özetidir.

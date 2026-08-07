@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { mask, unmask } from './mask'
-import { MaskTable, MaskTableSerializationError } from './table'
+import {
+  MaskTable,
+  MaskTableDecryptError,
+  MaskTableSerializationError,
+} from './table'
 
 /*
  * Bu dosyanın tek asıl iddiası SPEC S1'dir: unmask(mask(x)) === x, istisnasız.
@@ -220,5 +224,71 @@ describe('rastgele metinlerde birebirlik (M12.1 özellik testi)', () => {
       }
       expect(roundTrip(input)).toBe(input)
     }
+  })
+})
+
+describe('şifreli kalıcı saklama (M5.7)', () => {
+  it('dışa aktarılan blob ham veri içermez', async () => {
+    const masked = mask('TC 10000000146, tel 0532 111 22 33')
+    const blob = await masked.table.exportEncrypted('cok-gizli-parola')
+
+    const serialized = JSON.stringify(blob)
+    expect(serialized).not.toContain('10000000146')
+    expect(serialized).not.toContain('0532')
+    expect(blob.format).toBe('hukuk-ai.masktable.v1')
+  })
+
+  it('doğru parolayla geri yüklenen tablo unmask’i aynen yapar', async () => {
+    const input = 'TC 10000000146, tel 0532 111 22 33'
+    const masked = mask(input)
+    const blob = await masked.table.exportEncrypted('cok-gizli-parola')
+
+    const restored = await MaskTable.importEncrypted(blob, 'cok-gizli-parola')
+    expect(unmask(masked.text, restored).text).toBe(input)
+  })
+
+  it('geri yüklenen tablo numaralandırmayı kaldığı yerden sürdürür', async () => {
+    const first = mask('Tel 0532 111 22 33')
+    const blob = await first.table.exportEncrypted('cok-gizli-parola')
+
+    const restored = await MaskTable.importEncrypted(blob, 'cok-gizli-parola')
+    const second = mask('Tel 0533 222 33 44', { table: restored })
+
+    expect(second.text).toBe('Tel [TEL_2]')
+  })
+
+  it('yanlış parola çözemez', async () => {
+    const masked = mask('TC 10000000146')
+    const blob = await masked.table.exportEncrypted('cok-gizli-parola')
+
+    await expect(MaskTable.importEncrypted(blob, 'yanlis-parola')).rejects.toThrow(
+      MaskTableDecryptError,
+    )
+  })
+
+  it('bozulmuş veri çözemez', async () => {
+    const masked = mask('TC 10000000146')
+    const blob = await masked.table.exportEncrypted('cok-gizli-parola')
+    const bozuk = { ...blob, ciphertext: blob.ciphertext.slice(0, -4) + 'AAAA' }
+
+    await expect(MaskTable.importEncrypted(bozuk, 'cok-gizli-parola')).rejects.toThrow(
+      MaskTableDecryptError,
+    )
+  })
+
+  it('kısa parola reddedilir', async () => {
+    const masked = mask('TC 10000000146')
+    await expect(masked.table.exportEncrypted('kisa')).rejects.toThrow(
+      MaskTableSerializationError,
+    )
+  })
+
+  it('clear() tabloyu gerçekten boşaltır', () => {
+    const masked = mask('TC 10000000146, tel 0532 111 22 33')
+    expect(masked.table.size).toBe(2)
+
+    masked.table.clear()
+    expect(masked.table.size).toBe(0)
+    expect(masked.table.lookup('[TCKN_1]')).toBeUndefined()
   })
 })

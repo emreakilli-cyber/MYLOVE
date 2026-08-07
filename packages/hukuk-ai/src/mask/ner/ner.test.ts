@@ -149,3 +149,73 @@ describe('NER katmanında ağ yasağı (M3.6)', () => {
     }
   })
 })
+
+describe('belirsiz soyisim (M5.3, SPEC §7/7)', () => {
+  const iki = createDictionaryNerBackend({ people: ['Ahmet Yılmaz', 'Mehmet Yılmaz'] })
+
+  it('çıplak soyisim iki kişiye uyuyorsa BELİRSİZ işaretlenir, tahmin edilmez', () => {
+    const masked = mask('Ahmet Yılmaz ve Mehmet Yılmaz geldi. Yılmaz beyan verdi.', {
+      ner: iki,
+    })
+
+    // Tam adlar ayrı ayrı; çıplak soyisim üçüncü, ayrı bir maske.
+    expect(masked.text).toBe('[KISI_1] ve [KISI_2] geldi. [KISI_3] beyan verdi.')
+
+    const belirsiz = masked.table.lookup('[KISI_3]')
+    expect(belirsiz?.ambiguous).toBe(true)
+    expect(belirsiz?.candidates).toEqual(['AHMET YILMAZ', 'MEHMET YILMAZ'])
+  })
+
+  it('tam adlar belirsiz işaretlenmez', () => {
+    const masked = mask('Ahmet Yılmaz ve Mehmet Yılmaz', { ner: iki })
+    expect(masked.table.lookup('[KISI_1]')?.ambiguous).toBe(false)
+    expect(masked.table.lookup('[KISI_2]')?.ambiguous).toBe(false)
+  })
+
+  it('soyismi taşıyan tek kişi varsa o kişiye bağlanır, belirsizlik yok', () => {
+    const tek = createDictionaryNerBackend({ people: ['Ahmet Yılmaz'] })
+    const masked = mask('Ahmet Yılmaz geldi. Yılmaz beyan verdi.', { ner: tek })
+
+    expect(masked.text).toBe('[KISI_1] geldi. [KISI_1] beyan verdi.')
+    expect(masked.table.lookup('[KISI_1]')?.ambiguous).toBe(false)
+  })
+
+  it('tam ad içindeki soyisim ayrıca maskelenmez', () => {
+    const masked = mask('Ahmet Yılmaz', { ner: iki })
+    expect(masked.spans).toHaveLength(1)
+    expect(masked.spans[0]?.text).toBe('Ahmet Yılmaz')
+  })
+
+  it('belirsiz maske de birebir geri döner', () => {
+    const input = 'Ahmet Yılmaz ve Mehmet Yılmaz geldi. Yılmaz beyan verdi.'
+    const masked = mask(input, { ner: iki })
+    expect(unmask(masked.text, masked.table).text).toBe(input)
+  })
+})
+
+describe('aynı dizge iki farklı tip (M12.7)', () => {
+  it('kişi ve kurum aynı dizgeye uyarsa öncelik tablosu karar verir', () => {
+    const ikili = createDictionaryNerBackend({
+      people: ['Yılmaz Demir'],
+      organizations: ['Yılmaz Demir'],
+    })
+    const masked = mask('Yılmaz Demir taraf olarak gösterildi.', { ner: ikili })
+
+    // SPEC §6.1: uzunluk eşit → öncelik KISI (80) < KURUM (90).
+    expect(masked.spans).toHaveLength(1)
+    expect(masked.spans[0]?.type).toBe('KISI')
+    expect(masked.text).toBe('[KISI_1] taraf olarak gösterildi.')
+  })
+
+  it('uzun olan kısa olanı yener: kurum adı kişi adını içeriyorsa kurum kazanır', () => {
+    const ikili = createDictionaryNerBackend({
+      people: ['Ahmet Yılmaz'],
+      organizations: ['Ahmet Yılmaz İnşaat'],
+    })
+    const masked = mask('Ahmet Yılmaz İnşaat sözleşmeyi imzaladı.', { ner: ikili })
+
+    expect(masked.spans).toHaveLength(1)
+    expect(masked.spans[0]?.type).toBe('KURUM')
+    expect(masked.text).toBe('[KURUM_1] sözleşmeyi imzaladı.')
+  })
+})

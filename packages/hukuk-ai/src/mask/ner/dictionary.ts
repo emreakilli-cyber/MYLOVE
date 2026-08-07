@@ -181,6 +181,78 @@ function findByCue(
   return found
 }
 
+/**
+ * M5.3 — çıplak soyisim geçişleri.
+ *
+ * `Ahmet Yılmaz` ve `Mehmet Yılmaz` kayıtlıyken metinde yalnız `Yılmaz`
+ * geçiyorsa hangisi olduğu belirsizdir. Burada TAHMİN YAPILMAZ:
+ *   - soyismi taşıyan tek kişi varsa o kişiye bağlanır (düşük güvenle),
+ *   - birden çok kişi varsa `ambiguous` işaretli AYRI bir maske üretilir ve
+ *     adaylar listelenir; onay ekranı kullanıcıya sorar (M6.3 ile bağlanır).
+ *
+ * Tam ad geçişleri daha uzun olduğu için çakışma çözümünde bunları zaten
+ * yener (SPEC §6.1); yani `Ahmet Yılmaz` içindeki `Yılmaz` ayrıca işaretlenmez.
+ */
+function findBareSurnames(
+  text: string,
+  regions: readonly FreeRegion[],
+  people: readonly string[],
+): NerCandidate[] {
+  const bySurname = new Map<string, string[]>()
+  for (const person of people) {
+    const words = person.trim().split(/\s+/)
+    if (words.length < 2) continue
+
+    const surname = words[words.length - 1]
+    if (surname === undefined || surname.length < 2) continue
+
+    const existing = bySurname.get(surname) ?? []
+    existing.push(person.trim())
+    bySurname.set(surname, existing)
+  }
+
+  const found: NerCandidate[] = []
+  const upperText = text.toLocaleUpperCase('tr')
+
+  for (const [surname, owners] of bySurname) {
+    const unique = [...new Set(owners)]
+    for (const variant of surfaceVariants(surname)) {
+      const needle = variant.toLocaleUpperCase('tr')
+      let from = 0
+      for (;;) {
+        const index = upperText.indexOf(needle, from)
+        if (index < 0) break
+        from = index + 1
+
+        const end = index + variant.length
+        if (!isWordEdge(text, index, end)) continue
+        if (!regions.some((region) => index >= region.start && end <= region.end)) continue
+
+        if (unique.length === 1 && unique[0] !== undefined) {
+          found.push({
+            start: index,
+            end,
+            type: 'KISI',
+            confidence: 0.6,
+            key: nameKey(unique[0]),
+          })
+        } else {
+          found.push({
+            start: index,
+            end,
+            type: 'KISI',
+            confidence: 0.4,
+            key: nameKey(surname),
+            ambiguous: true,
+            candidates: unique.map((owner) => nameKey(owner)),
+          })
+        }
+      }
+    }
+  }
+  return found
+}
+
 export function createDictionaryNerBackend(
   options: DictionaryNerOptions = {},
 ): NerBackend {
@@ -196,6 +268,7 @@ export function createDictionaryNerBackend(
         ...findKnownNames(text, regions, people, 'KISI'),
         ...findKnownNames(text, regions, organizations, 'KURUM'),
         ...findKnownNames(text, regions, workplaces, 'ISYERI'),
+        ...findBareSurnames(text, regions, people),
         ...findByCue(text, regions, TITLE_CUE, 'KISI', 1, 0.85),
         ...findByCue(text, regions, ORG_CUE, 'KURUM', 0, 0.8),
         ...findByCue(text, regions, WORKPLACE_CUE, 'ISYERI', 0, 0.8),

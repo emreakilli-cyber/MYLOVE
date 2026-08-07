@@ -59,6 +59,8 @@ export function toEntitySpans(
     layer: 'ner' as const,
     key: candidate.key ?? text.slice(candidate.start, candidate.end),
     confidence: candidate.confidence,
+    ...(candidate.ambiguous ? { ambiguous: true } : {}),
+    ...(candidate.candidates ? { candidates: candidate.candidates } : {}),
   }))
 }
 

@@ -26,6 +26,10 @@ export interface NerCandidate {
    * katmanı ham metinden üretir.
    */
   readonly key?: string
+  /** SPEC §7/7 — hangi varlık olduğu belirsiz. Tahmin edilmez, işaretlenir. */
+  readonly ambiguous?: boolean
+  /** Belirsizse aday varlıkların anahtarları. */
+  readonly candidates?: readonly string[]
 }
 
 /** Kural katmanının dokunmadığı, NER'e açık aralık. */

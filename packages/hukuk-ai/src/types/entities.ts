@@ -58,6 +58,15 @@ export interface EntitySpan {
   readonly key: string
   /** 0..1. Kural katmanı doğrulama algoritmalı tiplerde 1 verir. */
   readonly confidence: number
+  /**
+   * Birden çok varlığa bağlanabildiği için hangisi olduğu belirsiz aralık
+   * (SPEC §7/7 — metinde yalnız `Yılmaz` geçiyor ama iki Yılmaz var).
+   * Belirsizlik TAHMİN EDİLMEZ; işaretlenir ve onay ekranında kullanıcıya
+   * sorulur.
+   */
+  readonly ambiguous?: boolean
+  /** Belirsizse aday varlıklar — onay ekranı bunları seçenek olarak gösterir. */
+  readonly candidates?: readonly string[]
 }
 
 /** Doğrulaması olan ama geçemeyen aday — SPEC §7/3 gereği yutulmaz. */

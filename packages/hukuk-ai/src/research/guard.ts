@@ -16,6 +16,7 @@
 
 import { runNer } from '../mask/ner'
 import type { NerBackend } from '../mask/ner/types'
+import { resolveOverlaps } from '../mask/overlap'
 import { runRuleLayer } from '../mask/rules'
 import type { EntityType } from '../types/entities'
 
@@ -62,8 +63,10 @@ export function findUnmaskedContent(
   const rules = runRuleLayer(text)
   const ner = options.ner ? runNer(text, rules.spans, options.ner) : []
 
-  return [...rules.spans, ...ner]
-    .sort((a, b) => a.start - b.start)
+  // Maskeleme ile AYNI çakışma çözümü koşuyor. Kapı ile maskeleme aynı metni
+  // farklı sayıda bulgu olarak görürse rapor yanıltıcı olur: `Ahmet Yılmaz`
+  // hem tam ad hem de çıplak soyisim olarak iki kez sayılırdı.
+  return resolveOverlaps([...rules.spans, ...ner])
     .map((span) => ({
       type: span.type,
       start: span.start,

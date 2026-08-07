@@ -116,14 +116,14 @@ varsayımla devam edilir.
 - [x] M5.1 `MaskTable` veri yapısı: kök → token, token → kök, tip başına sayaç
 - [x] M5.2 Deterministik numaralandırma: metinde ilk görülme sırasına göre
       `[KISI_1]`, `[KISI_2]`…; aynı girdi → aynı çıktı (test)
-- [ ] M5.3 Aynı soyisimli iki kişi ayrımı: `Ahmet Yılmaz` ≠ `Mehmet Yılmaz`;
+- [x] M5.3 Aynı soyisimli iki kişi ayrımı: `Ahmet Yılmaz` ≠ `Mehmet Yılmaz`;
       yalnız `Yılmaz` geçtiğinde belirsizlik işaretlenir, kullanıcıya sorulur
 - [x] M5.4 `unmask(text, table)` — birebir geri dönüş
 - [x] M5.5 **Serileştirme yasağı:** `MaskTable` üzerinde `toJSON` tanımlı değil;
       `JSON.stringify` çağrısı sessizce veri sızdıramaz. Testle doğrula
 - [x] M5.6 Tablonun ağa gidebileceği tek biçim `sha256` özetidir
       (`PROTOCOL.md` §5.3 `maskTableHash`); testle doğrula
-- [ ] M5.7 Tablo yaşam döngüsü: bellek içi, oturum sonunda temizlenir; kalıcı
+- [x] M5.7 Tablo yaşam döngüsü: bellek içi, oturum sonunda temizlenir; kalıcı
       saklama gerekiyorsa şifreli
 
 ## M6 — Onay ekranı API'si
@@ -220,7 +220,7 @@ varsayımla devam edilir.
       `[KISI_1` kapanmamış) → çökmez, tanımlı davranış
 - [x] M12.6 Kenar durum: iç içe geçmiş varlık — `Egeperla AVM sahibi Ahmet Yılmaz`
       → `ORG` ve `PERSON` ayrı ayrı, doğru sınırlarla
-- [ ] M12.7 Kenar durum: aynı dizge iki farklı tip (`Yılmaz` hem soyad hem şirket adı)
+- [x] M12.7 Kenar durum: aynı dizge iki farklı tip (`Yılmaz` hem soyad hem şirket adı)
 - [x] M12.8 Kenar durum: maske token'ına benzeyen ham metin (`[KISI_1]` kullanıcı
       metninde geçiyorsa) → kaçışlanır, unmask bozulmaz
 - [x] M12.9 **Devir eşiği testi:** eşik altında `shouldOfferHandoff()` **her
@@ -255,3 +255,4 @@ varsayımla devam edilir.
 | 10 | 2026-08-07 | Araştırma katmanı + `MaskGuard` zorlayıcı kapı | M7.1–M7.5, M7.7 | Ağ taşıması dışarıdan veriliyor; paket ağ API'sine hiç dokunmuyor |
 | 11 | 2026-08-07 | Kaçak kimlik yakalama (`preflightCheck`) | M11.1–M11.6 | Ağ hedefinde "maskesiz gönder" seçeneği hiç üretilmiyor |
 | 12 | 2026-08-07 | Devir eşiği motoru + sınır değeri testleri | M12.9 | Eşik altında `offer` üretilmediği kapsamlı taramayla doğrulandı |
+| 13 | 2026-08-07 | Belirsiz soyisim isaretleme, sifreli tablo saklama, ayni dizge iki tip testi | M5.3, M5.7, M12.7 | Guard da artik cakisma cozumu kosuyor; SPEC'e S7 degismezi eklendi |

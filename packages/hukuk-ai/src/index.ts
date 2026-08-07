@@ -50,8 +50,13 @@ export type { GuardFinding, GuardOptions } from './research/guard'
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
-export { MaskTable, MaskTableSerializationError } from './mask/table'
-export type { MaskEntry, Occurrence } from './mask/table'
+export {
+  MASK_TABLE_FORMAT,
+  MaskTable,
+  MaskTableDecryptError,
+  MaskTableSerializationError,
+} from './mask/table'
+export type { EncryptedMaskTable, MaskEntry, Occurrence } from './mask/table'
 
 export { isMaskToken } from './mask/token'
 
