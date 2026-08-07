@@ -20,6 +20,8 @@ import {
   llmSaglayiciAdi,
   llmSor,
 } from '../services/llm'
+import { devirSorulmali, sureOlc } from '../services/devir'
+import { DevirTeslim } from '../components/DevirTeslim'
 
 const oncelikEtiket: Record<Bulgu['oncelik'], string> = {
   kritik: 'Kritik',
@@ -54,6 +56,7 @@ export function Asistan() {
   const [cevap, setCevap] = useState<string | null>(null)
   const [kaynak, setKaynak] = useState<'kural' | 'llm'>('kural')
   const [llmYukleniyor, setLlmYukleniyor] = useState(false)
+  const [devirAcik, setDevirAcik] = useState(false)
 
   const baglam = useDosyaBaglami(dosyaId || undefined)
   const llmHazir = llmDurumu(ayarlar) === 'hazir'
@@ -75,7 +78,8 @@ export function Asistan() {
     setCevap(soruyuCevapla(baglam, s))
   }
 
-  const sorLlm = async () => {
+  // AI ile taslak "uzun dilekçe" işidir; masaüstü erişilebilirse devir sorulur.
+  const sorLlm = () => {
     const s = soru.trim()
     if (!s || !ayarlar) return
     if (!baglam) {
@@ -83,10 +87,22 @@ export function Asistan() {
       setCevap('Önce bir dosya seçin.')
       return
     }
+    if (devirSorulmali('uzun-dilekce')) {
+      setDevirAcik(true)
+      return
+    }
+    void sorLlmCalistir()
+  }
+
+  const sorLlmCalistir = async () => {
+    const s = soru.trim()
+    if (!s || !ayarlar || !baglam) return
     setLlmYukleniyor(true)
     setCevap(null)
+    const baslangic = performance.now()
     try {
       const metin = await llmSor(ayarlar, dosyaOzeti(baglam), s)
+      sureOlc('uzun-dilekce', performance.now() - baslangic) // gerçek ölçüm
       setKaynak('llm')
       setCevap(metin)
     } catch (e) {
@@ -237,6 +253,22 @@ export function Asistan() {
         anahtarınızla açabilirsiniz — açıkken yalnızca sorunuz ve dosya özeti
         gönderilir.
       </p>
+
+      {devirAcik ? (
+        <DevirTeslim
+          isTipi="uzun-dilekce"
+          onTelefon={() => {
+            setDevirAcik(false)
+            void sorLlmCalistir()
+          }}
+          onMasaustu={() => {
+            setDevirAcik(false)
+            setKaynak('kural')
+            setCevap('Bilgisayara aktarma henüz bağlanmadı; iş telefonda yapılır.')
+          }}
+          onKapat={() => setDevirAcik(false)}
+        />
+      ) : null}
     </>
   )
 }
