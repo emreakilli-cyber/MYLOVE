@@ -17,8 +17,10 @@ import './styles/kilit.css'
 import './styles/arama.css'
 import './styles/onboarding.css'
 import './styles/tur.css'
+import './styles/durum.css'
 
 import App from './App'
+import { HataSiniri } from './components/HataSiniri'
 
 // İlk açılışta örnek veriyi yaz. Dexie'nin canlı sorguları veri gelince
 // kendiliğinden yeniden yayın yaptığı için render'ı beklemeye gerek yok.
@@ -37,6 +39,8 @@ if (!container) throw new Error('#root bulunamadı')
 
 createRoot(container).render(
   <StrictMode>
-    <App />
+    <HataSiniri>
+      <App />
+    </HataSiniri>
   </StrictMode>,
 )

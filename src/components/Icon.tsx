@@ -34,6 +34,7 @@ export type IconName =
   | 'phone'
   | 'mail'
   | 'lock'
+  | 'cloud-off'
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'children'> {
   readonly name: IconName
@@ -194,6 +195,13 @@ const paths: Record<IconName, ReactElement> = {
       <rect x="4.5" y="10.5" width="15" height="10" rx="2.2" />
       <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
       <circle cx="12" cy="15.5" r="1.2" />
+    </>
+  ),
+  'cloud-off': (
+    <>
+      <path d="m3 3 18 18" />
+      <path d="M5.8 5.8A6 6 0 0 0 8.5 17H17a4 4 0 0 0 1.3-.2" />
+      <path d="M20.6 15.3A4.5 4.5 0 0 0 17 8h-1.6A6 6 0 0 0 9.7 4.2" />
     </>
   ),
   check: <path d="m5 12.5 4.5 4.5L19 7" />,

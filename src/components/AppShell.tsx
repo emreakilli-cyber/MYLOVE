@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Icon } from './Icon'
 import { Drawer } from './Drawer'
+import { CevrimdisiUyari } from './CevrimdisiUyari'
 import { SurumYenile } from './SurumYenile'
 import { useLocation, useNavigate } from '../router'
 import { useAktifHatirlatmaSayisi } from '../data/hatirlatmaSorgulari'
@@ -76,7 +77,10 @@ export function AppShell({ children }: AppShellProps) {
 
       <Drawer open={drawerOpen} onClose={closeDrawer} />
 
-      <main className="shell-content">{children}</main>
+      <main className="shell-content">
+        <CevrimdisiUyari />
+        {children}
+      </main>
     </div>
   )
 }

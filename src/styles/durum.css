@@ -1,0 +1,112 @@
+/* Uygulama durum göstergeleri: çevrimdışı şeridi + hata (çökme) ekranı. */
+
+/* ---------------------------------------------------------------- *
+ * Çevrimdışı şeridi (içerik akışının başında, sakin bilgi tonu)
+ * ---------------------------------------------------------------- */
+
+.cevrimdisi {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--cat-amber-bg);
+  border: 1px solid var(--cat-amber-br);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+}
+
+.cevrimdisi-ikon {
+  flex: none;
+  color: var(--cat-amber-fg);
+  margin-top: 1px;
+}
+
+.cevrimdisi-metin {
+  font-size: var(--text-small);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------------- *
+ * Hata (çökme) ekranı — HataSiniri fallback'i
+ * ---------------------------------------------------------------- */
+
+.hata-ekran {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--space-6) + var(--safe-top)) var(--space-5)
+    calc(var(--space-6) + var(--safe-bottom));
+  background: var(--surface-page);
+}
+
+.hata-kart {
+  width: min(420px, 100%);
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-raised);
+  padding: var(--space-6) var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+
+.hata-ikon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  color: var(--brand-teal);
+}
+
+.hata-baslik {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: var(--text-primary);
+}
+
+.hata-metin {
+  font-size: var(--text-small);
+  line-height: var(--leading-normal);
+  color: var(--text-secondary);
+}
+
+.hata-eylemler {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.hata-birincil,
+.hata-ikincil {
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-body);
+}
+
+.hata-birincil {
+  background: var(--brand-ink);
+  color: #fff;
+}
+
+.hata-birincil:active {
+  opacity: 0.9;
+}
+
+.hata-ikincil {
+  background: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+}
+
+.hata-ikincil:active {
+  background: var(--surface-sunken);
+}
