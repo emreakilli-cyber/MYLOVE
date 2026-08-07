@@ -21,61 +21,68 @@ export interface TurAdimi {
   readonly drawer?: boolean
 }
 
+/*
+ * Anlatı: senaryo, "bir cevap dilekçesi hazırlamanız gerekiyor" örneğinden akar
+ * ve panelleri gerçek işleyişiyle gösterir — kullanıcının kendi vurguladığı
+ * "menüden AI Asistan'a geç, gerçek panelden göster" senaryosu.
+ */
 export const turAdimlari: readonly TurAdimi[] = [
   {
     id: 'panel',
     rota: '/',
     hedef: '[data-tur="panel"]',
-    baslik: 'Kontrol paneliniz',
+    baslik: 'Gününüz burada başlar',
     metin:
-      'Bugünün duruşmaları, yaklaşan süreler ve işleriniz tek bakışta burada toplanır.',
+      'Bugünkü duruşmalar, yaklaşan süreler ve işleriniz tek bakışta burada. Kısa bir turla birlikte gezelim — diyelim yeni bir işe başlıyorsunuz.',
   },
   {
     id: 'menu',
     rota: '/',
     hedef: '[data-tur="menu"]',
-    baslik: 'Menü',
-    metin: 'Tüm bölümlere buradaki menüden ulaşırsınız. Hadi Asistan’ı açalım.',
+    baslik: 'Her yere buradan',
+    metin:
+      'Tüm bölümlere soldaki menüden ulaşırsınız. Bir cevap dilekçesi hazırlamanız gerektiğini düşünelim; menüyü açıp Asistan’a geçelim.',
   },
   {
     id: 'menu-asistan',
     rota: '/',
     hedef: '.drawer [href*="/asistan"]',
     drawer: true,
-    baslik: 'AI Asistan’a geçiş',
+    baslik: 'Menüden Asistan’a',
     metin:
-      'Örneğin bir dilekçe için menüden “Asistan”a dokunursunuz. İleri deyin, birlikte gidelim.',
+      'İşte menü. Dilekçe için tek yapmanız gereken “Asistan”a dokunmak. İleri deyin, sizi oraya götüreyim.',
   },
   {
     id: 'asistan',
     rota: '/asistan',
     hedef: '[data-tur="asistan"]',
-    baslik: 'Dosyaya danışın',
+    baslik: 'Gerçek panel: Dosyaya danışın',
     metin:
-      'Dilekçe taslağı isteyin ya da soru sorun. Gönderdiğinizde kimlik bilgileri maskelenir; sağlayıcıya yalnızca maskeli metin gider.',
+      'Buradayız. Dosyayı seçip taslak ister ya da soru sorarsınız. Gönderdiğinizde kimlik bilgileri maskelenir; sağlayıcıya yalnızca maskeli metin gider.',
   },
   {
     id: 'dosya',
     rota: '/dosyalar',
     hedef: '.fab',
-    baslik: 'Yeni dosya',
+    baslik: 'Yeni dava geldiğinde',
     metin:
-      'Dosyalarınızı buradan açar; süre, görev ve hazırlık durumunu dosyanın içinde takip edersiniz.',
+      'Yeni bir dosyayı buradan açarsınız; süre, görev ve hazırlık durumu dosyanın içinde toplanır.',
   },
   {
     id: 'takvim',
     rota: '/takvim',
     hedef: '[data-tur="takvim"]',
-    baslik: 'Takvim',
-    metin: 'Duruşmalar ve hukuki süreler tek bir zaman çizelgesinde toplanır.',
+    baslik: 'Duruşma ve süreler',
+    metin:
+      'Duruşmalarınız ve hukuki süreleriniz bu takvimde tek bir zaman çizelgesinde buluşur.',
   },
   {
     id: 'sure',
     rota: '/sure',
     hedef: '[data-tur="sure"]',
-    baslik: 'Süre hesabı',
+    baslik: 'Süreyi hesaplayın',
     metin:
-      'Süre türünü ve tebligat tarihini seçin; son günü resmî tatil ve adli tatili gözeterek hesaplasın.',
+      'Süre türünü ve tebligat tarihini seçin; son günü resmî tatil ve adli tatili gözeterek bulur. Sonuç bilgilendirme amaçlıdır; teyit sizde.',
   },
   {
     id: 'bitis',
@@ -83,6 +90,6 @@ export const turAdimlari: readonly TurAdimi[] = [
     hedef: null,
     baslik: 'Hazırsınız',
     metin:
-      'Turu istediğiniz zaman Ayarlar’dan yeniden başlatabilirsiniz. Kolay gelsin.',
+      'Turu bitirdik. İstediğiniz an Ayarlar → Yardım’dan yeniden başlatabilirsiniz. Kolay gelsin.',
   },
 ]
