@@ -388,6 +388,12 @@ export interface Ayarlar {
   hatirlatmaErtelemeleri?: Record<string, string>
   /** İlk açılış öğretici modu görüldü/atlandı mı. */
   onboardingTamam?: boolean
+  /** Hukuki onay kaydı; metin sürümü değişince yeniden istenir. */
+  hukukiOnay?: {
+    zaman: IsoDateTime
+    surum: string
+    hash: string
+  }
 }
 
 /* ------------------------------------------------------------------ *
