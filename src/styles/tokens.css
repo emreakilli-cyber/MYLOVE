@@ -17,10 +17,14 @@
   --border-strong: #ddd8d0;
   --border-inverse: #2b444f;
 
-  /* ---- Metin ---- */
+  /* ---- Metin ----
+   * secondary/muted, WCAG AA (≥4.5:1) için koyulaştırıldı (F23 erişilebilirlik;
+   * ileri yaş kitle). Aynı gri-yeşil aile korunur; eski değerler 9aa0a0/6b7472
+   * kırık beyaz üzerinde 2.5:1 ve 4.45:1 ile okunması zordu.
+   */
   --text-primary: #1c2b2d;
-  --text-secondary: #6b7472;
-  --text-muted: #9aa0a0;
+  --text-secondary: #5b6462;
+  --text-muted: #6b7170;
   --text-on-inverse: #f2f4f3;
   --text-on-inverse-muted: #9fb1b6;
 
