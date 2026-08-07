@@ -166,14 +166,93 @@ worker'ın çevrimdışı önbelleğini şişirmesin diye dışarıda bırakıld
 - [x] KVKK notu, veri saklama/silme (Ayarlar'da veri sıfırlama)
 
 ### F16 — Bitiş
-- [ ] **Geçici sürüm yenileme düğmesini kaldır** — `src/components/SurumYenile.tsx`,
+- [!] **Geçici sürüm yenileme düğmesini kaldır** — `src/components/SurumYenile.tsx`,
       `AppShell` içindeki kullanımı, `shell.css` sonundaki blok ve `vite.config.ts`
-      içindeki `define` bloğu birlikte silinecek
+      içindeki `define` bloğu birlikte silinecek. **Şimdilik test için DURUYOR;
+      kaldırma App Store paketlemesinden hemen öncesine ertelendi (bkz. BEKLEYEN).**
 - [ ] Çevrimdışı davranış, boş/yükleniyor/hata hâlleri
 - [ ] Erişilebilirlik: odak sırası, kontrast, ekran okuyucu etiketleri
 - [ ] Vitest ile birim testleri (süre motoru, hazırlık skoru, hatırlatma ofsetleri)
 - [x] README: kurulum, GitHub Pages yayını, ana ekrana ekleme, Capacitor ile App Store yolu
 - [ ] Sürüm etiketi ve son elden geçirme
+
+> **Not (madde 8):** F16'nın açık maddeleri (çevrimdışı/boş/hata hâlleri,
+> erişilebilirlik, kalan testler, sürüm etiketi) planda zaten duruyor.
+> Erişilebilirlik ayrıca F23'te ayrıntılandırıldı. "Sürüm yenile" düğmesi
+> `[!]` işaretlendi ve şimdilik silinmeyecek.
+
+---
+
+### F17 — İlk açılış öğretici modu (onboarding)
+- [ ] `src/onboarding/` altında akış; ilk açılışta (hukuki onay yoksa) otomatik başlar, tamamlanınca/atlanınca bir daha açılmaz (kalıcı bayrak)
+- [ ] Sahne metinleri ve zamanlamalar `src/onboarding/script.ts` içinde **veri** olarak durur; bileşen script'i okuyup oynatır (metin/süre bileşene gömülü değil)
+- [ ] Demo verisi yalnızca bellekte; gerçek Dexie tablolarına yazılmaz ve akış bitince/çıkışta iz bırakmaz (test: onboarding sonrası `db.dosyalar` sayısı değişmez)
+- [ ] Maskeleme animasyonu tamamen hardcoded script; hiçbir gerçek modülü (LLM, kripto, db) çağırmaz
+- [ ] Her sahnede "Atla" var; atlanınca doğrudan hukuki onaya (F18) gidilir; onay ekranı atlanamaz
+- [ ] **S0** Açılış: logo + "Verileriniz bu cihazdan çıkmaz"; bulut ikonu belirir → üstü çizilir → telefon ikonuna döner
+- [ ] **S1** Müvekkil kaydı: form kendi kendine yazılır (Kemal Arslan / 2026/1184 E. / Kira Alacağı / karşı taraf Nuray Öztürk / duruşma 14 Eylül 2026 / 45.000 TL tahsil edilmedi)
+- [ ] **S2** Bildirim: "Duruşmaya 38 gün, cevap dilekçesi süresi 9 gün"; takvim açılır, geri sayım halkası dolar
+- [ ] **S3** Ücret takibi: kırmızı "62 gündür tahsil edilmedi"; telefon ikonu parlar, KULLANICI dokunur → arama simülasyonu + dosyaya not düşme
+- [ ] **S4** Acil iş: turuncu "karşı taraf cevap dilekçesi sundu, beyan için 6 gün"; "AI Asistan'a Yaz" butonuna KULLANICI dokunur
+- [ ] **S5** AI Asistan tanıtımı: üç satır yetenek; mesaj kendi kendine yazılır, dosya eklenir, KULLANICI GÖNDER'e dokunur
+- [ ] **S6a** Maskeleme: tarama ışığı geçer; isim, TCKN, adres, işyeri, IBAN, dosya no tek tek maskeye döner (her biri "tık" sesiyle); "İzmir" ve "14 Eylül 2026" yeşil çerçeveli kalır + "yetkili mahkeme için"/"süre hesabı için" etiketi
+- [ ] **S6b** Onay ekranı: "7 bilgi maskelendi, kontrol edin" + "Orijinali Göster" tuşu (1 sn gerçek metni gösterip geri döner)
+- [ ] **S6c** Bölünmüş ekran: sol "Cihazınız" / sağ "Yapay Zekâ"; hattan yalnızca maskeli metin akar; soldaki kasa ikonundaki eşleme tablosu hatta girmez, yerinde titrer; alt yazı "Sağa giden: maskelenmiş metin. Cihazda kalan: kim olduğu."
+- [ ] **S6d** Dilekçe geri döner; "Gerçek bilgilerle değiştir" tuşuna KULLANICI dokunur, maskeler sırayla açılır; son satır "Dilekçe hazır. Kimliği hiç dışarı çıkmadı."
+- [ ] **"Neyi nerede yaparsınız?"** sahnesi (S7'den önce): iki sütun (telefon | bilgisayar); maddeler sırayla sol/telefon tarafa düşer, çoğunluk solda ve görsel olarak baskın; altta "Bilgisayarınız kapalıyken de çalışır."; toplam ≤ 8 sn
+- [ ] **S7** Özet: 📵 bulut yok · 🎭 AI'a giden metinde kimlik yok · ⏱ süreler kendiliğinden · 📶 internetsiz çalışır · 💻 AI kendi cihazınızda
+- [ ] Dil denetimi: onboarding metinlerinde "hiçbir veri paylaşılmıyor" / "hacklenemez" / "%100 güvenli" **geçmez** (test: `script.ts` bu ifadeleri içermez); yalnızca "kimlik bilgileri gitmiyor" / "maskelenmiş metin gidiyor" dili
+
+### F18 — Hukuki onay akışı (onboarding S8)
+- [ ] Onay ekranında 5 kutucuk; hepsi başta işaretsiz; "Kabul et/Devam" yalnızca 5'i de işaretliyken aktif olur
+- [ ] Her kutucuk, ilgili metin **sonuna kaydırılmadan** aktifleşmez
+- [ ] 5 madde birebir: (Kullanım Şartları + Aydınlatma) / (şifre unutulursa kurtarılamaz) / (maskeleme tam anonimleştirme değil, onay kontrolü kullanıcıda) / (AI çıktısı taslak, doğruluk + meslek sırrı kullanıcıda) / (cihaz güvenliği kullanıcıda)
+- [ ] Onay kaydı cihaza yazılır: tarih, saat, metin sürümü ve metin **hash'i** (test: onaydan sonra kayıt Dexie'de mevcut)
+- [ ] Metin sürümü/hash değişince yeniden onay istenir; değişmediyse tekrar istenmez (test: aynı sürümde ikinci açılışta onay çıkmaz)
+- [ ] Hukuki metinler **yer tutucu**; içerik [!] avukatta (bkz. BEKLEYEN). Uygulama yer tutucuyu + sürüm/hash'i gösterir
+
+### F19 — Kayıt / giriş ve profil
+- [ ] Kayıt formunda ad, soyad, ünvan alınır ve yerelde saklanır
+- [ ] Ad/soyad/ünvan yan menü (drawer) altında görünür *(ana ekran selamlaması F2'de zaten adı gösteriyor — bkz. çakışma notu)*
+- [ ] E-posta ile kayıt/giriş **arayüzü** (yerel profil); gerçek e-posta doğrulama sunucusu [!]
+- [ ] Google ve Apple ile giriş butonları arayüzde; bağlanmamışken açıkça "yapılandırılmadı"; OAuth entegrasyonu [!]
+
+### F20 — Cihazlar arası iş bölümü (devir teslim)
+- [ ] Devir teslim ekranında "Telefonda yap" seçeneği **her zaman** var ve **varsayılan vurgulu** buton odur
+- [ ] Süre tahminleri gerçek ölçümden hesaplanır (uydurma sabit sayı yok; test: tahmin fonksiyonu bir ölçüm kaynağından türetir)
+- [ ] Bilgisayar kapalı/erişilemezse devir seçeneği **hiç** gösterilmez; iş sessizce telefonda yapılır
+- [ ] Kullanıcı bir kez "telefonda yap" derse, aynı oturumda aynı iş tipi için tekrar sorulmaz (oturum içi tercih hatırlanır)
+- [ ] Masaüstü varlığı algılama + gerçek iş transferi bir eşleme/sunucu gerektirir → adaptör arkasında, varsayılan "masaüstü yok → telefonda" (gerçek taşıma [!], bkz. BEKLEYEN)
+
+### F21 — hukuk-ai arayüz sözleşmesi
+- [ ] `packages/hukuk-ai`'nin sağlayacağı arayüz, **tüketici tarafta** tanımlanır (ör. `src/services/hukukAi.ts`); `packages/hukuk-ai/` klasörüne **DOKUNULMAZ**
+- [ ] Arayüz tip düzeyinde: maskele (metin → maskeli metin + eşleme), demaskele, AI sorusu sözleşmelerini içerir; çalışma zamanı bağımlılığı yok
+- [ ] `npm run build` geçer (yalnızca tip; gerçek uygulama başka session'da)
+
+### F22 — Gizli günlükleme (redacting logger)
+- [ ] Merkezi logger: ham veri diske **hiç** yazılmaz (redaksiyon çıktıdan önce; "yaz-sonra-sil" değil)
+- [ ] Doğrudan `console.*`/ham log çağrısı **lint hatası** verir (ESLint kuralı); yalnızca merkezi logger'a izin
+- [ ] Test: müvekkil verili bir hata fırlatılır; logger çıktısında hiçbir tanımlayıcı (isim, TCKN, IBAN, telefon, e-posta, adres) geçmez
+
+### F23 — Erişilebilirlik (ileri yaş kitle; F16'yı genişletir)
+- [ ] Büyük taban punto; kullanıcı yazı boyutunu artırabilir veya sistem büyütmesine uyar
+- [ ] Metin/arka plan kontrastı WCAG AA (≥ 4.5:1) — denetlenebilir
+- [ ] Tüm dokunma hedefleri min 44×44 pt
+- [ ] `prefers-reduced-motion` desteklenir; onboarding dâhil animasyonlar sadeleşir/kapanır
+- [ ] Ses ve titreşim Ayarlar'dan kapatılabilir; kapalıyken onboarding "tık" sesleri ve titreşim çalışmaz
+- [ ] Görünür odak halkası + mantıklı odak sırası + tüm etkileşimli öğelerde ekran okuyucu (aria) etiketleri
+
+---
+
+## BEKLEYEN — KULLANICI
+Bu maddeler kod tarafında hazırlanır ama tamamlanması **senin** elle yapacağın
+adımları gerektirir; otonom döngü bunları `[!]` sayıp atlar.
+
+- [!] **Hukuki metin içerikleri** (Kullanım Şartları, Aydınlatma Metni, sorumluluk maddeleri) — avukat hazırlayacak; uygulama yer tutucu + sürüm/hash yönetir (F18)
+- [!] **Google/Apple OAuth** client ID'leri, "Sign in with Apple" sertifikaları ve e-posta doğrulama sunucusu (F19)
+- [!] **Cihazlar arası gerçek devir/senkron altyapısı** — masaüstü varlığı algılama + iş transferi bir sunucu/eşleme ister (F20)
+- [!] **Geçici "sürüm yenile" düğmesinin kaldırılması** — şimdilik test için DURUYOR (F16)
+- [!] **App Store yayını** — Apple Developer hesabı, imzalama profili, Capacitor paketi yükleme (F16 devamı)
 
 ---
 
