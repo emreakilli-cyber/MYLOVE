@@ -344,15 +344,64 @@ export function Ayarlar() {
           <span>
             <span style={{ display: 'block' }}>LLM katmanı</span>
             <span className="field-hint">
-              Asistan varsayılan olarak yalnızca kural motorunu kullanır. LLM
-              katmanı henüz bağlanmadı; açık olsa da müvekkil verisi cihazdan
-              çıkmaz.
+              Asistan varsayılan olarak yalnızca cihaz içi kural motorunu
+              kullanır. Bu katmanı açarsanız, sorduğunuz soru ve seçtiğiniz
+              dosyanın <strong>kısa özeti</strong> aşağıdaki uç noktaya
+              gönderilir — ham müvekkil kaydı gitmez. Kendi anahtarınızı kullanın.
             </span>
           </span>
           <span className="switch-track" aria-hidden="true">
             <span className="switch-thumb" />
           </span>
         </button>
+
+        {ayarlar.llmEtkin ? (
+          <>
+            <label className="field">
+              <span className="field-label">
+                Uç nokta (OpenAI uyumlu /chat/completions)
+              </span>
+              <input
+                className="input"
+                type="url"
+                inputMode="url"
+                placeholder="https://api.openai.com/v1/chat/completions"
+                defaultValue={ayarlar.llmUcNokta ?? ''}
+                onBlur={(e) =>
+                  void ayarlariGuncelle({ llmUcNokta: e.target.value.trim() })
+                }
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">Model</span>
+              <input
+                className="input"
+                placeholder="gpt-4o-mini"
+                defaultValue={ayarlar.llmModel ?? ''}
+                onBlur={(e) =>
+                  void ayarlariGuncelle({ llmModel: e.target.value.trim() })
+                }
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">API anahtarı</span>
+              <input
+                className="input"
+                type="password"
+                autoComplete="off"
+                placeholder="sk-…"
+                defaultValue={ayarlar.llmAnahtar ?? ''}
+                onBlur={(e) =>
+                  void ayarlariGuncelle({ llmAnahtar: e.target.value.trim() })
+                }
+              />
+              <span className="field-hint">
+                Anahtar yalnızca bu cihazda saklanır. Uç noktanız tarayıcı
+                (CORS) çağrısına izin vermelidir.
+              </span>
+            </label>
+          </>
+        ) : null}
       </section>
 
       {/* Yedekleme */}

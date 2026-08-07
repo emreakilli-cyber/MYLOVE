@@ -125,3 +125,23 @@
   color: var(--brand-teal);
   margin-bottom: var(--space-2);
 }
+
+.qa-answer-not {
+  margin-top: var(--space-3);
+  font-size: var(--text-tiny);
+  color: var(--text-on-inverse-muted);
+}
+
+.qa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* İkincil "yapay zekâya sor" düğmesi metin+ikon hizası. */
+.qa-actions .button-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}

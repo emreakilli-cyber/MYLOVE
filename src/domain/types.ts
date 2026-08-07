@@ -373,6 +373,12 @@ export interface Ayarlar {
   biyometriKimlikB64?: string
   /** LLM katmanı varsayılan olarak kapalı — müvekkil verisi cihazdan çıkmasın. */
   llmEtkin: boolean
+  /** OpenAI uyumlu sohbet uç noktası (kullanıcının kendi sunucusu/geçidi). */
+  llmUcNokta?: string
+  /** Kullanılacak model adı, ör. "gpt-4o-mini". */
+  llmModel?: string
+  /** Kullanıcının kendi API anahtarı; yalnızca bu cihazda saklanır. */
+  llmAnahtar?: string
   sonYedeklemeZamani?: IsoDateTime
   /**
    * Ertelenen hatırlatmalar: türetilmiş hatırlatma kimliği → yeniden gösterileceği

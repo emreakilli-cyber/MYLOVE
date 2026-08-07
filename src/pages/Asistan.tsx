@@ -8,10 +8,18 @@ import {
 } from '../data/asistanSorgulari'
 import { useAcikDosyalar } from '../data/olayIslemleri'
 import {
+  dosyaOzeti,
   onerilenSorular,
   soruyuCevapla,
   type Bulgu,
 } from '../domain/asistan'
+import { useAyarlar } from '../data/sorgular'
+import {
+  LlmHatasi,
+  llmDurumu,
+  llmSaglayiciAdi,
+  llmSor,
+} from '../services/llm'
 
 const oncelikEtiket: Record<Bulgu['oncelik'], string> = {
   kritik: 'Kritik',
@@ -39,12 +47,16 @@ function BulguSatiri({ bulgu }: { bulgu: Bulgu }) {
 export function Asistan() {
   const bulgular = useTumBulgular()
   const dosyalar = useAcikDosyalar()
+  const ayarlar = useAyarlar()
 
   const [dosyaId, setDosyaId] = useState('')
   const [soru, setSoru] = useState('')
   const [cevap, setCevap] = useState<string | null>(null)
+  const [kaynak, setKaynak] = useState<'kural' | 'llm'>('kural')
+  const [llmYukleniyor, setLlmYukleniyor] = useState(false)
 
   const baglam = useDosyaBaglami(dosyaId || undefined)
+  const llmHazir = llmDurumu(ayarlar) === 'hazir'
 
   const kritikSayi = useMemo(
     () => bulgular?.filter((b) => b.oncelik === 'kritik').length ?? 0,
@@ -55,11 +67,36 @@ export function Asistan() {
     const s = metin.trim()
     if (!s) return
     setSoru(s)
+    setKaynak('kural')
     if (!baglam) {
       setCevap('Önce bir dosya seçin, sonra sorunuzu yanıtlayayım.')
       return
     }
     setCevap(soruyuCevapla(baglam, s))
+  }
+
+  const sorLlm = async () => {
+    const s = soru.trim()
+    if (!s || !ayarlar) return
+    if (!baglam) {
+      setKaynak('kural')
+      setCevap('Önce bir dosya seçin.')
+      return
+    }
+    setLlmYukleniyor(true)
+    setCevap(null)
+    try {
+      const metin = await llmSor(ayarlar, dosyaOzeti(baglam), s)
+      setKaynak('llm')
+      setCevap(metin)
+    } catch (e) {
+      setKaynak('kural')
+      setCevap(
+        e instanceof LlmHatasi ? e.message : 'Yapay zekâ yanıtı alınamadı.',
+      )
+    } finally {
+      setLlmYukleniyor(false)
+    }
   }
 
   return (
@@ -151,23 +188,44 @@ export function Asistan() {
               if (e.key === 'Enter') sor(soru)
             }}
           />
-          <button
-            type="button"
-            className="button-primary"
-            disabled={!dosyaId || !soru.trim()}
-            onClick={() => sor(soru)}
-          >
-            Sor
-          </button>
+          <div className="qa-actions">
+            <button
+              type="button"
+              className="button-primary"
+              disabled={!dosyaId || !soru.trim() || llmYukleniyor}
+              onClick={() => sor(soru)}
+            >
+              Sor
+            </button>
+            {llmHazir ? (
+              <button
+                type="button"
+                className="button-quiet"
+                disabled={!dosyaId || !soru.trim() || llmYukleniyor}
+                onClick={() => void sorLlm()}
+              >
+                <Icon name="sparkles" size={15} />
+                {llmYukleniyor ? 'Yanıtlanıyor…' : 'Yapay zekâya sor'}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {cevap ? (
           <div className="qa-answer">
             <p className="qa-answer-label">
               <Icon name="sparkles" size={13} />
-              Asistan
+              {kaynak === 'llm'
+                ? `Yapay zekâ · ${llmSaglayiciAdi(ayarlar)}`
+                : 'Asistan'}
             </p>
             {cevap}
+            {kaynak === 'llm' ? (
+              <p className="qa-answer-not">
+                Bu yanıt için sorunuz ve dosya özeti {llmSaglayiciAdi(ayarlar)}{' '}
+                adresine gönderildi.
+              </p>
+            ) : null}
           </div>
         ) : null}
       </section>
@@ -175,7 +233,9 @@ export function Asistan() {
       <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
         Asistan cihazdaki veriyi kurallara göre değerlendirir; hukuki tavsiye
         vermez ve süre teyidi kullanıcının sorumluluğundadır. Yapay zekâ (LLM)
-        katmanı ileride, isteğe bağlı ve varsayılan kapalı olarak eklenecektir.
+        katmanı isteğe bağlıdır ve varsayılan olarak kapalıdır; Ayarlar’dan kendi
+        anahtarınızla açabilirsiniz — açıkken yalnızca sorunuz ve dosya özeti
+        gönderilir.
       </p>
     </>
   )
