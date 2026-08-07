@@ -41,6 +41,18 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="shell">
+      {/* Klavye/ekran okuyucu: üst çubuğu atlayıp içeriğe geç. Hash router'ı
+          tetiklememek için varsayılan gezinme engellenip odak elle taşınır. */}
+      <a
+        href="#ana-icerik"
+        className="skip-link"
+        onClick={(e) => {
+          e.preventDefault()
+          document.getElementById('ana-icerik')?.focus()
+        }}
+      >
+        İçeriğe geç
+      </a>
       <header className="topbar" data-scrolled={scrolled}>
         <button
           type="button"
@@ -65,9 +77,14 @@ export function AppShell({ children }: AppShellProps) {
           <button
             type="button"
             className="icon-button"
+            aria-label={
+              hatirlatmaSayisi > 0
+                ? `Bildirimler, ${hatirlatmaSayisi} aktif hatırlatma`
+                : 'Bildirimler'
+            }
             onClick={() => navigate('/bildirimler')}
           >
-            <Icon name="bell" size={19} title="Bildirimler" />
+            <Icon name="bell" size={19} />
             {hatirlatmaSayisi > 0 ? (
               <span className="icon-button-dot" aria-hidden="true" />
             ) : null}
@@ -77,7 +94,7 @@ export function AppShell({ children }: AppShellProps) {
 
       <Drawer open={drawerOpen} onClose={closeDrawer} />
 
-      <main className="shell-content">
+      <main id="ana-icerik" className="shell-content" tabIndex={-1}>
         <CevrimdisiUyari />
         {children}
       </main>

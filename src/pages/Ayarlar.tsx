@@ -221,7 +221,11 @@ export function Ayarlar() {
         <h1 className="t-title">Ayarlar</h1>
       </div>
 
-      {mesaj ? <p className="ayar-mesaj">{mesaj}</p> : null}
+      {mesaj ? (
+        <p className="ayar-mesaj" role="status" aria-live="polite">
+          {mesaj}
+        </p>
+      ) : null}
 
       {/* Profil */}
       <section className="card form-card">

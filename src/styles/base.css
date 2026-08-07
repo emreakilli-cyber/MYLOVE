@@ -136,6 +136,34 @@ ol {
   color: var(--text-muted);
 }
 
+/* İçeriğe geç (skip link): odaklanınca üstten belirir, aksi halde gizli. */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -140%);
+  z-index: calc(var(--z-toast) + 5);
+  background: var(--brand-ink);
+  color: #fff;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-small);
+  box-shadow: var(--shadow-overlay);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translate(-50%, calc(var(--safe-top) + 8px));
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Skip-link ile odaklanan içerik kabına kutu çizilmesin. */
+.shell-content:focus {
+  outline: none;
+}
+
 /* Ekran okuyucuya görünür, göze görünmez */
 .sr-only {
   position: absolute;
