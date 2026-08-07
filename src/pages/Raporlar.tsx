@@ -1,12 +1,47 @@
+import { useState } from 'react'
 import { Icon } from '../components/Icon'
 import { SatirIskeleti } from '../components/BolumKarti'
 import { Link } from '../router'
 import {
   raporCsv,
   useRaporVerisi,
+  varsayilanRaporAraligi,
   type RaporVerisi,
 } from '../data/raporSorgulari'
 import { tutarKisa } from '../domain/para'
+import { dateToIsoDate, kisaTarih } from '../domain/tarih'
+import type { IsoDate } from '../domain/types'
+
+type Preset = 'bu-ay' | 'son-3' | 'son-6' | 'son-12' | 'bu-yil' | 'serbest'
+
+const PRESETLER: ReadonlyArray<{ id: Preset; etiket: string }> = [
+  { id: 'bu-ay', etiket: 'Bu ay' },
+  { id: 'son-3', etiket: 'Son 3 ay' },
+  { id: 'son-6', etiket: 'Son 6 ay' },
+  { id: 'son-12', etiket: 'Son 12 ay' },
+  { id: 'bu-yil', etiket: 'Bu yıl' },
+  { id: 'serbest', etiket: 'Serbest' },
+]
+
+function presetAralik(p: Preset): { baslangic: IsoDate; bitis: IsoDate } {
+  const bugun = new Date()
+  const bitis = dateToIsoDate(bugun)
+  const ayIlki = (geriAy: number) =>
+    dateToIsoDate(new Date(bugun.getFullYear(), bugun.getMonth() - geriAy, 1))
+  switch (p) {
+    case 'bu-ay':
+      return { baslangic: ayIlki(0), bitis }
+    case 'son-3':
+      return { baslangic: ayIlki(2), bitis }
+    case 'son-12':
+      return { baslangic: ayIlki(11), bitis }
+    case 'bu-yil':
+      return { baslangic: dateToIsoDate(new Date(bugun.getFullYear(), 0, 1)), bitis }
+    case 'son-6':
+    default:
+      return varsayilanRaporAraligi()
+  }
+}
 
 /*
  * Raporlar. Grafiklerin tamamı elle çizilmiş SVG (tasarım kısıtı); renkler
@@ -194,7 +229,16 @@ function csvIndir(veri: RaporVerisi): void {
 }
 
 export function Raporlar() {
-  const veri = useRaporVerisi()
+  const [preset, setPreset] = useState<Preset>('son-6')
+  const [aralik, setAralik] = useState(() => varsayilanRaporAraligi())
+  const veri = useRaporVerisi(aralik.baslangic, aralik.bitis)
+
+  const presetSec = (p: Preset) => {
+    setPreset(p)
+    if (p !== 'serbest') setAralik(presetAralik(p))
+  }
+
+  const aralikEtiketi = `${kisaTarih(aralik.baslangic)} – ${kisaTarih(aralik.bitis)}`
 
   return (
     <>
@@ -203,26 +247,71 @@ export function Raporlar() {
         <h1 className="t-title">Raporlar</h1>
       </div>
 
+      {/* Tarih aralığı seçimi */}
+      <section className="card form-card rapor-aralik">
+        <div className="chip-row" role="group" aria-label="Tarih aralığı" style={{ marginInline: 0, paddingInline: 0 }}>
+          {PRESETLER.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              className="chip"
+              aria-pressed={preset === p.id}
+              onClick={() => presetSec(p.id)}
+            >
+              {p.etiket}
+            </button>
+          ))}
+        </div>
+        {preset === 'serbest' ? (
+          <div className="field-row">
+            <label className="field">
+              <span className="field-label">Başlangıç</span>
+              <input
+                type="date"
+                className="input"
+                value={aralik.baslangic}
+                max={aralik.bitis}
+                onChange={(e) =>
+                  setAralik((a) => ({ ...a, baslangic: e.target.value }))
+                }
+              />
+            </label>
+            <label className="field">
+              <span className="field-label">Bitiş</span>
+              <input
+                type="date"
+                className="input"
+                value={aralik.bitis}
+                min={aralik.baslangic}
+                onChange={(e) =>
+                  setAralik((a) => ({ ...a, bitis: e.target.value }))
+                }
+              />
+            </label>
+          </div>
+        ) : null}
+      </section>
+
       {veri === undefined ? (
         <section className="card section-card">
           <SatirIskeleti adet={4} />
         </section>
       ) : (
         <>
-          {/* Bu ay aktivite */}
+          {/* Seçili dönem aktivite */}
           <section className="card">
             <div className="rapor-stats">
               <div className="rapor-stat accent-red">
-                <div className="rapor-stat-value">{veri.buAyDurusma}</div>
-                <div className="rapor-stat-label">Bu ay duruşma</div>
+                <div className="rapor-stat-value">{veri.donemDurusma}</div>
+                <div className="rapor-stat-label">Duruşma</div>
               </div>
               <div className="rapor-stat accent-blue">
-                <div className="rapor-stat-value">{veri.buAyGorusme}</div>
+                <div className="rapor-stat-value">{veri.donemGorusme}</div>
                 <div className="rapor-stat-label">Müvekkil görüşmesi</div>
               </div>
               <div className="rapor-stat accent-green">
                 <div className="rapor-stat-value">
-                  {veri.buAyTamamlananGorev}
+                  {veri.donemTamamlananGorev}
                 </div>
                 <div className="rapor-stat-label">Tamamlanan görev</div>
               </div>
@@ -233,7 +322,7 @@ export function Raporlar() {
           <section className="card chart-card">
             <h2 className="t-title chart-title">Gelir ve gider</h2>
             <p className="chart-sub">
-              Son altı ay · toplam tahsilat {tutarKisa(veri.toplamTahsilat)}
+              {aralikEtiketi} · toplam tahsilat {tutarKisa(veri.toplamTahsilat)}
             </p>
             <SutunGrafigi veri={veri} />
           </section>
@@ -241,7 +330,7 @@ export function Raporlar() {
           {/* Süre aciliyet halka */}
           <section className="card chart-card">
             <h2 className="t-title chart-title">Açık süreler</h2>
-            <p className="chart-sub">Aciliyete göre dağılım</p>
+            <p className="chart-sub">Aciliyete göre dağılım · anlık durum</p>
             <Halka veri={veri} />
           </section>
 

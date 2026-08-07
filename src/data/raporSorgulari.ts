@@ -1,8 +1,8 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
-import { aciliyet, bugunIso } from '../domain/tarih'
+import { aciliyet, bugunIso, dateToIsoDate, isoDateToDate } from '../domain/tarih'
 import { kategoriEtiketleri } from './finansIslemleri'
-import type { FinansKategorisi } from '../domain/types'
+import type { FinansKategorisi, IsoDate } from '../domain/types'
 
 /*
  * Raporlar için toplulaştırmalar. Hepsi bellekte hesaplanıyor: veri bir cihaza
@@ -21,14 +21,14 @@ export interface AylikKovan {
 }
 
 export interface RaporVerisi {
-  /** Son 6 ay tahsilat (kuruş). */
+  /** Seçili dönemdeki aylara göre tahsilat (kuruş). */
   aylikTahsilat: AylikKovan[]
-  /** Son 6 ay gider (kuruş). */
+  /** Seçili dönemdeki aylara göre gider (kuruş). */
   aylikGider: AylikKovan[]
-  /** Bu ay: duruşma, görüşme, tamamlanan görev sayısı. */
-  buAyDurusma: number
-  buAyGorusme: number
-  buAyTamamlananGorev: number
+  /** Seçili dönem: duruşma, görüşme, tamamlanan görev sayısı. */
+  donemDurusma: number
+  donemGorusme: number
+  donemTamamlananGorev: number
   /** Kategori bazlı gider dağılımı (kuruş), büyükten küçüğe. */
   giderDagilimi: Array<{ kategori: FinansKategorisi; etiket: string; tutar: number }>
   /** Açık sürelerin aciliyet dağılımı. */
@@ -40,22 +40,46 @@ export interface RaporVerisi {
   toplamGider: number
 }
 
-function sonAltiAy(): Array<{ etiket: string; onEk: string }> {
-  const bugun = new Date()
+/** Aralığın dokunduğu her ay için bir kova (en çok 24 — grafik okunur kalsın). */
+function aylikKovanlar(
+  baslangic: IsoDate,
+  bitis: IsoDate,
+): Array<{ etiket: string; onEk: string }> {
+  const b = isoDateToDate(baslangic)
+  const e = isoDateToDate(bitis)
   const liste: Array<{ etiket: string; onEk: string }> = []
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(bugun.getFullYear(), bugun.getMonth() - i, 1)
+  let y = b.getFullYear()
+  let m = b.getMonth()
+  while (
+    (y < e.getFullYear() || (y === e.getFullYear() && m <= e.getMonth())) &&
+    liste.length < 24
+  ) {
     liste.push({
-      etiket: AY_ADLARI[d.getMonth()] ?? '',
-      onEk: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+      etiket: AY_ADLARI[m] ?? '',
+      onEk: `${y}-${String(m + 1).padStart(2, '0')}`,
     })
+    m += 1
+    if (m > 11) {
+      m = 0
+      y += 1
+    }
   }
   return liste
 }
 
-export function useRaporVerisi(): RaporVerisi | undefined {
+/** Varsayılan rapor aralığı: son altı ay (ayın 1'inden bugüne). */
+export function varsayilanRaporAraligi(): { baslangic: IsoDate; bitis: IsoDate } {
+  const bugun = new Date()
+  const bas = new Date(bugun.getFullYear(), bugun.getMonth() - 5, 1)
+  return { baslangic: dateToIsoDate(bas), bitis: dateToIsoDate(bugun) }
+}
+
+export function useRaporVerisi(
+  baslangic: IsoDate,
+  bitis: IsoDate,
+): RaporVerisi | undefined {
   return useLiveQuery(async () => {
-    const [finans, olaylar, gorevler, sureler, dosyalar] = await Promise.all([
+    const [tumFinans, olaylar, gorevler, sureler, dosyalar] = await Promise.all([
       db.finans.toArray(),
       db.olaylar.toArray(),
       db.gorevler.toArray(),
@@ -63,8 +87,15 @@ export function useRaporVerisi(): RaporVerisi | undefined {
       db.dosyalar.toArray(),
     ])
 
-    const aylar = sonAltiAy()
-    const buAyOnEk = aylar[aylar.length - 1]?.onEk ?? ''
+    // Aralık içindeki günler (dahil). Tarih alanları "YYYY-MM-DD" ile başladığı
+    // için metin karşılaştırması gün karşılaştırmasıyla aynı.
+    const aralikta = (isoTarih: string): boolean => {
+      const g = isoTarih.slice(0, 10)
+      return g >= baslangic && g <= bitis
+    }
+    const finans = tumFinans.filter((f) => aralikta(f.tarih))
+
+    const aylar = aylikKovanlar(baslangic, bitis)
 
     const aylikTahsilat = aylar.map((a) => ({
       etiket: a.etiket,
@@ -81,20 +112,20 @@ export function useRaporVerisi(): RaporVerisi | undefined {
         .reduce((t, f) => t + f.odenenTutar, 0),
     }))
 
-    const buAyDurusma = olaylar.filter(
-      (o) => o.tur === 'durusma' && o.baslangic.slice(0, 7) === buAyOnEk,
+    const donemDurusma = olaylar.filter(
+      (o) => o.tur === 'durusma' && aralikta(o.baslangic),
     ).length
-    const buAyGorusme = olaylar.filter(
-      (o) =>
-        o.tur === 'muvekkil-gorusmesi' && o.baslangic.slice(0, 7) === buAyOnEk,
+    const donemGorusme = olaylar.filter(
+      (o) => o.tur === 'muvekkil-gorusmesi' && aralikta(o.baslangic),
     ).length
-    const buAyTamamlananGorev = gorevler.filter(
+    const donemTamamlananGorev = gorevler.filter(
       (g) =>
         g.durum === 'tamamlandi' &&
-        (g.tamamlanmaTarihi ?? '').slice(0, 7) === buAyOnEk,
+        g.tamamlanmaTarihi !== undefined &&
+        aralikta(g.tamamlanmaTarihi),
     ).length
 
-    // Gider dağılımı (ödenen).
+    // Gider dağılımı (ödenen, aralık içi).
     const giderMap = new Map<FinansKategorisi, number>()
     for (const f of finans) {
       if (f.yon !== 'gider') continue
@@ -142,9 +173,9 @@ export function useRaporVerisi(): RaporVerisi | undefined {
     return {
       aylikTahsilat,
       aylikGider,
-      buAyDurusma,
-      buAyGorusme,
-      buAyTamamlananGorev,
+      donemDurusma,
+      donemGorusme,
+      donemTamamlananGorev,
       giderDagilimi,
       sureAciliyet,
       dosyaBakiye,
@@ -155,7 +186,7 @@ export function useRaporVerisi(): RaporVerisi | undefined {
         .filter((f) => f.yon === 'gider')
         .reduce((t, f) => t + f.odenenTutar, 0),
     }
-  }, [])
+  }, [baslangic, bitis])
 }
 
 /** Rapor verisini CSV'ye çevirir (aylık gelir-gider). */
