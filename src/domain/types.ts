@@ -386,6 +386,8 @@ export interface Ayarlar {
    * için erteleme durumu burada saklanır.
    */
   hatirlatmaErtelemeleri?: Record<string, string>
+  /** İlk açılış öğretici modu görüldü/atlandı mı. */
+  onboardingTamam?: boolean
 }
 
 /* ------------------------------------------------------------------ *
