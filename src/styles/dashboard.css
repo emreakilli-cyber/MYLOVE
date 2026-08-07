@@ -404,6 +404,30 @@ button.row:active {
   background: var(--surface-sunken);
 }
 
+.task-add-form {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) var(--card-padding);
+}
+
+.task-add-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-add-btn {
+  flex: none;
+  padding-block: var(--space-2);
+}
+
+.task-add-detay {
+  flex: none;
+  font-size: var(--text-small);
+  color: var(--brand-teal);
+  padding: var(--space-2);
+}
+
 /* ---------------------------------------------------------------- *
  * Hazırlık durumu
  * ---------------------------------------------------------------- */

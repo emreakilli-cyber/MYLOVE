@@ -17,6 +17,7 @@ import {
   type PanelIstatistikleri,
   type SureSatiri,
 } from '../data/sorgular'
+import { gorevEkle } from '../data/gorevIslemleri'
 import { seviyeMetni } from '../domain/hazirlik'
 import { tutarKisa, yuzdeDegisim, yuzdeMetni } from '../domain/para'
 import {
@@ -341,11 +342,71 @@ function GorevListesi({ satirlar }: { satirlar: GorevSatiri[] | undefined }) {
         })}
       </div>
 
-      <Link to="/gorevler" className="task-add">
+      <HizliGorevEkle />
+    </>
+  )
+}
+
+/** Panelden ayrılmadan hızlı görev ekleme; detay için forma bağlantı verir. */
+function HizliGorevEkle() {
+  const [acik, setAcik] = useState(false)
+  const [metin, setMetin] = useState('')
+  const [kaydediliyor, setKaydediliyor] = useState(false)
+
+  const ekle = async () => {
+    const baslik = metin.trim()
+    if (!baslik || kaydediliyor) return
+    setKaydediliyor(true)
+    try {
+      await gorevEkle({ baslik, oncelik: 'normal' })
+      setMetin('')
+    } finally {
+      setKaydediliyor(false)
+    }
+  }
+
+  if (!acik) {
+    return (
+      <button
+        type="button"
+        className="task-add"
+        onClick={() => setAcik(true)}
+      >
         <Icon name="plus" size={16} />
         Yeni görev ekle
+      </button>
+    )
+  }
+
+  return (
+    <div className="task-add-form">
+      <input
+        className="input task-add-input"
+        value={metin}
+        placeholder="Görev başlığı…"
+        aria-label="Yeni görev başlığı"
+        autoFocus
+        onChange={(e) => setMetin(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') void ekle()
+          if (e.key === 'Escape') {
+            setMetin('')
+            setAcik(false)
+          }
+        }}
+      />
+      <button
+        type="button"
+        className="button-primary task-add-btn"
+        disabled={!metin.trim() || kaydediliyor}
+        onClick={() => void ekle()}
+      >
+        Ekle
+      </button>
+      <Link to="/gorevler/yeni" className="task-add-detay">
+        Detaylı
       </Link>
-    </>
+    </div>
   )
 }
 

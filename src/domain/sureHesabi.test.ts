@@ -122,6 +122,33 @@ describe('süre hesabı', () => {
     expect(s.hamSonTarih).toBe('2027-03-16')
   })
 
+  it('genişletilmiş katalog: yeni kuralların ham son günü doğru', () => {
+    // Kambiyo ödeme emrine itiraz: 5 gün.
+    expect(sureHesapla(kural('kambiyo-itiraz-iik-168'), '2026-03-16').hamSonTarih)
+      .toBe('2026-03-21')
+    // Üst makama başvuru: 60 gün.
+    expect(sureHesapla(kural('ust-makam-basvuru-iyuk-11'), '2026-03-16').hamSonTarih)
+      .toBe('2026-05-15')
+    // Yargılamanın iadesi: 3 ay.
+    expect(sureHesapla(kural('yargilamanin-iadesi-hmk-377'), '2026-03-16').hamSonTarih)
+      .toBe('2026-06-16')
+    // Hakem kararına iptal: 1 ay, ay sonu sabitlemesi.
+    expect(sureHesapla(kural('hakem-iptal-hmk-439'), '2026-01-31').hamSonTarih)
+      .toBe('2026-02-28')
+    // İstirdat davası: 1 yıl.
+    expect(sureHesapla(kural('istirdat-iik-72'), '2026-03-16').hamSonTarih)
+      .toBe('2027-03-16')
+    // Eski hâle getirme: 7 gün.
+    expect(sureHesapla(kural('eski-hale-getirme-cmk-42'), '2026-03-16').hamSonTarih)
+      .toBe('2026-03-23')
+  })
+
+  it('katalog 31 kural içeriyor ve kimlikler benzersiz', () => {
+    expect(SURE_KATALOGU.length).toBe(31)
+    const idler = SURE_KATALOGU.map((k) => k.id)
+    expect(new Set(idler).size).toBe(idler.length)
+  })
+
   it('kaydırılmış son tarih her zaman bir çalışma günüdür', () => {
     // Kataloğun tamamını birkaç başlangıçla tara.
     const baslangiclar = ['2026-07-15', '2026-08-25', '2026-12-28', '2026-04-20']
