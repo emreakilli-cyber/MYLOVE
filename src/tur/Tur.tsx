@@ -9,10 +9,10 @@ import { turAdimlari } from './turAdimlari'
  *
  * Yan menüyü açmak için `juris-drawer` CustomEvent'i yayınlar; AppShell dinler.
  *
- * Akıcılık ilkesi: sayfa/menü geçişi sürerken YALNIZCA karartma görünür; balon ve
- * halka, hedef ölçülüp hazır olunca birlikte belirir. Böylece "ortada balon →
- * zıplama" sıçraması olmaz. Balon her zaman güvenli alan (çentik/ana çubuk)
- * içinde kalacak şekilde konumlanır.
+ * Tepki ilkesi (kullanıcı geri bildirimi): "İleri"ye basınca balon metni ANINDA
+ * değişir — bekletme/boş kare yok, gecikme hissi olmaz. Yeni hedef ölçülene dek
+ * spotlight önceki konumunda kalır, ölçülünce oraya kısa bir kayışla oturur
+ * (ortada balon sıçraması YOK). Balon her zaman güvenli alan içinde durur.
  */
 
 interface Kutu {
@@ -47,8 +47,6 @@ function safeInsetleri(): { ust: number; alt: number } {
 export function Tur({ onBitti }: TurProps) {
   const [idx, setIdx] = useState(0)
   const [kutu, setKutu] = useState<Kutu | null>(null)
-  // Geçiş sürerken (rota/menü) balon+halka gizli; hazır olunca birlikte belirir.
-  const [hazir, setHazir] = useState(false)
   const [balonYuk, setBalonYuk] = useState(0)
   const balonRef = useRef<HTMLDivElement>(null)
   const [safe] = useState(safeInsetleri)
@@ -63,71 +61,54 @@ export function Tur({ onBitti }: TurProps) {
   }, [])
 
   // Adım/rota değişince: gerekli rotaya git, menüyü ayarla, hedefi ölç.
+  // Önemli: hedef bulunana dek `kutu` SIFIRLANMAZ — böylece "İleri"den sonra
+  // balon ortaya kaçıp zıplamaz; yeni hedefe kısa kayışla oturur.
   useEffect(() => {
     if (!adim) return
-    setHazir(false)
     if (path !== adim.rota) navigate(adim.rota)
     drawerAyarla(Boolean(adim.drawer))
 
-    let iptal = false
-    let deneme = 0
-    const zamanlayicilar: number[] = []
-
-    // Hedefsiz adım (kapanış): ortada balon, kısa gecikmeyle belir.
+    // Kapanış (hedefsiz) adım: ortada balon.
     if (!adim.hedef) {
-      const t = window.setTimeout(() => {
-        if (iptal) return
-        setKutu(null)
-        setHazir(true)
-      }, 120)
-      zamanlayicilar.push(t)
-      return () => {
-        iptal = true
-        for (const z of zamanlayicilar) window.clearTimeout(z)
-      }
+      setKutu(null)
+      return
     }
 
     const hedef = adim.hedef
-    const olcVeYaz = (el: Element) => {
-      if (iptal) return
-      const r = el.getBoundingClientRect()
-      setKutu({ x: r.x, y: r.y, width: r.width, height: r.height })
-    }
+    let iptal = false
+    let deneme = 0
+    const zaman: number[] = []
 
     const olc = () => {
       if (iptal) return
       const el = document.querySelector(hedef)
       if (el) {
         el.scrollIntoView({ block: 'center', inline: 'nearest' })
-        // İlk ölçümde göster; geçiş (~320ms) bitene dek yeniden ölçüp son
-        // konumda otur. Böylece halka öğeyi kayarken de takip eder.
-        for (const gecikme of [0, 120, 260, 420]) {
-          zamanlayicilar.push(
+        // İlk ölçümde otur; geçiş (~320ms) bitene dek yeniden ölçüp son
+        // konumda dursun (öğe kayarken de takip eder).
+        for (const g of [0, 120, 260, 420]) {
+          zaman.push(
             window.setTimeout(() => {
-              const guncel = document.querySelector(hedef)
-              if (guncel) {
-                olcVeYaz(guncel)
-                if (!iptal) setHazir(true)
+              const cur = document.querySelector(hedef)
+              if (cur && !iptal) {
+                const r = cur.getBoundingClientRect()
+                setKutu({ x: r.x, y: r.y, width: r.width, height: r.height })
               }
-            }, gecikme),
+            }, g),
           )
         }
         return
       }
       deneme += 1
-      if (deneme < 40) {
-        zamanlayicilar.push(window.setTimeout(olc, 60))
-      } else {
-        // Bulunamazsa ortada balon (tur takılmasın).
-        setKutu(null)
-        setHazir(true)
-      }
+      // Bulunana kadar hızlı yokla; bulunamazsa önceki kutu kalır (takılmaz).
+      if (deneme < 50) zaman.push(window.setTimeout(olc, 50))
     }
 
-    zamanlayicilar.push(window.setTimeout(olc, 140))
+    // Hızlı başla ki "İleri" sonrası gecikme hissi olmasın.
+    zaman.push(window.setTimeout(olc, 20))
     return () => {
       iptal = true
-      for (const z of zamanlayicilar) window.clearTimeout(z)
+      for (const t of zaman) window.clearTimeout(t)
     }
   }, [idx, path, adim, navigate, drawerAyarla])
 
@@ -152,22 +133,20 @@ export function Tur({ onBitti }: TurProps) {
 
   // Balon yüksekliğini ölç ki güvenli alana sığacak şekilde konumlansın.
   useLayoutEffect(() => {
-    if (hazir && balonRef.current) {
-      setBalonYuk(balonRef.current.offsetHeight)
-    }
-  }, [hazir, idx, kutu])
+    if (balonRef.current) setBalonYuk(balonRef.current.offsetHeight)
+  }, [idx, kutu])
 
   const bitir = useCallback(() => {
     drawerAyarla(false)
     onBitti()
   }, [drawerAyarla, onBitti])
 
+  // "İleri": metin ANINDA değişsin; kutu'yu null'lamıyoruz (sıçrama olmasın).
   const ileri = useCallback(() => {
     if (sonMu) {
       bitir()
       return
     }
-    setHazir(false)
     setIdx((n) => n + 1)
   }, [sonMu, bitir])
 
@@ -197,12 +176,11 @@ export function Tur({ onBitti }: TurProps) {
     balonStil = { left, top }
   }
 
-  const halkaVar = hazir && kutu
-  const ortada = hazir && !kutu
+  const ortada = !kutu
 
   return (
     <div className="tur" role="dialog" aria-label="Uygulama turu" aria-live="polite">
-      {halkaVar ? (
+      {kutu ? (
         <>
           <svg className="tur-svg" width="100%" height="100%" aria-hidden="true">
             <defs>
@@ -242,30 +220,27 @@ export function Tur({ onBitti }: TurProps) {
         <div className="tur-perde" aria-hidden="true" />
       )}
 
-      {hazir ? (
-        <div
-          ref={balonRef}
-          key={idx}
-          className={`tur-balon${ortada ? ' tur-balon-orta' : ''}`}
-          style={balonStil}
-        >
-          <div className="tur-balon-ust">
-            <span className="tur-adim">
-              {idx + 1}/{turAdimlari.length}
-            </span>
-            <button type="button" className="tur-atla" onClick={bitir}>
-              Turu kapat
-            </button>
-          </div>
-          <p className="tur-baslik">{adim.baslik}</p>
-          <p className="tur-metin">{adim.metin}</p>
-          <div className="tur-alt">
-            <button type="button" className="tur-ileri" onClick={ileri}>
-              {sonMu ? 'Bitir' : 'İleri'}
-            </button>
-          </div>
+      <div
+        ref={balonRef}
+        className={`tur-balon${ortada ? ' tur-balon-orta' : ''}`}
+        style={balonStil}
+      >
+        <div className="tur-balon-ust">
+          <span className="tur-adim">
+            {idx + 1}/{turAdimlari.length}
+          </span>
+          <button type="button" className="tur-atla" onClick={bitir}>
+            Turu kapat
+          </button>
         </div>
-      ) : null}
+        <p className="tur-baslik">{adim.baslik}</p>
+        <p className="tur-metin">{adim.metin}</p>
+        <div className="tur-alt">
+          <button type="button" className="tur-ileri" onClick={ileri}>
+            {sonMu ? 'Bitir' : 'İleri'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
