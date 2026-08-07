@@ -8,7 +8,30 @@ import {
 import { useAyarlar } from '../data/sorgular'
 import { goreliZaman, kisaTarih, saat } from '../domain/tarih'
 import { pushIzniIste } from '../services/bildirim'
-import { ayarlariGuncelle } from '../data/ayarlarIslemleri'
+import {
+  ayarlariGuncelle,
+  hatirlatmaErtele,
+  hatirlatmaErtelemeyiKaldir,
+} from '../data/ayarlarIslemleri'
+
+/** Erteleme seçenekleri; her tık için o anki zamana göre hedef üretir. */
+const ERTELEME_SECENEKLERI: ReadonlyArray<{
+  etiket: string
+  hedef: () => Date
+}> = [
+  { etiket: '1 saat', hedef: () => new Date(Date.now() + 60 * 60_000) },
+  { etiket: '3 saat', hedef: () => new Date(Date.now() + 3 * 60 * 60_000) },
+  {
+    etiket: 'Yarın',
+    hedef: () => {
+      const d = new Date()
+      d.setDate(d.getDate() + 1)
+      d.setHours(9, 0, 0, 0)
+      return d
+    },
+  },
+  { etiket: '1 hafta', hedef: () => new Date(Date.now() + 7 * 24 * 60 * 60_000) },
+]
 
 export function Bildirimler() {
   const hatirlatmalar = useYaklasanHatirlatmalar(30)
@@ -122,22 +145,55 @@ function HatirlatmaSatiri({
   vurgulu?: boolean
 }) {
   return (
-    <Link to={h.yol} className={`row accent-${h.accent}`}>
-      <span className="row-tile" aria-hidden="true">
-        <Icon name={h.icon} size={18} />
-      </span>
-      <span className="row-main">
-        <span className="row-title truncate">{h.baslik}</span>
-        <span className="row-sub truncate">
-          {h.altBaslik} · {kisaTarih(h.hedefZaman.slice(0, 10))} {saat(h.hedefZaman)}
+    <div className="hatirlatma-blok">
+      <Link to={h.yol} className={`row accent-${h.accent}`}>
+        <span className="row-tile" aria-hidden="true">
+          <Icon name={h.icon} size={18} />
         </span>
-      </span>
-      <span
-        className="deadline-kalan"
-        style={{ color: vurgulu ? 'var(--cat-red-fg)' : 'var(--text-muted)' }}
-      >
-        {vurgulu ? goreliZaman(h.zaman) : h.ofsetEtiketi}
-      </span>
-    </Link>
+        <span className="row-main">
+          <span className="row-title truncate">{h.baslik}</span>
+          <span className="row-sub truncate">
+            {h.altBaslik} · {kisaTarih(h.hedefZaman.slice(0, 10))}{' '}
+            {saat(h.hedefZaman)}
+          </span>
+        </span>
+        <span
+          className="deadline-kalan"
+          style={{ color: vurgulu ? 'var(--cat-red-fg)' : 'var(--text-muted)' }}
+        >
+          {vurgulu
+            ? goreliZaman(h.zaman)
+            : h.ertelendi
+              ? 'ertelendi'
+              : h.ofsetEtiketi}
+        </span>
+      </Link>
+
+      {vurgulu ? (
+        <div className="ertele-row">
+          <span className="ertele-etiket">Ertele:</span>
+          {ERTELEME_SECENEKLERI.map((s) => (
+            <button
+              key={s.etiket}
+              type="button"
+              className="ertele-chip"
+              onClick={() => void hatirlatmaErtele(h.id, s.hedef())}
+            >
+              {s.etiket}
+            </button>
+          ))}
+        </div>
+      ) : h.ertelendi ? (
+        <div className="ertele-row">
+          <button
+            type="button"
+            className="ertele-chip"
+            onClick={() => void hatirlatmaErtelemeyiKaldir(h.id)}
+          >
+            Ertelemeyi geri al
+          </button>
+        </div>
+      ) : null}
+    </div>
   )
 }

@@ -374,6 +374,12 @@ export interface Ayarlar {
   /** LLM katmanı varsayılan olarak kapalı — müvekkil verisi cihazdan çıkmasın. */
   llmEtkin: boolean
   sonYedeklemeZamani?: IsoDateTime
+  /**
+   * Ertelenen hatırlatmalar: türetilmiş hatırlatma kimliği → yeniden gösterileceği
+   * an (ISO). Süresi geçen kayıtlar yok sayılır; hatırlatmalar tabloda tutulmadığı
+   * için erteleme durumu burada saklanır.
+   */
+  hatirlatmaErtelemeleri?: Record<string, string>
 }
 
 /* ------------------------------------------------------------------ *

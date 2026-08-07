@@ -53,6 +53,39 @@ export async function kanallariGuncelle(
   await ayarlariGuncelle({ varsayilanKanallar: kanallar })
 }
 
+/**
+ * Bir hatırlatmayı belirtilen ana kadar erteler. Süresi çoktan geçmiş kayıtlar
+ * bu sırada temizlenir ki harita büyümesin.
+ */
+export async function hatirlatmaErtele(
+  hatirlatmaId: string,
+  kadar: Date,
+): Promise<void> {
+  const mevcut = await mevcutAyarlar()
+  const simdi = Date.now()
+  const temiz: Record<string, string> = {}
+  for (const [id, an] of Object.entries(mevcut.hatirlatmaErtelemeleri ?? {})) {
+    if (new Date(an).getTime() > simdi) temiz[id] = an
+  }
+  temiz[hatirlatmaId] = kadar.toISOString()
+  await db.ayarlar.put({
+    ...mevcut,
+    hatirlatmaErtelemeleri: temiz,
+    id: 'tekil',
+  })
+}
+
+/** Bir hatırlatmanın ertelemesini kaldırır (özgün zamanına döner). */
+export async function hatirlatmaErtelemeyiKaldir(
+  hatirlatmaId: string,
+): Promise<void> {
+  const mevcut = await mevcutAyarlar()
+  if (!mevcut.hatirlatmaErtelemeleri?.[hatirlatmaId]) return
+  const kalan = { ...mevcut.hatirlatmaErtelemeleri }
+  delete kalan[hatirlatmaId]
+  await db.ayarlar.put({ ...mevcut, hatirlatmaErtelemeleri: kalan, id: 'tekil' })
+}
+
 /** Standart hatırlatma ofsetleri ve okunur etiketleri (dakika cinsinden). */
 export const HATIRLATMA_SECENEKLERI: ReadonlyArray<{
   ofset: number

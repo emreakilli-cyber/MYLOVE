@@ -27,6 +27,8 @@ export interface YaklasanHatirlatma {
   yol: string
   /** Tetikleme zamanı geçmişte mi (yani "artık zamanı geldi"). */
   gecti: boolean
+  /** Kullanıcı bu hatırlatmayı ileri bir ana erteledi mi. */
+  ertelendi: boolean
 }
 
 const GUN_MS = 86_400_000
@@ -56,6 +58,18 @@ export function useYaklasanHatirlatmalar(
     const dosyaAd = new Map(dosyalar.map((d) => [d.id, d.baslik]))
     const profiller = ayarlar?.hatirlatmaOfsetleri ?? {}
     const varsayilan = [...VARSAYILAN_HATIRLATMA_OFSETLERI]
+    const erteleme = ayarlar?.hatirlatmaErtelemeleri ?? {}
+
+    // Erteleme aktifse tetiklemeyi ertelenen ana taşır; süresi geçmiş erteleme
+    // yok sayılır (hatırlatma özgün zamanında yeniden görünür).
+    const etkinTetik = (id: string, tetik: number): [number, boolean] => {
+      const kadar = erteleme[id]
+      if (kadar) {
+        const an = new Date(kadar).getTime()
+        if (an > simdi) return [an, true]
+      }
+      return [tetik, false]
+    }
 
     const sonuc: YaklasanHatirlatma[] = []
 
@@ -67,10 +81,11 @@ export function useYaklasanHatirlatmalar(
       const ofsetler = profiller[olay.tur] ?? varsayilan
       const gorunum = olayGorunumleri[olay.tur]
       for (const ofset of ofsetler) {
-        const tetik = hedef - ofset * 60_000
+        const id = `${olay.id}-${ofset}`
+        const [tetik, ertelendi] = etkinTetik(id, hedef - ofset * 60_000)
         if (tetik < alt || tetik > ufuk) continue
         sonuc.push({
-          id: `${olay.id}-${ofset}`,
+          id,
           zaman: new Date(tetik).toISOString(),
           hedefZaman: olay.baslangic,
           baslik: olay.baslik,
@@ -82,6 +97,7 @@ export function useYaklasanHatirlatmalar(
           icon: gorunum.icon,
           yol: olay.dosyaId ? `/dosyalar/${olay.dosyaId}` : '/takvim',
           gecti: tetik <= simdi,
+          ertelendi,
         })
       }
     }
@@ -93,10 +109,11 @@ export function useYaklasanHatirlatmalar(
       const hedef = new Date(`${sure.sonTarih}T09:00:00`).getTime()
       if (hedef < simdi) continue
       for (const ofset of sureOfsetleri) {
-        const tetik = hedef - ofset * 60_000
+        const id = `${sure.id}-${ofset}`
+        const [tetik, ertelendi] = etkinTetik(id, hedef - ofset * 60_000)
         if (tetik < alt || tetik > ufuk) continue
         sonuc.push({
-          id: `${sure.id}-${ofset}`,
+          id,
           zaman: new Date(tetik).toISOString(),
           hedefZaman: new Date(hedef).toISOString(),
           baslik: sure.kuralAdi,
@@ -106,6 +123,7 @@ export function useYaklasanHatirlatmalar(
           icon: 'calendar-clock',
           yol: `/dosyalar/${sure.dosyaId}`,
           gecti: tetik <= simdi,
+          ertelendi,
         })
       }
     }
@@ -126,14 +144,22 @@ export function useAktifHatirlatmaSayisi(): number | undefined {
     ])
     const profiller = ayarlar?.hatirlatmaOfsetleri ?? {}
     const varsayilan = [...VARSAYILAN_HATIRLATMA_OFSETLERI]
+    const erteleme = ayarlar?.hatirlatmaErtelemeleri ?? {}
     let sayi = 0
+
+    // Ertelenen (ileri ana taşınmış) hatırlatma "şimdi" sayılmaz.
+    const ertelenmisAktif = (id: string): boolean => {
+      const kadar = erteleme[id]
+      return kadar !== undefined && new Date(kadar).getTime() > simdi
+    }
 
     for (const olay of olaylar) {
       const hedef = new Date(olay.baslangic).getTime()
       if (hedef < simdi) continue
       for (const ofset of profiller[olay.tur] ?? varsayilan) {
         const tetik = hedef - ofset * 60_000
-        if (tetik > alt && tetik <= simdi) sayi++
+        if (tetik > alt && tetik <= simdi && !ertelenmisAktif(`${olay.id}-${ofset}`))
+          sayi++
       }
     }
     const sureOfsetleri = profiller['son-tarih'] ?? varsayilan
@@ -142,7 +168,8 @@ export function useAktifHatirlatmaSayisi(): number | undefined {
       if (hedef < simdi) continue
       for (const ofset of sureOfsetleri) {
         const tetik = hedef - ofset * 60_000
-        if (tetik > alt && tetik <= simdi) sayi++
+        if (tetik > alt && tetik <= simdi && !ertelenmisAktif(`${sure.id}-${ofset}`))
+          sayi++
       }
     }
     return sayi
