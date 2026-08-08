@@ -28,6 +28,10 @@ body {
   text-rendering: optimizeLegibility;
   /* iOS ana ekran uygulamasında lastik bant kaydırmayı bastır */
   overscroll-behavior-y: none;
+  /* Güvenlik ağı: uzun/boşluksuz metin (e-posta, adres, URL) kabı taşırmasın,
+   * gerektiğinde kelime içinde sarsın. `.truncate` (nowrap) alanları etkilenmez;
+   * normal metinde tetiklenmez. Bkz. F16 QA — müvekkil detayında taşma. */
+  overflow-wrap: anywhere;
 }
 
 img,
