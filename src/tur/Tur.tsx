@@ -85,13 +85,21 @@ export function Tur({ onBitti }: TurProps) {
       if (el) {
         el.scrollIntoView({ block: 'center', inline: 'nearest' })
         // İlk ölçümde otur; geçiş (~320ms) bitene dek yeniden ölçüp son
-        // konumda dursun (öğe kayarken de takip eder).
+        // konumda dursun (öğe kayarken de takip eder). Ayrıca hedef, geç
+        // yüklenen içerik (ör. Asistan "Gündem" listesi) ekranı uzatınca
+        // görünür bandın dışına düşebilir; bu durumda yeniden ortalanır ki
+        // spotlight ekran dışında bir öğeyi işaret etmesin.
         for (const g of [0, 120, 260, 420]) {
           zaman.push(
             window.setTimeout(() => {
               const cur = document.querySelector(hedef)
               if (cur && !iptal) {
-                const r = cur.getBoundingClientRect()
+                let r = cur.getBoundingClientRect()
+                const vy = window.innerHeight
+                if (r.top > vy - 80 || r.bottom < 80) {
+                  cur.scrollIntoView({ block: 'center', inline: 'nearest' })
+                  r = cur.getBoundingClientRect()
+                }
                 setKutu({ x: r.x, y: r.y, width: r.width, height: r.height })
               }
             }, g),
