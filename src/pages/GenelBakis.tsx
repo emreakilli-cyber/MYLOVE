@@ -229,11 +229,8 @@ function SureListesi({ satirlar }: { satirlar: SureSatiri[] | undefined }) {
                 {kisaTarih(sure.sonTarih)}
               </span>
             </span>
-            <span className="row-aside">
-              <span className="deadline-kalan">
-                {kalanSureMetni(sure.sonTarih)}
-              </span>
-              <Icon name="chevron-right" size={16} className="row-chevron" />
+            <span className="deadline-kalan">
+              {kalanSureMetni(sure.sonTarih)}
             </span>
           </Link>
         )

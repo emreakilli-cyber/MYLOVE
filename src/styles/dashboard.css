@@ -247,13 +247,6 @@ button.row:active {
   margin-top: 1px;
 }
 
-.row-aside {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  flex: none;
-}
-
 .row-chevron {
   color: var(--text-muted);
   flex: none;
