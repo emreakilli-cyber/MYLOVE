@@ -172,17 +172,17 @@ varsayımla devam edilir.
 
 ## M9 — `docs/TRAINING.md` *(B listesi — en sona)*
 
-- [ ] M9.1 Veri formatı: JSONL şeması, alan adları, örnek kayıt
-- [ ] M9.2 Veri hazırlama: maskelenmiş korpustan eğitim seti üretme; **ham
+- [x] M9.1 Veri formatı: JSONL şeması, alan adları, örnek kayıt
+- [x] M9.2 Veri hazırlama: maskelenmiş korpustan eğitim seti üretme; **ham
       müvekkil verisi eğitime girmez**
-- [ ] M9.3 Örnek sayısı: LoRA için alt sınır, önerilen aralık, doygunluk noktası
-- [ ] M9.4 Hiperparametreler: rank, alpha, dropout, öğrenme oranı, epoch, batch,
+- [x] M9.3 Örnek sayısı: LoRA için alt sınır, önerilen aralık, doygunluk noktası
+- [x] M9.4 Hiperparametreler: rank, alpha, dropout, öğrenme oranı, epoch, batch,
       gradyan biriktirme — tablo hâlinde, gerekçeli
-- [ ] M9.5 Donanım gereksinimi: VRAM tablosu (7B/9B/27B × LoRA/QLoRA)
-- [ ] M9.6 Tahminî süre ve maliyet: yerel GPU ve kiralık GPU için ayrı
-- [ ] M9.7 Adım adım çalıştırma yönergesi — kullanıcının kendisi koşabileceği
+- [x] M9.5 Donanım gereksinimi: VRAM tablosu (7B/9B/27B × LoRA/QLoRA)
+- [x] M9.6 Tahminî süre ve maliyet: yerel GPU ve kiralık GPU için ayrı
+- [x] M9.7 Adım adım çalıştırma yönergesi — kullanıcının kendisi koşabileceği
       netlikte, komut komut
-- [ ] M9.8 Değerlendirme: eğitim sonrası kalite nasıl ölçülür, geri alma nasıl yapılır
+- [x] M9.8 Değerlendirme: eğitim sonrası kalite nasıl ölçülür, geri alma nasıl yapılır
 
 ## M10 — `docs/ARCHITECTURE.md`
 
@@ -258,3 +258,4 @@ varsayımla devam edilir.
 | 13 | 2026-08-07 | Belirsiz soyisim isaretleme, sifreli tablo saklama, ayni dizge iki tip testi | M5.3, M5.7, M12.7 | Guard da artik cakisma cozumu kosuyor; SPEC'e S7 degismezi eklendi |
 | 14 | 2026-08-08 | Sonuç özetleme + olayla ilişkilendirme (`correlateResults`/`summarizeResults`, K bağımsız geçiş); yazma katmanı: iskelet çıkarma, üslup profili (artımlı), few-shot seçimi, aşamalı üretim orkestrasyonu (`generateStaged`); `TRAINING.md` iskeleti (M8.6 kararı) | M7.6, M8.1–M8.7 | Oturum sıfır klondan başladı, önceki ilerleme `claude/hukuk-ai-packages-4zy3sq` dalından `git merge` ile alındı (bkz. S8); tüm yeni kod pluggable backend deseniyle (NER'deki gibi) model bağımsız, ağ çağrısı yok |
 | 15 | 2026-08-08 | `docs/ARCHITECTURE.md` yazıldı (modül haritası, telefon/masaüstü iş bölümü, devir mimarisi, telefon-tek-başına garantisi, veri akışı, kırmızı çizgiler); `docs/API.md` yazıldı (public yüzeyin tamamı: imza/parametre/dönüş/hata/örnek, hata kataloğu, kararlılık sözü) | M10.1–M10.6, M13.2–M13.5 | A listesi (M1–M8, M11–M13) bu maddeyle TAMAMLANDI; öncelik kuralı 1 gereği M9 (B) bundan sonra sırada. Oturum yine sıfır klondan başladı, önceki ilerleme `claude/hopeful-ritchie-8lw3c7` dalından `git merge` ile alındı (S8'in aynısı, dal adı bu oturuma göre değişti) |
+| 16 | 2026-08-08 | `docs/TRAINING.md` M9.1–M9.8 dolduruldu: JSONL veri şeması (`SectionRequest`/`GeneratedSection` ile hizalı), veri hazırlama akışı (mevcut `findUnmaskedContent` guard'ı son kapı olarak yeniden kullanılıyor, yeni kontrol eklenmedi), örnek sayısı aralığı, hiperparametre tablosu, VRAM tablosu (7B/9B/27B × LoRA/QLoRA), süre/maliyet tahmini, adım adım koşum yönergesi, değerlendirme + geri alma yöntemi | M9.1–M9.8 | Plan artık uçtan uca TAMAMLANDI (A ve B listeleri). Ağ erişimi açıktı; VRAM/fiyat değerleri ikincil kaynak + enterpolasyon olarak işaretlendi, Mizan-27B'ye özgü ölçüm yok — bkz. `TRAINING.md` Doğrulanacaklar. Not: Mizan-27B'nin eğitilebilir (safetensors) ağırlıklarının yayınlanıp yayınlanmadığı doğrulanamadı (§7 madde 2), bu kullanıcı gerçek koşuya geçmeden önce kontrol etmesi gereken açık bir madde olarak bırakıldı, BLOCKED sayılacak kadar kesin değil |
