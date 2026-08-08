@@ -40,6 +40,9 @@
 .select,
 .textarea {
   width: 100%;
+  /* Izgara/esnek kapsayıcıda içerik asgari genişliğini aşmasın (ör. yerel
+   * tarih girişleri dar ekranda taşıyordu — bkz. F16 QA). */
+  min-width: 0;
   padding: var(--space-3);
   border-radius: var(--radius-md);
   border: 1px solid var(--border-hairline);
@@ -89,6 +92,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
+}
+
+/* Çok dar ekranlarda (ör. 320px) iki sütun sığmıyor; tek sütuna in. */
+@media (max-width: 360px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Onay kutulu satır */
