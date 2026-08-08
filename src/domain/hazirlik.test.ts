@@ -180,6 +180,63 @@ describe('hazırlık — yüzde ve seviye', () => {
     expect(ozet.sonrakiAdim).toBe('Kaçırılan süreyi inceleyin')
   })
 
+  it('olumsuz ("… yok") maddeler eksik olduğunda etiket gerçeğe döner', () => {
+    // Bekleyen gider, kaçmış süre ve geciken görev ekle → üç madde de eksik.
+    const g = tamGirdi('hukuk')
+    g.finans = [
+      odenmisHarc(),
+      {
+        id: 'f2',
+        olusturmaTarihi: AN,
+        guncellemeTarihi: AN,
+        dosyaId: 'd1',
+        yon: 'gider',
+        kategori: 'diger',
+        baslik: 'Bilirkişi ücreti',
+        tutar: 300000,
+        odenenTutar: 0,
+        tarih: '2026-08-01',
+        odemeDurumu: 'bekliyor',
+      },
+    ]
+    g.sureler = [kacmisSure()]
+    g.gorevler = [
+      {
+        id: 'g1',
+        olusturmaTarihi: AN,
+        guncellemeTarihi: AN,
+        dosyaId: 'd1',
+        baslik: 'Cevap dilekçesi yaz',
+        durum: 'bekliyor',
+        oncelik: 'normal',
+        vadeTarihi: '2026-07-01',
+      },
+    ]
+    const maddeler = hazirlikHesapla(g).maddeler
+    const bul = (a: string) => maddeler.find((m) => m.anahtar === a)
+    // Eksik olumsuz maddede gösterilecek etiket = etiketEksik (çift olumsuz olmaz)
+    for (const [anahtar, eksik] of [
+      ['odemeler', 'Bekleyen ödeme var'],
+      ['sureler', 'Kaçırılmış süre var'],
+      ['gorevler', 'Geciken görev var'],
+    ] as const) {
+      const m = bul(anahtar)
+      expect(m?.tamam, anahtar).toBe(false)
+      expect(m?.etiketEksik, anahtar).toBe(eksik)
+    }
+    // Olumlu maddede etiketEksik yok: tek etiket her durumda kullanılır.
+    expect(bul('vekaletname')?.etiketEksik).toBeUndefined()
+  })
+
+  it('olumsuz maddeler tamamken de doğru olumlu etiketi taşır', () => {
+    const maddeler = hazirlikHesapla(tamGirdi('hukuk')).maddeler
+    const bul = (a: string) => maddeler.find((m) => m.anahtar === a)
+    expect(bul('odemeler')?.tamam).toBe(true)
+    expect(bul('odemeler')?.etiket).toBe('Bekleyen ödeme yok')
+    expect(bul('sureler')?.etiket).toBe('Kaçırılmış süre yok')
+    expect(bul('gorevler')?.etiket).toBe('Geciken görev yok')
+  })
+
   it('icra takibi duruşmasız olduğu için duruşma eksikliğinden ceza almaz', () => {
     // Aynı boş veri: icra "duruşma yok" diye düşmezken hukuk düşer.
     const bos = (tur: DosyaTuru): HazirlikGirdisi => ({

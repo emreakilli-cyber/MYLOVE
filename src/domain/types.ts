@@ -417,6 +417,13 @@ export interface HazirlikMaddesi {
   anahtar: string
   etiket: string
   tamam: boolean
+  /**
+   * Madde tamamlanmadığında gösterilecek etiket. Olumsuz ("… yok") ifadeli
+   * maddelerde kullanılır: durum işareti çarpıya döndüğünde etiket de gerçeğe
+   * uymalı ("Bekleyen ödeme yok" → "Bekleyen ödeme var"); yoksa çift olumsuz
+   * çıkar. Verilmezse `etiket` her iki durumda da kullanılır.
+   */
+  etiketEksik?: string
   /** Eksikse kullanıcıya gösterilecek bir sonraki adım. */
   eylem?: string
 }

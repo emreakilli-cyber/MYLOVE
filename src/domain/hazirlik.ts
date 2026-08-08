@@ -193,6 +193,7 @@ export function hazirlikHesapla(girdi: HazirlikGirdisi): HazirlikOzeti {
     odemeler: {
       anahtar: 'odemeler',
       etiket: 'Bekleyen ödeme yok',
+      etiketEksik: 'Bekleyen ödeme var',
       tamam: bekleyenGiderler.length === 0,
       agirlik: 2,
       eylem: bekleyenGiderler[0]
@@ -202,6 +203,7 @@ export function hazirlikHesapla(girdi: HazirlikGirdisi): HazirlikOzeti {
     sureler: {
       anahtar: 'sureler',
       etiket: 'Kaçırılmış süre yok',
+      etiketEksik: 'Kaçırılmış süre var',
       tamam: !kacmisSure,
       agirlik: 4,
       eylem: 'Kaçırılan süreyi inceleyin',
@@ -209,6 +211,7 @@ export function hazirlikHesapla(girdi: HazirlikGirdisi): HazirlikOzeti {
     gorevler: {
       anahtar: 'gorevler',
       etiket: 'Geciken görev yok',
+      etiketEksik: 'Geciken görev var',
       tamam: gecikmisGorev.length === 0,
       agirlik: 2,
       eylem: gecikmisGorev[0]

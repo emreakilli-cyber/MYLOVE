@@ -133,7 +133,9 @@ function GenelSekmesi({ detay }: { detay: Detay }) {
                 <Icon name={madde.tamam ? 'check' : 'close'} size={12} />
               </span>
               <span className="check-text">
-                <span className="check-label">{madde.etiket}</span>
+                <span className="check-label">
+                  {madde.tamam ? madde.etiket : madde.etiketEksik ?? madde.etiket}
+                </span>
                 {!madde.tamam && madde.eylem ? (
                   <span className="check-action">{madde.eylem}</span>
                 ) : null}
