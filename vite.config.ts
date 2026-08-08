@@ -1,7 +1,13 @@
 import { execSync } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+
+/** package.json'daki sürüm — arayüzde "sürüm etiketi" olarak gösterilir. */
+const uygulamaSurumu: string = JSON.parse(
+  readFileSync(new URL('./package.json', import.meta.url), 'utf-8'),
+).version
 
 /**
  * Derlemeyi tanımlayan kısa kimlik. Ana ekrana eklenmiş uygulamada hangi
@@ -25,6 +31,7 @@ export default defineConfig({
   define: {
     __BUILD_ID__: JSON.stringify(derlemeKimligi()),
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __APP_VERSION__: JSON.stringify(uygulamaSurumu),
   },
   plugins: [
     react(),

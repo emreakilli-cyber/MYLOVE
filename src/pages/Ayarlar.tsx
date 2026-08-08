@@ -730,7 +730,8 @@ export function Ayarlar() {
       </section>
 
       <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
-        JurisCalendar · derleme {__BUILD_ID__} · veriler cihazınızda saklanır.
+        JurisCalendar · sürüm {__APP_VERSION__} ({__BUILD_ID__}) · veriler
+        cihazınızda saklanır.
       </p>
     </>
   )
