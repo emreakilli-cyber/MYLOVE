@@ -1,0 +1,85 @@
+/*
+ * Erişilebilir dokunma hedefleri (WCAG 2.5.5 / F23).
+ *
+ * Görünür boyutu DEĞİŞTİRMEDEN tıklama alanını genişletir: küçük kontrollere
+ * görünmez bir `::after` "dokunma alanı" eklenir. Böylece referans görsel dili
+ * (yoğunluk, ölçü) korunur ama parmakla isabet kolaylaşır — ileri yaş kitle için.
+ *
+ * Yatay komşu çakışmasını önlemek için kural:
+ *   - Geniş / satır içi kontroller YALNIZCA dikeyde büyür (yanındaki öğeye taşmaz).
+ *   - Yalıtık kare ikon düğmeleri iki eksende büyür.
+ *   - Görev onay kutusu, sağdaki gezinme bağlantısına taşmadan sola + dikey büyür.
+ * Liste satırları ve satır-içi başlık bağlantıları (row-main, section-link) sınır
+ * çakışması riski yüzünden kapsam dışı; onlar zaten AA (≥24px) hedefini karşılıyor.
+ */
+
+/* --- Yalnızca dikey: geniş / satır kontrolleri --- */
+.chip,
+.ofset-chip,
+.qa-chip,
+.ertele-chip,
+.cal-tab,
+.cal-today,
+.cal-nav-button,
+.hero-button,
+.page-back,
+.cal-export-link,
+.button-primary,
+.surum-button {
+  position: relative;
+}
+
+.chip::after,
+.ofset-chip::after,
+.qa-chip::after,
+.ertele-chip::after,
+.cal-tab::after,
+.cal-today::after,
+.cal-nav-button::after,
+.hero-button::after,
+.page-back::after,
+.cal-export-link::after,
+.button-primary::after,
+.surum-button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+}
+
+/* --- İki eksen: yalıtık kare ikon düğmeleri --- */
+.icon-button,
+.topbar-menu,
+.drawer-close {
+  position: relative;
+}
+
+.icon-button::after,
+.topbar-menu::after,
+.drawer-close::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+/* --- Görev onay kutusu: sola + dikey (sağdaki bağlantıya taşmaz) --- */
+.task-check {
+  position: relative;
+}
+
+.task-check::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  left: -16px;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+}

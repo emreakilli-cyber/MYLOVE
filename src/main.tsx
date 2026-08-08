@@ -18,6 +18,7 @@ import './styles/arama.css'
 import './styles/onboarding.css'
 import './styles/tur.css'
 import './styles/durum.css'
+import './styles/dokunmatik.css'
 
 import App from './App'
 import { HataSiniri } from './components/HataSiniri'
