@@ -34,6 +34,17 @@ body {
   overflow-wrap: anywhere;
 }
 
+/* Sayılar (para tutarları, istatistik) ASLA rakam ortasından bölünmesin —
+ * finans uygulamasında yanlış okunmayı önler; body'deki `anywhere` sayıları
+ * kesmesin diye geri alınır. Büyük tutar tek satırda kalır. */
+.stat-value,
+.money-value,
+.money-amount,
+.t-mono {
+  overflow-wrap: normal;
+  word-break: keep-all;
+}
+
 img,
 svg,
 video {
