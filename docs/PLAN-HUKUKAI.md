@@ -186,14 +186,14 @@ varsayımla devam edilir.
 
 ## M10 — `docs/ARCHITECTURE.md`
 
-- [ ] M10.1 Modül haritası ve bağımlılık yönü (ok diyagramı)
-- [ ] M10.2 Telefon-masaüstü iş bölümü, `CAPABILITIES.md` A/B listesiyle birebir
-- [ ] M10.3 Devir teslim mimarisi, `PROTOCOL.md`'ye birebir uyumlu
-- [ ] M10.4 **Telefon tek başına tam işlevsel** — masaüstü modülü hiç kurulmasa
+- [x] M10.1 Modül haritası ve bağımlılık yönü (ok diyagramı)
+- [x] M10.2 Telefon-masaüstü iş bölümü, `CAPABILITIES.md` A/B listesiyle birebir
+- [x] M10.3 Devir teslim mimarisi, `PROTOCOL.md`'ye birebir uyumlu
+- [x] M10.4 **Telefon tek başına tam işlevsel** — masaüstü modülü hiç kurulmasa
       hangi kod yolunun çalıştığı açıkça gösterilir
-- [ ] M10.5 Veri akışı diyagramı: ham metin → maske → (yerel işlem | araştırma |
+- [x] M10.5 Veri akışı diyagramı: ham metin → maske → (yerel işlem | araştırma |
       devir) → unmask → kullanıcı
-- [ ] M10.6 Kırmızı çizgiler: hangi modül hangi modülü **import edemez**
+- [x] M10.6 Kırmızı çizgiler: hangi modül hangi modülü **import edemez**
       (araştırma ↛ maske tablosu, yazma ↛ ağ, masaüstü ↛ kalıcı depolama)
 
 ## M11 — Kaçak kimlik bilgisi yakalama
@@ -231,11 +231,11 @@ varsayımla devam edilir.
 
 - [x] M13.1 Dışa açılan yüzey tek dosyada toplanır (`src/index.ts`); iç modüller
       dışarı sızmaz
-- [ ] M13.2 Her public fonksiyon: imza, parametreler, dönüş, fırlatabileceği
+- [x] M13.2 Her public fonksiyon: imza, parametreler, dönüş, fırlatabileceği
       hatalar, örnek
-- [ ] M13.3 Hata tipleri kataloğu
-- [ ] M13.4 `docs/API.md` üretilir ve `SPEC.md`/`PROTOCOL.md` ile çapraz bağlanır
-- [ ] M13.5 Kararlılık sözü: hangi API'ler kararlı, hangileri deneysel
+- [x] M13.3 Hata tipleri kataloğu
+- [x] M13.4 `docs/API.md` üretilir ve `SPEC.md`/`PROTOCOL.md` ile çapraz bağlanır
+- [x] M13.5 Kararlılık sözü: hangi API'ler kararlı, hangileri deneysel
 
 ---
 
@@ -257,3 +257,4 @@ varsayımla devam edilir.
 | 12 | 2026-08-07 | Devir eşiği motoru + sınır değeri testleri | M12.9 | Eşik altında `offer` üretilmediği kapsamlı taramayla doğrulandı |
 | 13 | 2026-08-07 | Belirsiz soyisim isaretleme, sifreli tablo saklama, ayni dizge iki tip testi | M5.3, M5.7, M12.7 | Guard da artik cakisma cozumu kosuyor; SPEC'e S7 degismezi eklendi |
 | 14 | 2026-08-08 | Sonuç özetleme + olayla ilişkilendirme (`correlateResults`/`summarizeResults`, K bağımsız geçiş); yazma katmanı: iskelet çıkarma, üslup profili (artımlı), few-shot seçimi, aşamalı üretim orkestrasyonu (`generateStaged`); `TRAINING.md` iskeleti (M8.6 kararı) | M7.6, M8.1–M8.7 | Oturum sıfır klondan başladı, önceki ilerleme `claude/hukuk-ai-packages-4zy3sq` dalından `git merge` ile alındı (bkz. S8); tüm yeni kod pluggable backend deseniyle (NER'deki gibi) model bağımsız, ağ çağrısı yok |
+| 15 | 2026-08-08 | `docs/ARCHITECTURE.md` yazıldı (modül haritası, telefon/masaüstü iş bölümü, devir mimarisi, telefon-tek-başına garantisi, veri akışı, kırmızı çizgiler); `docs/API.md` yazıldı (public yüzeyin tamamı: imza/parametre/dönüş/hata/örnek, hata kataloğu, kararlılık sözü) | M10.1–M10.6, M13.2–M13.5 | A listesi (M1–M8, M11–M13) bu maddeyle TAMAMLANDI; öncelik kuralı 1 gereği M9 (B) bundan sonra sırada. Oturum yine sıfır klondan başladı, önceki ilerleme `claude/hopeful-ritchie-8lw3c7` dalından `git merge` ile alındı (S8'in aynısı, dal adı bu oturuma göre değişti) |
