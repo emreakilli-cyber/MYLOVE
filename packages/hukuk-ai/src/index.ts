@@ -47,6 +47,15 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export { correlateResults, summarizeResults } from './research/correlate'
+export type {
+  CaseCorrelation,
+  CorrelationBackend,
+  DocumentSummary,
+  Relevance,
+  SummaryBackend,
+} from './research/correlate'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
@@ -75,3 +84,28 @@ export type {
   JobEstimate,
   ThermalState,
 } from './handoff/threshold'
+
+export { addDocument, emptyStyleProfile, estimateTokens, extractSkeleton, generateStaged, selectFewShot } from './write'
+export type {
+  ConsistencyIssue,
+  ConsistencyReport,
+  DocumentOutline,
+  DocumentSkeleton,
+  FewShotCandidate,
+  FewShotExample,
+  FewShotOptions,
+  FewShotSelection,
+  GenerateStagedOptions,
+  GeneratedSection,
+  LengthDistribution,
+  NumberingStyle,
+  OutlineRequest,
+  OutlineSection,
+  SampleParagraph,
+  SectionRequest,
+  SectionSummary,
+  SkeletonSection,
+  StagedDocument,
+  StyleProfile,
+  WriteBackend,
+} from './write'

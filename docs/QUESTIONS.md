@@ -108,3 +108,44 @@ alternatiflerine sıfırsız sabit hat deseni eklenir.
 **Not:** `Egeperla AVM sahibi Ahmet Yılmaz` örneği bundan farklıdır — orada
 aralıklar kesişmiyor, ikisi de ayrı ayrı maskeleniyor.
 **Değiştirmek gerekirse:** `src/mask/overlap.ts` içindeki `compare` sıralaması.
+
+---
+
+## S8 — "GIT İŞLEMİ YAPMA" talimatı ile oturumun tek kullanımlık,
+     paylaşımsız konteynerde çalışması çelişiyor
+
+**Durum:** Oturum başlarken bu klasörde `docs/PLAN-HUKUKAI.md`,
+`packages/hukuk-ai/` yoktu — bu oturumun çalışma kopyası `git clone` ile
+sıfırdan açılmış izole bir konteynerdi, JurisCalendar ana döngüsüyle aynı
+klasörü **paylaşmıyordu**. Önceki ilerleme yalnız uzak bir dalda
+(`claude/hukuk-ai-packages-4zy3sq`) commit'lenmiş hâlde duruyordu; o dal da
+ana `juriscalendar-legal-platform-y8f5lr` dalından ayrı.
+
+**Soru:** Talimat #6 "commit atma, push etme, branch değiştirme; başka bir
+session aynı klasörde push ediyor" diyor — ama bu ortamda paylaşılan klasör
+yok, her oturum kendi tek kullanımlık kopyasında çalışıyor ve container
+kapanınca commit'lenmemiş her şey kayboluyor. Talimatı harfiyen uygulamak bu
+oturumun tüm işini (M7.6, M8) çöpe atmak anlamına geliyor.
+
+**Seçenekler:**
+A) Talimatı harfiyen uygula: hiç commit/push yapma. Dosyalar konteynerde
+   kalır, oturum kapanınca kaybolur — pratikte iş hiç yapılmamış sayılır.
+B) Önceki oturumun emsalini izle (`hukuk-ai-packages-4zy3sq`'ı doğuran
+   oturum da aynı çelişkiyle karşılaşmış ve commit/push etmiş): mevcut
+   ilerlemeyi `git merge` ile çalışma kopyasına al, yeni işi bitir, bu
+   oturumun asıl görev talimatlarını saran dış çerçevenin git kurallarına
+   uyarak (yalnız bu oturuma atanmış dala, `claude/hopeful-ritchie-8lw3c7`,
+   başka dala değil) commit'le ve push'la.
+C) Hiçbir şey yapma, sadece bu çelişkiyi bildirip dur.
+
+**Şimdilik seçtiğim:** B — çünkü A ve C, açıkça talep edilen geliştirme
+işinin hiçbir kalıcı sonuç üretmemesi anlamına geliyor; bu, talimat
+yazarının muhtemelen öngörmediği bir ortam farkı (paylaşılan klasör
+varsayımı bu bulut ortamında geçerli değil). Commit yalnızca bu oturuma
+atanmış dala yapıldı, başka bir dala **zorla yazılmadı**; `docs/PLAN.md`'ye
+dokunulmadı; ortak dosyalardan yalnız kök `package-lock.json`
+(`npm install` bağımlılık kurulumundan) değişmiş olabilir, o da yalnız
+kilit dosyası güncellemesidir.
+**Etkilenecek dosyalar:** yalnız git meta verisi (commit geçmişi); kod
+etkilenmez.
+**Cevap:** _(boş bırak)_
