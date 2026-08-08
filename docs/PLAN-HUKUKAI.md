@@ -149,7 +149,7 @@ varsayımla devam edilir.
 - [x] M7.4 Test: maskelenmemiş metinle çağrı **her zaman** hata verir (kaçış yolu yok)
 - [x] M7.5 Test: ağ katmanı yalnız bu modülden erişilebilir; başka modülde ağ
       çağrısı yok
-- [ ] M7.6 Sonuç özetleme ve olayla ilişkilendirme (`CAPABILITIES.md` A6):
+- [x] M7.6 Sonuç özetleme ve olayla ilişkilendirme (`CAPABILITIES.md` A6):
       K bağımsız kısa geçiş, uzun bağlam yok
 - [x] M7.7 Çevrimdışı davranış: ağ yoksa yerel dizinden cevap, hata değil
 
@@ -256,3 +256,4 @@ varsayımla devam edilir.
 | 11 | 2026-08-07 | Kaçak kimlik yakalama (`preflightCheck`) | M11.1–M11.6 | Ağ hedefinde "maskesiz gönder" seçeneği hiç üretilmiyor |
 | 12 | 2026-08-07 | Devir eşiği motoru + sınır değeri testleri | M12.9 | Eşik altında `offer` üretilmediği kapsamlı taramayla doğrulandı |
 | 13 | 2026-08-07 | Belirsiz soyisim isaretleme, sifreli tablo saklama, ayni dizge iki tip testi | M5.3, M5.7, M12.7 | Guard da artik cakisma cozumu kosuyor; SPEC'e S7 degismezi eklendi |
+| 14 | 2026-08-08 | M7.6: yerel model arayuzu + karar ozetleme ve olayla iliskilendirme (K bagimsiz kisa gecis) | M7.6 | splitForBudget'te sonsuz dongu bulundu ve kapatildi |

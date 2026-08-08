@@ -47,6 +47,16 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export { ContextBudgetError, assertWithinBudget, estimateTokens } from './llm/types'
+export type { GenerateRequest, LocalModel } from './llm/types'
+
+export { relateToCase, splitForBudget, summarizeDocument } from './research/relate'
+export type {
+  CaseFacts,
+  RelateOptions,
+  RelevanceVerdict,
+} from './research/relate'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
