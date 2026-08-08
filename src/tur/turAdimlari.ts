@@ -57,8 +57,12 @@ export const turAdimlari: readonly TurAdimi[] = [
     rota: '/asistan',
     hedef: '[data-tur="asistan"]',
     baslik: 'Gerçek panel: Dosyaya danışın',
+    // NOT: Maskeleme motoru (packages/hukuk-ai) dala merge edildi ama henüz app'e
+    // bağlanmadı; llmSor şu an dosya özetini (müvekkil adı dâhil) maskesiz
+    // gönderiyor. Bu yüzden metin, gerçek davranışı anlatıyor (Ayarlar/altbilgi
+    // ile tutarlı). Paket app'e bağlanınca maskeleme cümlesi geri eklenecek.
     metin:
-      'Buradayız. Dosyayı seçip taslak ister ya da soru sorarsınız. Gönderdiğinizde kimlik bilgileri maskelenir; sağlayıcıya yalnızca maskeli metin gider.',
+      'Buradayız. Dosyayı seçip soru sorar ya da taslak istersiniz. Asistan varsayılan olarak cihazınızda çalışır; yapay zekâyı açarsanız yalnızca sorunuz ve kısa dosya özeti kendi uç noktanıza gider, ham müvekkil kaydı çıkmaz.',
   },
   {
     id: 'dosya',

@@ -30,9 +30,13 @@ describe('turAdimlari', () => {
     expect(asistan?.hedef).toBe('[data-tur="asistan"]')
   })
 
-  it('AI Asistan adımı maskelemeyi açıklar', () => {
+  it('AI Asistan adımı gizlilik davranışını doğru anlatır', () => {
     const asistan = turAdimlari.find((a) => a.id === 'asistan')
-    expect(asistan?.metin.toLowerCase()).toContain('maske')
+    const metin = asistan?.metin.toLowerCase() ?? ''
+    // Gerçekte olan davranış: cihaz-öncelikli + yalnızca özet gider, ham kayıt gitmez.
+    // (Maskeleme motoru app'e bağlanana kadar "maskelenir" iddiası KULLANILMAZ.)
+    expect(metin).toContain('cihaz')
+    expect(metin).toMatch(/özet|ham müvekkil/)
   })
 
   it('menüden Asistan’a geçiş adımı yan menüyü açar', () => {
