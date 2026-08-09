@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { Icon } from '../components/Icon'
 import { SatirIskeleti } from '../components/BolumKarti'
 import { Link } from '../router'
@@ -736,6 +736,29 @@ export function DosyaDetay({ id }: { id?: string }) {
     ['notlar', 'Notlar', detay.notlar.length + detay.kisiler.length],
   ]
 
+  // ARIA tabs klavye deseni: ok tuşları sekmeler arasında gezer (otomatik
+  // etkinleştirme), Home/End ilk/son sekmeye gider. Roving tabindex ile yalnızca
+  // seçili sekme Tab sırasında; okla geçince odak yeni sekmeye taşınır.
+  const sekmeKlavye = (e: ReactKeyboardEvent<HTMLDivElement>) => {
+    const yonler: Record<string, number | 'ilk' | 'son'> = {
+      ArrowRight: 1,
+      ArrowLeft: -1,
+      Home: 'ilk',
+      End: 'son',
+    }
+    const yon = yonler[e.key]
+    if (yon === undefined) return
+    e.preventDefault()
+    const n = sekmeler.length
+    const i = sekmeler.findIndex(([d]) => d === sekme)
+    const hedefIdx =
+      yon === 'ilk' ? 0 : yon === 'son' ? n - 1 : (i + yon + n) % n
+    const hedef = sekmeler[hedefIdx]
+    if (!hedef) return
+    setSekme(hedef[0])
+    document.getElementById(`sekme-${hedef[0]}`)?.focus()
+  }
+
   return (
     <>
       <div className="detail-topline">
@@ -789,7 +812,12 @@ export function DosyaDetay({ id }: { id?: string }) {
         </div>
       </section>
 
-      <div className="tab-row" role="tablist" aria-label="Dosya bölümleri">
+      <div
+        className="tab-row"
+        role="tablist"
+        aria-label="Dosya bölümleri"
+        onKeyDown={sekmeKlavye}
+      >
         {sekmeler.map(([deger, etiket, adet]) => (
           <button
             key={deger}
@@ -799,6 +827,7 @@ export function DosyaDetay({ id }: { id?: string }) {
             aria-controls={`panel-${deger}`}
             className="tab"
             aria-selected={sekme === deger}
+            tabIndex={sekme === deger ? 0 : -1}
             onClick={() => setSekme(deger)}
           >
             {etiket}
