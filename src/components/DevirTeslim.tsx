@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Icon } from './Icon'
 import {
   isTipiEtiketleri,
@@ -29,6 +30,44 @@ export function DevirTeslim({
   onKapat,
 }: DevirTeslimProps) {
   const tahmin = sureMetni(sureTahminiMs(isTipi))
+  const pencereRef = useRef<HTMLDivElement>(null)
+
+  // aria-modal="true" sözünü davranışla eşle: odağı pencereye al, Esc ile kapat,
+  // Tab'ı pencere içinde döndür, kapanınca odağı geri ver (Drawer ile aynı desen).
+  useEffect(() => {
+    const oncekiOdak = document.activeElement as HTMLElement | null
+    const ilkButon =
+      pencereRef.current?.querySelector<HTMLElement>('button:not([disabled])')
+    ilkButon?.focus()
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onKapat()
+        return
+      }
+      if (event.key !== 'Tab') return
+      const odaklanabilir = pencereRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      )
+      if (!odaklanabilir || odaklanabilir.length === 0) return
+      const ilk = odaklanabilir[0]
+      const son = odaklanabilir[odaklanabilir.length - 1]
+      if (!ilk || !son) return
+      if (event.shiftKey && document.activeElement === ilk) {
+        event.preventDefault()
+        son.focus()
+      } else if (!event.shiftKey && document.activeElement === son) {
+        event.preventDefault()
+        ilk.focus()
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      oncekiOdak?.focus()
+    }
+  }, [onKapat])
 
   return (
     <div
@@ -39,6 +78,7 @@ export function DevirTeslim({
       onClick={onKapat}
     >
       <div
+        ref={pencereRef}
         className="devir-pencere"
         onClick={(e) => e.stopPropagation()}
       >
