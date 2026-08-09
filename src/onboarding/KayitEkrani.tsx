@@ -147,7 +147,7 @@ export function KayitEkrani({ onTamam }: KayitEkraniProps) {
                 onChange={(e) => setEposta(e.target.value)}
               />
             </label>
-            {hata ? <p className="field-error">{hata}</p> : null}
+            {hata ? <p className="field-error" role="alert">{hata}</p> : null}
             <div className="kayit-form-alt">
               <button
                 type="button"

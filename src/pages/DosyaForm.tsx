@@ -307,7 +307,7 @@ export function DosyaForm({ id }: { id?: string }) {
           />
         </label>
 
-        {hata ? <p className="field-error">{hata}</p> : null}
+        {hata ? <p className="field-error" role="alert">{hata}</p> : null}
 
         <div className="form-actions">
           <button

@@ -217,7 +217,7 @@ export function MuvekkilForm({ id }: { id?: string }) {
           <span className="field-hint">Virgülle ayırın.</span>
         </label>
 
-        {hata ? <p className="field-error">{hata}</p> : null}
+        {hata ? <p className="field-error" role="alert">{hata}</p> : null}
 
         <div className="form-actions">
           <button

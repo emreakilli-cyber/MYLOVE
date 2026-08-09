@@ -122,7 +122,11 @@ export function KilitKapisi({ children }: KilitKapisiProps) {
               <span key={i} className="pin-nokta" data-dolu={i < pin.length} />
             ))}
           </div>
-          {hata ? <p className="kilit-hata">PIN yanlış, tekrar deneyin.</p> : null}
+          {hata ? (
+            <p className="kilit-hata" role="alert">
+              PIN yanlış, tekrar deneyin.
+            </p>
+          ) : null}
 
           {biyometriKimlik ? (
             <button

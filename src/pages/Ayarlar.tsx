@@ -562,7 +562,7 @@ export function Ayarlar() {
                 autoComplete="new-password"
               />
             </label>
-            {pinHata ? <p className="field-error">{pinHata}</p> : null}
+            {pinHata ? <p className="field-error" role="alert">{pinHata}</p> : null}
             <div className="form-actions">
               <button
                 type="button"
