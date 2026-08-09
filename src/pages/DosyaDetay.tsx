@@ -795,6 +795,8 @@ export function DosyaDetay({ id }: { id?: string }) {
             key={deger}
             type="button"
             role="tab"
+            id={`sekme-${deger}`}
+            aria-controls={`panel-${deger}`}
             className="tab"
             aria-selected={sekme === deger}
             onClick={() => setSekme(deger)}
@@ -805,13 +807,20 @@ export function DosyaDetay({ id }: { id?: string }) {
         ))}
       </div>
 
-      {sekme === 'genel' ? <GenelSekmesi detay={detay} /> : null}
-      {sekme === 'durusmalar' ? <DurusmaSekmesi detay={detay} /> : null}
-      {sekme === 'sureler' ? <SureSekmesi detay={detay} /> : null}
-      {sekme === 'gorevler' ? <GorevSekmesi detay={detay} /> : null}
-      {sekme === 'belgeler' ? <BelgeSekmesi detay={detay} /> : null}
-      {sekme === 'finans' ? <FinansSekmesi detay={detay} /> : null}
-      {sekme === 'notlar' ? <NotSekmesi detay={detay} /> : null}
+      <div
+        role="tabpanel"
+        id={`panel-${sekme}`}
+        aria-labelledby={`sekme-${sekme}`}
+        tabIndex={0}
+      >
+        {sekme === 'genel' ? <GenelSekmesi detay={detay} /> : null}
+        {sekme === 'durusmalar' ? <DurusmaSekmesi detay={detay} /> : null}
+        {sekme === 'sureler' ? <SureSekmesi detay={detay} /> : null}
+        {sekme === 'gorevler' ? <GorevSekmesi detay={detay} /> : null}
+        {sekme === 'belgeler' ? <BelgeSekmesi detay={detay} /> : null}
+        {sekme === 'finans' ? <FinansSekmesi detay={detay} /> : null}
+        {sekme === 'notlar' ? <NotSekmesi detay={detay} /> : null}
+      </div>
     </>
   )
 }
