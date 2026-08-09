@@ -165,6 +165,7 @@ export function Asistan() {
         <div className="qa-form">
           <select
             className="select"
+            aria-label="Danışılacak dosya"
             value={dosyaId}
             onChange={(e) => {
               setDosyaId(e.target.value)
@@ -196,6 +197,7 @@ export function Asistan() {
 
           <input
             className="input"
+            aria-label="Sorunuz"
             value={soru}
             placeholder="Kendi sorunuzu yazın…"
             disabled={!dosyaId}
