@@ -31,7 +31,6 @@
 
 .search-input:focus {
   border-color: var(--brand-teal);
-  outline: none;
 }
 
 .search-clear {
@@ -549,7 +548,6 @@
 }
 
 .belge-etiket-giris:focus {
-  outline: none;
   border-style: solid;
   border-color: var(--brand-teal);
 }

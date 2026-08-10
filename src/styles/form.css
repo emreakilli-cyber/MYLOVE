@@ -57,11 +57,13 @@
   appearance: none;
 }
 
+/* Odakta kenarlık teal olur (fare + klavye). Halkayı bilinçle kaldırmıyoruz:
+   global `:focus-visible` klavye gezintisinde 2px teal halkayı çizsin,
+   `:focus:not(:focus-visible)` fareyle tıklarken bastırsın — düğmelerle tutarlı. */
 .input:focus,
 .select:focus,
 .textarea:focus {
   border-color: var(--brand-teal);
-  outline: none;
 }
 
 .input[aria-invalid='true'] {
