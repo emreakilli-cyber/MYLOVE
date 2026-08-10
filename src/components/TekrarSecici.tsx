@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { MAKS_TEKRAR, tekrarEtiketleri, type TekrarSikligi } from '../domain/tekrar'
 
 /*
@@ -25,10 +26,16 @@ export function TekrarSecici({
   onAdet,
   ipucu,
 }: TekrarSeciciProps) {
+  // Alan iki kontrol taşıdığından (sıklık + adet) tek bir <label> ile
+  // saramayız; sıklık seçimini `htmlFor` ile açıkça ilişkilendiriyoruz.
+  const siklikId = useId()
   return (
     <div className="field">
-      <span className="field-label">Tekrar</span>
+      <label className="field-label" htmlFor={siklikId}>
+        Tekrar
+      </label>
       <select
+        id={siklikId}
         className="select"
         value={siklik}
         onChange={(e) => onSiklik(e.target.value as TekrarSecim)}

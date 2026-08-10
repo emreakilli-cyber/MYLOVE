@@ -211,7 +211,7 @@ export function FinansForm({ id }: { id?: string }) {
       </div>
 
       <section className="card form-card">
-        <div className="field">
+        <label className="field">
           <span className="field-label">Kategori</span>
           <select
             className="select"
@@ -225,7 +225,7 @@ export function FinansForm({ id }: { id?: string }) {
               </option>
             ))}
           </select>
-        </div>
+        </label>
 
         <label className="field">
           <span className="field-label">Başlık</span>

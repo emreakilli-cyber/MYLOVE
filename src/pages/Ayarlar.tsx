@@ -459,6 +459,8 @@ export function Ayarlar() {
           ref={dosyaGirisRef}
           type="file"
           accept="application/json,.jcenc"
+          aria-label="Yedek dosyası seç"
+          tabIndex={-1}
           style={{ display: 'none' }}
           onChange={(e) => void geriYukle(e.target.files?.[0])}
         />
