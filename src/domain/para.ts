@@ -32,27 +32,47 @@ export function tutarKisa(kurus: Kurus): string {
   return kurus % 100 === 0 ? kisaBicim.format(kurus / 100) : tutarTam(kurus)
 }
 
-/** Girilen "1.250,50" ya da "1250.50" metnini kuruşa çevirir. */
+/**
+ * Girilen tutar metnini kuruşa çevirir. Türkçe-öncelikli, İngilizce uyumlu.
+ *
+ * Ondalık ayracı belirsizliğini şöyle çözer: iki ayraç (`.` ve `,`) varsa
+ * SONDA olan ondalıktır ("1.250,50"→1250.50, "1,250.50"→1250.50). Tek tür ayraç
+ * varsa yalnızca ondan sonra **1–2 rakam** geliyorsa ondalıktır ("1,5"→1.5,
+ * "1.05"→1.05); aksi hâlde binlik ayracıdır ("1.250"→1250, "12.345"→12345,
+ * "1.250.000"→1250000). Böylece Türk kullanıcının "1.250" girişi 1.25'e değil
+ * 1250'ye çözülür.
+ */
 export function metindenKurus(metin: string): Kurus | null {
   const temiz = metin.trim().replace(/[^\d,.-]/g, '')
-  if (!temiz) return null
+  const eksi = temiz.startsWith('-')
+  const rakamlar = temiz.replace(/-/g, '')
+  if (!/\d/.test(rakamlar)) return null
 
-  // Türkçe girişte nokta binlik, virgül ondalık ayraçtır.
-  const sonVirgul = temiz.lastIndexOf(',')
-  const sonNokta = temiz.lastIndexOf('.')
-  let normal: string
+  const sonVirgul = rakamlar.lastIndexOf(',')
+  const sonNokta = rakamlar.lastIndexOf('.')
 
-  if (sonVirgul > sonNokta) {
-    normal = temiz.replace(/\./g, '').replace(',', '.')
-  } else if (sonNokta > sonVirgul) {
-    normal = temiz.replace(/,/g, '')
-  } else {
-    normal = temiz
+  let ondalikIdx = -1
+  if (sonVirgul >= 0 && sonNokta >= 0) {
+    // İki ayraç: sonda olan ondalık ayracıdır.
+    ondalikIdx = Math.max(sonVirgul, sonNokta)
+  } else if (sonVirgul >= 0 || sonNokta >= 0) {
+    // Tek tür ayraç: yalnızca sonrasında 1–2 rakam varsa ondalık; aksi hâlde
+    // binlik ayracıdır (Türkçe "1.250" = 1250).
+    const idx = Math.max(sonVirgul, sonNokta)
+    if (rakamlar.length - idx - 1 <= 2) ondalikIdx = idx
   }
 
-  const sayi = Number(normal)
+  const tam =
+    (ondalikIdx >= 0 ? rakamlar.slice(0, ondalikIdx) : rakamlar).replace(
+      /[.,]/g,
+      '',
+    ) || '0'
+  const kesir =
+    ondalikIdx >= 0 ? rakamlar.slice(ondalikIdx + 1).replace(/[.,]/g, '') : ''
+
+  const sayi = Number(`${tam}.${kesir || '0'}`)
   if (!Number.isFinite(sayi)) return null
-  return Math.round(sayi * 100)
+  return Math.round((eksi ? -sayi : sayi) * 100)
 }
 
 /** Değişim oranı: geçen aya göre yüzde. Payda sıfırsa null. */
