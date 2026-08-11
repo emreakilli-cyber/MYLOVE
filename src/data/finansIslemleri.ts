@@ -40,11 +40,21 @@ function durumNormalize(
   return 'kismi'
 }
 
+/**
+ * Ödenen tutarı [0, toplam] aralığına kırpar. Toplamı aşan (yanlışlıkla fazla
+ * girilen) ya da negatif ödeme, negatif "bekleyen" bakiyesi veya şişmiş tahsilat
+ * toplamı üretmesin — bekleyen = tutar − odenenTutar her zaman ≥ 0 kalır.
+ */
+function odenenKirp(tutar: Kurus, odenen: Kurus): Kurus {
+  return Math.max(0, Math.min(odenen, tutar))
+}
+
 export async function finansEkle(girdi: FinansGirdisi): Promise<string> {
   const zaman = simdi()
   const id = yeniId()
   const dosya = await db.dosyalar.get(girdi.dosyaId)
-  const durum = durumNormalize(girdi.tutar, girdi.odenenTutar)
+  const odenen = odenenKirp(girdi.tutar, girdi.odenenTutar)
+  const durum = durumNormalize(girdi.tutar, odenen)
 
   await db.finans.add({
     id,
@@ -54,7 +64,7 @@ export async function finansEkle(girdi: FinansGirdisi): Promise<string> {
     kategori: girdi.kategori,
     baslik: girdi.baslik.trim(),
     tutar: girdi.tutar,
-    odenenTutar: girdi.odenenTutar,
+    odenenTutar: odenen,
     tarih: girdi.tarih,
     ...(bosaCevir(girdi.vadeTarihi)
       ? { vadeTarihi: bosaCevir(girdi.vadeTarihi) }
@@ -81,13 +91,14 @@ export async function finansGuncelle(
   id: string,
   girdi: FinansGirdisi,
 ): Promise<void> {
-  const durum = durumNormalize(girdi.tutar, girdi.odenenTutar)
+  const odenen = odenenKirp(girdi.tutar, girdi.odenenTutar)
+  const durum = durumNormalize(girdi.tutar, odenen)
   await db.finans.update(id, {
     yon: girdi.yon,
     kategori: girdi.kategori,
     baslik: girdi.baslik.trim(),
     tutar: girdi.tutar,
-    odenenTutar: girdi.odenenTutar,
+    odenenTutar: odenen,
     tarih: girdi.tarih,
     vadeTarihi: bosaCevir(girdi.vadeTarihi),
     odemeDurumu: durum,
