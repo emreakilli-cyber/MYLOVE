@@ -786,7 +786,10 @@ export function DosyaDetay({ id }: { id?: string }) {
           {dosya.esasNo ? (
             <span className="tag tag-quiet">{dosya.esasNo}</span>
           ) : null}
-          {dosya.konu ? <span className="tag tag-quiet">{dosya.konu}</span> : null}
+          {/* Konu buraya çip olarak konmuyor: uzun bir cümle (ör. "İşçilik
+              alacağı, kıdem ve ihbar tazminatı…") nowrap/uppercase/mono çipte
+              hem yatay taşma yapıyor hem görsel dile aykırı. Konu zaten
+              aşağıdaki bilgi ızgarasında ("Konu" alanı) düzgün gösteriliyor. */}
         </div>
 
         <div className="detail-progress">
