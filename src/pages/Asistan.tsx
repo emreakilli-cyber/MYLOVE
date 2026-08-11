@@ -125,7 +125,7 @@ export function Asistan() {
           <p className="asistan-hero-text">
             {kritikSayi > 0
               ? `Dikkat gerektiren ${kritikSayi} konu var. Aşağıda önceliğe göre sıraladım.`
-              : 'Dosyalarınızı tarayıp yaklaşan süreleri ve eksik işlemleri önünüze koyarım. Her şey veriden; hiçbir bilgi dışarı çıkmaz.'}
+              : 'Dosyalarınızı tarayıp yaklaşan süreleri ve eksik işlemleri önünüze koyarım. Değerlendirme cihazınızda, kendi verinizden yapılır.'}
           </p>
         </div>
       </section>
