@@ -376,6 +376,14 @@
   animation: donen 700ms linear infinite;
 }
 
+/* Hareket azaltma tercihinde dönmeyi durdur (dashboard'daki eşdeğer
+   yenileme simgesiyle tutarlı; sabit durum yine de "işleniyor"u gösterir). */
+@media (prefers-reduced-motion: reduce) {
+  .surum-icon[data-donuyor='true'] {
+    animation: none;
+  }
+}
+
 .surum-toast {
   position: fixed;
   left: 50%;
