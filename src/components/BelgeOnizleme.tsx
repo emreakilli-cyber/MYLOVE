@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon } from './Icon'
 import { belgeyiIndir, boyutMetni } from '../data/belgeIslemleri'
 import type { Belge } from '../domain/types'
@@ -18,6 +18,7 @@ interface BelgeOnizlemeProps {
 
 export function BelgeOnizleme({ belge, onKapat }: BelgeOnizlemeProps) {
   const [adres, setAdres] = useState<string | null>(null)
+  const pencereRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const url = URL.createObjectURL(belge.icerik)
@@ -25,13 +26,43 @@ export function BelgeOnizleme({ belge, onKapat }: BelgeOnizlemeProps) {
     return () => URL.revokeObjectURL(url)
   }, [belge])
 
-  // Esc ile kapat.
+  // aria-modal="true" sözünü davranışla eşle: odağı pencereye al, Esc ile kapat,
+  // Tab'ı pencere içinde döndür, kapanınca odağı geri ver (DevirTeslim/Drawer ile
+  // aynı desen). Not: bu üç modal aynı kalıbı paylaşıyor — ileride ortak bir
+  // kancaya çıkarılabilir; çalışan modalları riske atmamak için şimdilik satır içi.
   useEffect(() => {
-    const tus = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onKapat()
+    const oncekiOdak = document.activeElement as HTMLElement | null
+    pencereRef.current
+      ?.querySelector<HTMLElement>('button:not([disabled])')
+      ?.focus()
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onKapat()
+        return
+      }
+      if (event.key !== 'Tab') return
+      const odaklanabilir = pencereRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), iframe, audio[controls], [tabindex]:not([tabindex="-1"])',
+      )
+      if (!odaklanabilir || odaklanabilir.length === 0) return
+      const ilk = odaklanabilir[0]
+      const son = odaklanabilir[odaklanabilir.length - 1]
+      if (!ilk || !son) return
+      if (event.shiftKey && document.activeElement === ilk) {
+        event.preventDefault()
+        son.focus()
+      } else if (!event.shiftKey && document.activeElement === son) {
+        event.preventDefault()
+        ilk.focus()
+      }
     }
-    document.addEventListener('keydown', tus)
-    return () => document.removeEventListener('keydown', tus)
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      oncekiOdak?.focus()
+    }
   }, [onKapat])
 
   const mime = belge.mimeTur
@@ -47,7 +78,11 @@ export function BelgeOnizleme({ belge, onKapat }: BelgeOnizlemeProps) {
       aria-label={`${belge.ad} önizleme`}
       onClick={onKapat}
     >
-      <div className="onizleme-pencere" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={pencereRef}
+        className="onizleme-pencere"
+        onClick={(e) => e.stopPropagation()}
+      >
         <header className="onizleme-bar">
           <span className="onizleme-baslik truncate">{belge.ad}</span>
           <button
