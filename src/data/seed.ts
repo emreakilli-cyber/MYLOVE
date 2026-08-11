@@ -952,6 +952,16 @@ export async function tohumlaGerekiyorsa(): Promise<boolean> {
   const mevcut = await db.dosyalar.count()
   if (mevcut > 0) return false
 
+  // Dosya sayısı sıfır olmak "ilk kurulum" demek DEĞİLDİR: dosyalarını silip
+  // sıfıra inen MEVCUT kullanıcı da buraya düşer. Onay/profil kaydı varsa
+  // kullanıcı uygulamayı zaten kurmuştur; örnek veriyi DİRİLTMEYİZ ve
+  // ayarlarını (adı, PIN, LLM…) EZMEYİZ — aksi hâlde son dosyasını silen
+  // kullanıcıya 24 sahte dosya ve "Ayşe Kaya" profili geri gelirdi.
+  // Tam sıfırlama (`db.delete()`) ayarları da sildiğinden bu koşul geçer ve
+  // taze kurulum olarak kasıtlı tohumlanır.
+  const ayarlar = await db.ayarlar.get('tekil')
+  if (ayarlar?.profilKuruldu || ayarlar?.hukukiOnay) return false
+
   await db.transaction(
     'rw',
     [
