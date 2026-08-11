@@ -10,6 +10,7 @@
 
 import {
   createContext,
+  Fragment,
   useCallback,
   useContext,
   useEffect,
@@ -175,8 +176,14 @@ export function Routes({ routes, fallback }: RoutesProps) {
     document.title = `${baslik} · JurisCalendar`
   }, [baslik])
 
-  if (matched) return <>{matched.route.render(matched.params)}</>
-  return <>{fallback}</>
+  // Eşleşen içeriği **yola göre anahtarla**: bir kayıttan (`/finans/A`)
+  // başkasına (`/finans/B`) geçildiğinde React aynı bileşen örneğini yeniden
+  // kullanmasın, taze mount etsin. Aksi hâlde "yalnızca bir kez ön-doldur"
+  // (`yuklendi`) korumalı düzenleme formları önceki kaydın verisini gösterir
+  // ve kaydedilirse yanlış kaydın üzerine yazılır (veri bozulması). Anahtar
+  // sorgu dizesini içermez → aynı yolda süzgeç (query) değişimi remount etmez.
+  if (matched) return <Fragment key={path}>{matched.route.render(matched.params)}</Fragment>
+  return <Fragment key="__404__">{fallback}</Fragment>
 }
 
 interface LinkProps {
