@@ -172,7 +172,7 @@ export async function yedegiIndir(parola?: string): Promise<void> {
 
 export class YedekHatasi extends Error {}
 
-function dogrula(veri: unknown): asserts veri is Yedek {
+export function dogrula(veri: unknown): asserts veri is Yedek {
   if (typeof veri !== 'object' || veri === null) {
     throw new YedekHatasi('Dosya okunamadı.')
   }
@@ -187,6 +187,15 @@ function dogrula(veri: unknown): asserts veri is Yedek {
   }
   if (typeof aday.tablolar !== 'object' || aday.tablolar === null) {
     throw new YedekHatasi('Yedek içeriği eksik.')
+  }
+  // Her tablo alanı, varsa, bir dizi olmalı. Bozuk/elle düzenlenmiş bir dosya
+  // (ör. `dosyalar` bir metin) burada, DB'ye dokunmadan ÖNCE reddedilsin;
+  // aksi hâlde geri yükleme önce tüm tabloları `clear()` eder, sonra
+  // `bulkAdd`'de patlar ve veri güvenliği yalnızca işlem geri almasına kalır.
+  for (const deger of Object.values(aday.tablolar as Record<string, unknown>)) {
+    if (deger !== undefined && !Array.isArray(deger)) {
+      throw new YedekHatasi('Yedek içeriği bozuk.')
+    }
   }
 }
 

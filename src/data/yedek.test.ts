@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { YEDEK_SURUMU, sifreliMi, yedekOzeti, type Yedek } from './yedek'
+import {
+  YEDEK_SURUMU,
+  YedekHatasi,
+  dogrula,
+  sifreliMi,
+  yedekOzeti,
+  type Yedek,
+} from './yedek'
 
 /*
  * Yedekleme, local-first uygulamada verinin tek güvencesi; bu iki saf yardımcı
@@ -61,6 +68,54 @@ function yedekKur(sayilar: Partial<Record<string, number>>): Yedek {
     },
   }
 }
+
+describe('dogrula — geri yükleme öncesi yedek doğrulaması', () => {
+  it('geçerli yedeği kabul eder (fırlatmaz)', () => {
+    expect(() => dogrula(yedekKur({ dosyalar: 3 }))).not.toThrow()
+  })
+
+  it('nesne olmayan girdiyi reddeder', () => {
+    expect(() => dogrula(null)).toThrow(YedekHatasi)
+    expect(() => dogrula('metin')).toThrow(YedekHatasi)
+  })
+
+  it('yanlış biçim etiketini reddeder', () => {
+    expect(() => dogrula({ bicim: 'baska', surum: 1, tablolar: {} })).toThrow(
+      /JurisCalendar yedeği değil/,
+    )
+  })
+
+  it('uygulamadan yeni sürümü reddeder', () => {
+    expect(() =>
+      dogrula({ bicim: 'juriscalendar-yedek', surum: YEDEK_SURUMU + 1, tablolar: {} }),
+    ).toThrow(/daha yeni/)
+  })
+
+  it('tablolar nesne değilse reddeder', () => {
+    expect(() =>
+      dogrula({ bicim: 'juriscalendar-yedek', surum: 1, tablolar: 42 }),
+    ).toThrow(/içeriği eksik/)
+  })
+
+  it('bir tablo alanı dizi değilse "bozuk" olarak reddeder — DB clear/rollback\'e kalmasın', () => {
+    // Regresyon: elle bozulmuş dosya (dosyalar bir metin) geri yükleme
+    // tabloları temizlemeden ÖNCE, net bir mesajla reddedilmeli.
+    expect(() =>
+      dogrula({
+        bicim: 'juriscalendar-yedek',
+        surum: 1,
+        tablolar: { dosyalar: 'boom' },
+      }),
+    ).toThrow(/içeriği bozuk/)
+    expect(() =>
+      dogrula({
+        bicim: 'juriscalendar-yedek',
+        surum: 1,
+        tablolar: { belgeler: 5 },
+      }),
+    ).toThrow(/içeriği bozuk/)
+  })
+})
 
 describe('yedekOzeti', () => {
   it('kullanıcıya gösterilen yedi tablonun sayısını doğru verir', () => {
