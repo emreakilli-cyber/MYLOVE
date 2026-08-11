@@ -31,7 +31,7 @@ function bosaCevir(v: string | undefined): string | undefined {
 }
 
 /** Ödeme durumunu ödenen/toplam oranından tutarlı biçimde türetir. */
-function durumNormalize(
+export function durumNormalize(
   tutar: Kurus,
   odenen: Kurus,
 ): FinansKaydi['odemeDurumu'] {
@@ -45,7 +45,7 @@ function durumNormalize(
  * girilen) ya da negatif ödeme, negatif "bekleyen" bakiyesi veya şişmiş tahsilat
  * toplamı üretmesin — bekleyen = tutar − odenenTutar her zaman ≥ 0 kalır.
  */
-function odenenKirp(tutar: Kurus, odenen: Kurus): Kurus {
+export function odenenKirp(tutar: Kurus, odenen: Kurus): Kurus {
   return Math.max(0, Math.min(odenen, tutar))
 }
 
