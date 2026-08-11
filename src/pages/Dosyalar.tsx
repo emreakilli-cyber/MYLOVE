@@ -79,7 +79,7 @@ export function Dosyalar() {
         </section>
       ) : satirlar.length === 0 ? (
         <section className="card section-card">
-          <p className="section-empty">
+          <p className="section-empty" role="status">
             {arama
               ? `“${arama}” için sonuç yok.`
               : 'Bu süzgeçte dosya yok.'}
@@ -87,7 +87,7 @@ export function Dosyalar() {
         </section>
       ) : (
         <>
-          <p className="list-count">
+          <p className="list-count" role="status">
             {satirlar.length} dosya
           </p>
           <section className="card divide-rows">

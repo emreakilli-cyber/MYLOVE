@@ -74,11 +74,13 @@ export function Finans() {
         </section>
       ) : satirlar.length === 0 ? (
         <section className="card section-card">
-          <p className="section-empty">Bu süzgeçte kayıt yok.</p>
+          <p className="section-empty" role="status">Bu süzgeçte kayıt yok.</p>
         </section>
       ) : (
         <>
-          <p className="list-count">{satirlar.length} kayıt</p>
+          <p className="list-count" role="status">
+            {satirlar.length} kayıt
+          </p>
           <section className="card divide-rows">
             {satirlar.map(({ kayit, dosya }) => {
               const bekliyor = kayit.odemeDurumu !== 'odendi'

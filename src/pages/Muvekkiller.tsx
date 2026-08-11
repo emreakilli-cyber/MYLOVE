@@ -43,13 +43,15 @@ export function Muvekkiller() {
         </section>
       ) : satirlar.length === 0 ? (
         <section className="card section-card">
-          <p className="section-empty">
+          <p className="section-empty" role="status">
             {arama ? `“${arama}” için sonuç yok.` : 'Henüz müvekkil yok.'}
           </p>
         </section>
       ) : (
         <>
-          <p className="list-count">{satirlar.length} müvekkil</p>
+          <p className="list-count" role="status">
+            {satirlar.length} müvekkil
+          </p>
           <section className="card divide-rows">
             {satirlar.map(({ muvekkil, acikDosya, toplamDosya, bekleyenOdeme }) => (
               <Link

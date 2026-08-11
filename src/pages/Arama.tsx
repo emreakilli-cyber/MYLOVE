@@ -123,11 +123,15 @@ export function Arama() {
         </section>
       ) : sonuclar.toplam === 0 ? (
         <section className="card section-card">
-          <p className="section-empty">“{sorgu.trim()}” için sonuç yok.</p>
+          <p className="section-empty" role="status">
+            “{sorgu.trim()}” için sonuç yok.
+          </p>
         </section>
       ) : (
         <>
-          <p className="list-count">{sonuclar.toplam} sonuç</p>
+          <p className="list-count" role="status">
+            {sonuclar.toplam} sonuç
+          </p>
 
           {sonuclar.dosyalar.length > 0 ? (
             <section className="arama-grup">
