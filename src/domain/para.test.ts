@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   metindenKurus,
+  tutarDuzenlenebilir,
   tutarKisa,
   tutarTam,
   yuzdeDegisim,
@@ -67,6 +68,22 @@ describe('metindenKurus — Türkçe/İngilizce karışık ayrıştırma', () =>
     expect(metindenKurus('abc')).toBeNull()
     expect(metindenKurus('.')).toBeNull()
     expect(metindenKurus('-')).toBeNull()
+  })
+})
+
+describe('tutarDuzenlenebilir — düzenleme alanı ön-doldurma biçimi', () => {
+  it('kuruşu binlik ayraçlı, para simgesiz Türkçe metne çevirir', () => {
+    expect(tutarDuzenlenebilir(1250000)).toBe('12.500,00')
+    expect(tutarDuzenlenebilir(50000)).toBe('500,00')
+    expect(tutarDuzenlenebilir(50)).toBe('0,50')
+    expect(tutarDuzenlenebilir(125000050)).toBe('1.250.000,50')
+  })
+
+  it('çıktısı metindenKurus ile kayıpsız gidiş-dönüş yapar — regresyon koruması', () => {
+    // Düzenleme formu bu biçimle ön-dolar; kaydederken aynı kuruşa dönmeli.
+    for (const kurus of [1, 99, 50, 50000, 400000, 900000, 1250000, 125000050, 100000000]) {
+      expect(metindenKurus(tutarDuzenlenebilir(kurus))).toBe(kurus)
+    }
   })
 })
 

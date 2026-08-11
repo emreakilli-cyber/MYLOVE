@@ -19,6 +19,11 @@ const kisaBicim = new Intl.NumberFormat('tr-TR', {
   maximumFractionDigits: 0,
 })
 
+const duzenlemeBicim = new Intl.NumberFormat('tr-TR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
 /** "₺184.500,00" — finans listeleri ve makbuzlar. */
 export function tutarTam(kurus: Kurus): string {
   return tamBicim.format(kurus / 100)
@@ -30,6 +35,17 @@ export function tutarTam(kurus: Kurus): string {
  */
 export function tutarKisa(kurus: Kurus): string {
   return kurus % 100 === 0 ? kisaBicim.format(kurus / 100) : tutarTam(kurus)
+}
+
+/**
+ * Kuruşu düzenlenebilir Türkçe metne çevirir ("1250000" → "12.500,00").
+ * Para simgesi yoktur; bir tutar girişini ön-doldurmak içindir — çıktısı
+ * `metindenKurus` ile kayıpsız gidiş-dönüş yapar (binlik ayraçlı biçim de
+ * doğru ayrışır), böylece düzenleme alanı uygulamanın geri kalanıyla (₺ ile
+ * gösterilen `tutarTam`) aynı Türkçe biçimi kullanır.
+ */
+export function tutarDuzenlenebilir(kurus: Kurus): string {
+  return duzenlemeBicim.format(kurus / 100)
 }
 
 /**

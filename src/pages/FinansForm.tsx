@@ -19,7 +19,7 @@ import {
 } from '../data/belgeIslemleri'
 import { useAcikDosyalar } from '../data/olayIslemleri'
 import { bugunIso, tamTarih } from '../domain/tarih'
-import { metindenKurus, tutarTam } from '../domain/para'
+import { metindenKurus, tutarDuzenlenebilir, tutarTam } from '../domain/para'
 import type { FinansKategorisi, FinansYonu } from '../domain/types'
 
 const kategoriSirasi: FinansKategorisi[] = [
@@ -88,11 +88,9 @@ export function FinansForm({ id }: { id?: string }) {
       kategori: mevcut.kategori,
       yon: mevcut.yon,
       baslik: mevcut.baslik,
-      tutarMetni: (mevcut.tutar / 100).toFixed(2).replace('.', ','),
+      tutarMetni: tutarDuzenlenebilir(mevcut.tutar),
       odenenMetni:
-        mevcut.odenenTutar > 0
-          ? (mevcut.odenenTutar / 100).toFixed(2).replace('.', ',')
-          : '',
+        mevcut.odenenTutar > 0 ? tutarDuzenlenebilir(mevcut.odenenTutar) : '',
       odemeDurumu: mevcut.odemeDurumu,
       tarih: mevcut.tarih,
       vadeTarihi: mevcut.vadeTarihi ?? '',
