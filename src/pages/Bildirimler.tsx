@@ -131,7 +131,9 @@ export function Bildirimler() {
 
       <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
         Hatırlatmalar takvim ve süre kayıtlarınızdan anlık hesaplanır.
-        Zamanlarını Ayarlar’dan değiştirebilirsiniz.
+        Zamanlarını Ayarlar’dan değiştirebilirsiniz. Süre kayıtları
+        bilgilendirme amaçlıdır; son günün doğruluğunu teyit etmek kullanıcının
+        sorumluluğundadır.
       </p>
     </>
   )

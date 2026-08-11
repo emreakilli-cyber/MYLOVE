@@ -332,6 +332,13 @@ export function Raporlar() {
             <h2 className="t-title chart-title">Açık süreler</h2>
             <p className="chart-sub">Aciliyete göre dağılım · anlık durum</p>
             <Halka veri={veri} />
+            <p
+              className="t-small t-muted"
+              style={{ marginTop: 'var(--space-3)' }}
+            >
+              Süre kayıtları bilgilendirme amaçlıdır; son günün doğruluğunu teyit
+              etmek kullanıcının sorumluluğundadır.
+            </p>
           </section>
 
           {/* Gider dağılımı */}

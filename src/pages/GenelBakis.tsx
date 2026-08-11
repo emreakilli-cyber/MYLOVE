@@ -531,6 +531,13 @@ function PanelIcerigi() {
         <SureListesi satirlar={sureler} />
       </BolumKarti>
 
+      {sureler && sureler.length > 0 ? (
+        <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
+          Süre kayıtları bilgilendirme amaçlıdır; son günün doğruluğunu teyit
+          etmek kullanıcının sorumluluğundadır.
+        </p>
+      ) : null}
+
       <BolumKarti
         etiket="Bugünün programı"
         baslik="Duruşmalar"
