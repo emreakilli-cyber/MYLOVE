@@ -143,6 +143,8 @@ export interface RouteDefinition {
   /** "/dosyalar/:id" biçiminde kalıp. */
   readonly path: string
   readonly render: (params: RouteParams) => ReactNode
+  /** Sekme/geçmiş ve ekran okuyucu için sayfa başlığı (WCAG 2.4.2). */
+  readonly baslik?: string
 }
 
 interface RoutesProps {
@@ -153,15 +155,27 @@ interface RoutesProps {
 export function Routes({ routes, fallback }: RoutesProps) {
   const { path } = useLocation()
 
+  const matched = useMemo(() => {
+    for (const route of routes) {
+      const params = matchPath(route.path, path)
+      if (params) return { route, params }
+    }
+    return null
+  }, [routes, path])
+
   // Gezinince içerik başa sarsın; tarayıcı geri tuşu da aynı davranır.
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }, [path])
 
-  for (const route of routes) {
-    const params = matchPath(route.path, path)
-    if (params) return <>{route.render(params)}</>
-  }
+  // Her rota kendi başlığını taşısın (WCAG 2.4.2): ekran okuyucu sayfa
+  // değişimini duyurur, tarayıcı geçmişi ve sekmeler anlamlı olur.
+  const baslik = matched?.route.baslik ?? 'Sayfa bulunamadı'
+  useEffect(() => {
+    document.title = `${baslik} · JurisCalendar`
+  }, [baslik])
+
+  if (matched) return <>{matched.route.render(matched.params)}</>
   return <>{fallback}</>
 }
 
