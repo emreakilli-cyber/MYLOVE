@@ -126,6 +126,7 @@ export async function dosyaGuncelle(
   id: string,
   girdi: DosyaGirdisi,
 ): Promise<void> {
+  const onceki = await db.dosyalar.get(id)
   await db.dosyalar.update(id, {
     baslik: girdi.baslik.trim(),
     muvekkilId: girdi.muvekkilId,
@@ -142,6 +143,21 @@ export async function dosyaGuncelle(
       : { kapanisTarihi: undefined }),
     guncellemeTarihi: simdi(),
   })
+
+  // Müvekkil değiştiyse dosyaya bağlı kayıtlardaki denormalize `muvekkilId`'yi
+  // eşitle. finans/olay/görev kayıtları oluşturulurken dosyanın müvekkilini
+  // kopyalar; dosya başka müvekkile taşınınca bu kopyalar bayatlar. Özellikle
+  // müvekkil bazlı finans (bekleyen ödeme) `finans.muvekkilId`'den okunduğu için
+  // eski müvekkile yazılmaya devam ederdi. Kaynak doğruluğu dosyada; kopyalar
+  // onu izlemeli.
+  if (onceki && onceki.muvekkilId !== girdi.muvekkilId) {
+    const yeni = { muvekkilId: girdi.muvekkilId }
+    await db.transaction('rw', [db.finans, db.olaylar, db.gorevler], async () => {
+      await db.finans.where('dosyaId').equals(id).modify(yeni)
+      await db.olaylar.where('dosyaId').equals(id).modify(yeni)
+      await db.gorevler.where('dosyaId').equals(id).modify(yeni)
+    })
+  }
 }
 
 export async function dosyaSil(id: string): Promise<void> {
