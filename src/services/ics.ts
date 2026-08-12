@@ -153,13 +153,31 @@ export function tekOlayIcs(
   })
 }
 
+/**
+ * Dosya adı kökünü güvenli hâle getirir. Olay başlığından türetilen ad
+ * (ör. "Yılmaz / Arslan") dosya sistemi/indirme için güvensiz karakterler
+ * içerebilir; `/ \ : * ? " < > |` bunlar `download` özniteliğinde tarayıcıya
+ * göre ya yolu kesiyor ("…/arslan.ics") ya da bozuyor. Bunları tireye çevirir,
+ * boşlukları tireler, çoklu tireyi tekiller. Türkçe harfler (ş/ı/İ/ğ/ü/ö/ç)
+ * dosya adında geçerli olduğundan korunur.
+ */
+export function dosyaAdiTemizle(adKoku: string): string {
+  return (
+    adKoku
+      .replace(/[/\\:*?"<>|]/g, '-')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'takvim'
+  )
+}
+
 /** ICS metnini .ics dosyası olarak indirir. */
 export function icsIndir(ics: string, adKoku: string): void {
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
   const adres = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = adres
-  a.download = `${adKoku}.ics`
+  a.download = `${dosyaAdiTemizle(adKoku)}.ics`
   a.click()
   URL.revokeObjectURL(adres)
 }

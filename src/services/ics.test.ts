@@ -1,11 +1,30 @@
 import { describe, expect, it } from 'vitest'
-import { icsUret } from './ics'
+import { dosyaAdiTemizle, icsUret } from './ics'
 import type { Olay, Sure } from '../domain/types'
 
 /*
  * ICS çıktısı takvim uygulamalarına aktarılacak; biçimin RFC 5545'e uygun
  * olması şart. Sabit bir `simdi` ile deterministik doğrulanır.
  */
+
+describe('dosyaAdiTemizle — indirme dosya adını güvenli hâle getirir', () => {
+  it('yol ayıracı ve güvensiz karakterleri tireye çevirir', () => {
+    // Regresyon: "Yılmaz / Arslan" başlığındaki "/" download adında yolu
+    // kesip dosyayı bozuyordu.
+    expect(dosyaAdiTemizle('olay-yılmaz / arslan')).toBe('olay-yılmaz-arslan')
+    expect(dosyaAdiTemizle('dava: 2026/123')).toBe('dava-2026-123')
+    expect(dosyaAdiTemizle('a*b?c"d<e>f|g\\h')).toBe('a-b-c-d-e-f-g-h')
+  })
+
+  it('Türkçe harfleri korur, çoklu tireyi tekiller, baş/son tireyi kırpar', () => {
+    expect(dosyaAdiTemizle('Şirket  İşleri')).toBe('Şirket-İşleri')
+    expect(dosyaAdiTemizle('/// kenar ///')).toBe('kenar')
+  })
+
+  it('tümü güvensizse boş kalmaz (yedek ad)', () => {
+    expect(dosyaAdiTemizle('///')).toBe('takvim')
+  })
+})
 
 const SIMDI = new Date('2026-08-04T18:00:00Z')
 

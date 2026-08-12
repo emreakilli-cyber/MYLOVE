@@ -139,7 +139,8 @@ export function OlayForm({ id }: { id?: string }) {
       ? dosyalar?.find((d) => d.id === mevcut.dosyaId)?.baslik
       : undefined
     const ics = tekOlayIcs(mevcut, dosyaAdi, new Date())
-    icsIndir(ics, `olay-${mevcut.baslik.replace(/\s+/g, '-').toLocaleLowerCase('tr')}`)
+    // Güvensiz karakter temizliği icsIndir'de; burada yalnızca tr-küçük harf.
+    icsIndir(ics, `olay-${mevcut.baslik.toLocaleLowerCase('tr')}`)
   }
 
   if (duzenleme && mevcut === null) {
