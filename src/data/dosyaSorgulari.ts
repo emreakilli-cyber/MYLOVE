@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
 import { hazirlikHesapla } from '../domain/hazirlik'
+import { yerelGun } from '../domain/tarih'
 import type {
   Belge,
   Dosya,
@@ -107,7 +108,8 @@ export function useDosyaListesi(
           .sort((a, b) => a.sonTarih.localeCompare(b.sonTarih))[0]
 
         let sonrakiIs: DosyaSatiri['sonrakiIs']
-        const olayGunu = sonrakiOlay?.baslangic.slice(0, 10)
+        // Gösterilen "sıradaki iş" günü, takvimle aynı olsun diye yerel gün.
+        const olayGunu = sonrakiOlay ? yerelGun(sonrakiOlay.baslangic) : undefined
         if (sonrakiOlay && olayGunu && (!sonrakiSure || olayGunu <= sonrakiSure.sonTarih)) {
           sonrakiIs = { etiket: sonrakiOlay.baslik, gun: olayGunu }
         } else if (sonrakiSure) {

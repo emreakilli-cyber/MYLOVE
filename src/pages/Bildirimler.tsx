@@ -6,7 +6,7 @@ import {
   type YaklasanHatirlatma,
 } from '../data/hatirlatmaSorgulari'
 import { useAyarlar } from '../data/sorgular'
-import { goreliZaman, kisaTarih, saat } from '../domain/tarih'
+import { goreliZaman, kisaTarih, saat, yerelGun } from '../domain/tarih'
 import { pushIzniIste } from '../services/bildirim'
 import {
   ayarlariGuncelle,
@@ -155,7 +155,7 @@ function HatirlatmaSatiri({
         <span className="row-main">
           <span className="row-title truncate">{h.baslik}</span>
           <span className="row-sub truncate">
-            {h.altBaslik} · {kisaTarih(h.hedefZaman.slice(0, 10))}{' '}
+            {h.altBaslik} · {kisaTarih(yerelGun(h.hedefZaman))}{' '}
             {saat(h.hedefZaman)}
           </span>
         </span>

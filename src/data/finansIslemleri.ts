@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, simdi, yeniId } from './db'
+import { bugunIso } from '../domain/tarih'
 import type {
   FinansKategorisi,
   FinansKaydi,
@@ -123,7 +124,7 @@ export async function odemeTamamla(id: string): Promise<void> {
   await db.finans.update(id, {
     odenenTutar: kayit.tutar,
     odemeDurumu: 'odendi',
-    odemeTarihi: simdi().slice(0, 10),
+    odemeTarihi: bugunIso(),
     guncellemeTarihi: simdi(),
   })
 }

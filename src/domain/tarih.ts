@@ -37,6 +37,21 @@ export function bugunIso(): IsoDate {
   return dateToIsoDate(new Date())
 }
 
+/**
+ * Bir tarih/zaman damgasını YEREL güne indirger. Saf "YYYY-MM-DD" değerler
+ * (ör. `finans.tarih`, `sure.sonTarih`) olduğu gibi döner; UTC zaman damgaları
+ * (`…Z`, ör. `olay.baslangic`, `gorev.tamamlanmaTarihi`) yerel güne çevrilir.
+ *
+ * Neden: olaylar UTC saklanıp arayüzde yerele çevriliyor; "hangi gün" kararı
+ * (takvim kovası, "bugün", rapor aralığı) her yerde YEREL güne göre olmalı ki
+ * gece yarısı civarındaki bir olay (ör. 22:00Z = UTC+3'te ertesi gün 01:00)
+ * tüm ekranlarda aynı güne düşsün. Ham `slice(0, 10)` UTC gününü verir ve
+ * yerel "bugün" ile karşılaştırıldığında sınırda bir gün kayması yaratır.
+ */
+export function yerelGun(zaman: IsoDate | IsoDateTime): IsoDate {
+  return zaman.includes('T') ? dateToIsoDate(new Date(zaman)) : zaman.slice(0, 10)
+}
+
 /** Aradaki tam gün sayısı. Bugün → 0, yarın → 1, dün → -1. */
 export function gunFarki(hedef: IsoDate, kaynak: IsoDate = bugunIso()): number {
   const a = isoDateToDate(hedef).getTime()

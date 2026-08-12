@@ -1,6 +1,12 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
-import { aciliyet, bugunIso, dateToIsoDate, isoDateToDate } from '../domain/tarih'
+import {
+  aciliyet,
+  bugunIso,
+  dateToIsoDate,
+  isoDateToDate,
+  yerelGun,
+} from '../domain/tarih'
 import { kategoriEtiketleri } from './finansIslemleri'
 import type { FinansKategorisi, IsoDate } from '../domain/types'
 
@@ -38,22 +44,6 @@ export interface RaporVerisi {
   /** Toplamlar. */
   toplamTahsilat: number
   toplamGider: number
-}
-
-/**
- * Bir tarih/zaman damgasını YEREL güne indirger. `finans.tarih` gibi saf
- * "YYYY-MM-DD" değerler olduğu gibi döner; `olay.baslangic` / `gorev.
- * tamamlanmaTarihi` gibi UTC zaman damgaları (`…Z`) yerel güne çevrilir.
- *
- * Neden: takvim olayları yerel güne göre kovalanıyor (`dateToIsoDate(new
- * Date(baslangic))`, bkz. takvimSorgulari). Raporlar UTC gününü (`slice(0,10)`)
- * alsaydı, gece yarısı civarındaki bir olay (ör. 22:00Z = UTC+3'te ertesi gün
- * 01:00) takvimde bir ayda, raporda başka ayda görünür — iki görünüm çelişirdi.
- */
-export function raporGunu(isoTarih: string): IsoDate {
-  return isoTarih.includes('T')
-    ? dateToIsoDate(new Date(isoTarih))
-    : isoTarih.slice(0, 10)
 }
 
 /** Aralığın dokunduğu her ay için bir kova (en çok 24 — grafik okunur kalsın). */
@@ -104,9 +94,9 @@ export function useRaporVerisi(
     ])
 
     // Aralık içindeki günler (dahil). Zaman damgaları (olay/görev) yerel güne
-    // indirgenir ki takvimle aynı gün kovasına düşsün (bkz. raporGunu).
+    // indirgenir ki takvimle aynı gün kovasına düşsün (bkz. yerelGun).
     const aralikta = (isoTarih: string): boolean => {
-      const g = raporGunu(isoTarih)
+      const g = yerelGun(isoTarih)
       return g >= baslangic && g <= bitis
     }
     const finans = tumFinans.filter((f) => aralikta(f.tarih))

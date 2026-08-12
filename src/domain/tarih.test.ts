@@ -10,7 +10,28 @@ import {
   selamlama,
   tarihRozeti,
   uzunTarihEtiketi,
+  yerelGun,
 } from './tarih'
+
+describe('yerelGun — tarih/zaman damgasını yerel güne indirger', () => {
+  it('saf "YYYY-MM-DD" tarihi olduğu gibi döndürür (Date ayrıştırmasına sokmaz)', () => {
+    // "T" yoksa doğrudan dilimlenir — her saat diliminde kaymadan geçer.
+    expect(yerelGun('2026-08-15')).toBe('2026-08-15')
+    expect(yerelGun('2026-01-01')).toBe('2026-01-01')
+    expect(yerelGun('2026-12-31')).toBe('2026-12-31')
+  })
+
+  it('UTC zaman damgasını takvimle AYNI yerel güne çevirir', () => {
+    // Sözleşme: "hangi gün" kararı takvimin yerel-gün kovasıyla birebir olmalı.
+    for (const iso of [
+      '2026-08-15T09:00:00Z',
+      '2026-08-31T22:00:00.000Z', // UTC+3'te ertesi gün — kritik sınır
+      '2026-09-01T00:30:00Z',
+    ]) {
+      expect(yerelGun(iso)).toBe(dateToIsoDate(new Date(iso)))
+    }
+  })
+})
 
 describe('gün aritmetiği', () => {
   it('ISO gün metnini yerel güne çevirir, kaydırmaz', () => {

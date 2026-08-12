@@ -11,7 +11,13 @@ import type {
 } from '../domain/types'
 import { hazirlikHesapla } from '../domain/hazirlik'
 import type { HazirlikOzeti } from '../domain/types'
-import { aralik, bugunIso, dateToIsoDate, gunBaslangici } from '../domain/tarih'
+import {
+  aralik,
+  bugunIso,
+  dateToIsoDate,
+  gunBaslangici,
+  yerelGun,
+} from '../domain/tarih'
 
 /*
  * Gösterge panelinin okuma katmanı.
@@ -183,7 +189,7 @@ export function useGunlukGorevler(limit = 6): GorevSatiri[] | undefined {
         // Yalnızca bugün tamamlananlar görünsün.
         return (
           g.tamamlanmaTarihi !== undefined &&
-          g.tamamlanmaTarihi.slice(0, 10) === bugun
+          yerelGun(g.tamamlanmaTarihi) === bugun
         )
       }
       return true
@@ -312,7 +318,7 @@ function durumNotuUret(
   const bugun = bugunIso()
 
   const bugunkuDurusma = olaylar.find(
-    (o) => o.tur === 'durusma' && o.baslangic.slice(0, 10) === bugun,
+    (o) => o.tur === 'durusma' && yerelGun(o.baslangic) === bugun,
   )
   if (bugunkuDurusma) return 'Duruşma bugün'
 
@@ -330,7 +336,7 @@ function durumNotuUret(
   if (bekleyenOdeme) return `${bekleyenOdeme.baslik} bekliyor`
 
   const sonrakiDurusma = olaylar
-    .filter((o) => o.tur === 'durusma' && o.baslangic.slice(0, 10) > bugun)
+    .filter((o) => o.tur === 'durusma' && yerelGun(o.baslangic) > bugun)
     .sort((a, b) => a.baslangic.localeCompare(b.baslangic))[0]
   if (sonrakiDurusma) return 'Duruşma bekleniyor'
 

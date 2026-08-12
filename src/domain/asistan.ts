@@ -7,7 +7,14 @@ import type {
   Olay,
   Sure,
 } from './types'
-import { aciliyet, gunFarki, kalanSureMetni, kisaTarih } from './tarih'
+import {
+  aciliyet,
+  bugunIso,
+  gunFarki,
+  kalanSureMetni,
+  kisaTarih,
+  yerelGun,
+} from './tarih'
 import { hazirlikHesapla } from './hazirlik'
 
 /*
@@ -137,10 +144,10 @@ export function dosyaBulgulari(baglam: DosyaBaglami): Bulgu[] {
   }
 
   // 3) Yaklaşan duruşma.
-  const bugunStr = new Date().toISOString().slice(0, 10)
+  const bugunStr = bugunIso()
   for (const o of olaylar) {
     if (o.tur !== 'durusma' || o.durum !== 'planlandi') continue
-    const gun = o.baslangic.slice(0, 10)
+    const gun = yerelGun(o.baslangic)
     if (gun < bugunStr) continue
     const fark = gunFarki(gun)
     if (fark <= 7) {
@@ -244,13 +251,13 @@ export function dosyaOzeti(baglam: DosyaBaglami): string {
     )
   }
 
-  const bugunStr = new Date().toISOString().slice(0, 10)
+  const bugunStr = bugunIso()
   const sonrakiDurusma = olaylar
-    .filter((o) => o.tur === 'durusma' && o.baslangic.slice(0, 10) >= bugunStr)
+    .filter((o) => o.tur === 'durusma' && yerelGun(o.baslangic) >= bugunStr)
     .sort((a, b) => a.baslangic.localeCompare(b.baslangic))[0]
   if (sonrakiDurusma) {
     parcalar.push(
-      `Sonraki duruşma ${kisaTarih(sonrakiDurusma.baslangic.slice(0, 10))}.`,
+      `Sonraki duruşma ${kisaTarih(yerelGun(sonrakiDurusma.baslangic))}.`,
     )
   }
 

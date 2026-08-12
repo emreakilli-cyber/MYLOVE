@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, simdi, yeniId } from './db'
+import { bugunIso } from '../domain/tarih'
 import type {
   Dosya,
   DosyaDurumu,
@@ -88,7 +89,7 @@ export async function dosyaEkle(girdi: DosyaGirdisi): Promise<string> {
     ...(bosaCevir(girdi.karsiTaraf)
       ? { karsiTaraf: bosaCevir(girdi.karsiTaraf) }
       : {}),
-    acilisTarihi: zaman.slice(0, 10),
+    acilisTarihi: bugunIso(),
     ...(bosaCevir(girdi.not) ? { not: bosaCevir(girdi.not) } : {}),
     arsivlendi: false,
     olusturmaTarihi: zaman,
@@ -122,7 +123,7 @@ export async function dosyaGuncelle(
     not: bosaCevir(girdi.not),
     // Dosya kapatılıyorsa kapanış tarihini damgala.
     ...(girdi.durum === 'kapali'
-      ? { kapanisTarihi: simdi().slice(0, 10) }
+      ? { kapanisTarihi: bugunIso() }
       : { kapanisTarihi: undefined }),
     guncellemeTarihi: simdi(),
   })
