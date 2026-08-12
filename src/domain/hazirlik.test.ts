@@ -92,6 +92,22 @@ function odenmisHarc(): FinansKaydi {
   }
 }
 
+function odenmisGiderAvansi(): FinansKaydi {
+  return {
+    id: 'f-ga',
+    olusturmaTarihi: AN,
+    guncellemeTarihi: AN,
+    dosyaId: 'd1',
+    yon: 'gider',
+    kategori: 'gider-avansi',
+    baslik: 'Gider avansı',
+    tutar: 30000,
+    odenenTutar: 30000,
+    tarih: '2026-01-02',
+    odemeDurumu: 'odendi',
+  }
+}
+
 function kacmisSure(): Sure {
   return {
     id: 's1',
@@ -116,7 +132,7 @@ function tamGirdi(tur: DosyaTuru): HazirlikGirdisi {
     olaylar: [durusma()],
     sureler: [],
     gorevler: [],
-    finans: [odenmisHarc()],
+    finans: [odenmisHarc(), odenmisGiderAvansi()],
     belgeler: [vekaletname()],
   }
 }
@@ -170,6 +186,18 @@ describe('hazırlık — yüzde ve seviye', () => {
       expect(ozet.yuzde, tur).toBe(100)
       expect(ozet.seviye, tur).toBe('iyi')
     }
+  })
+
+  it('gider avansı kaydı hiç yoksa madde eksik sayılır (harç gibi)', () => {
+    // Kayıt yokluğu "tamam" görünmemeli: yatırılmamış olabilir ve eksikliği
+    // davayı düşürür (HMK m. 120/2). Boş liste `every` ile true dönerdi.
+    const g = tamGirdi('hukuk')
+    g.finans = [odenmisHarc()] // gider avansı kaydı yok
+    const ozet = hazirlikHesapla(g)
+    const ga = ozet.maddeler.find((m) => m.anahtar === 'gider-avansi')
+    expect(ga?.tamam).toBe(false)
+    expect(ga?.eylem).toBe('Gider avansını kaydedin')
+    expect(ozet.yuzde).toBeLessThan(100)
   })
 
   it('kaçmış süre en ağır madde: yüzdeyi düşürür ve sıradaki adımı belirler', () => {

@@ -186,9 +186,17 @@ export function hazirlikHesapla(girdi: HazirlikGirdisi): HazirlikOzeti {
     'gider-avansi': {
       anahtar: 'gider-avansi',
       etiket: 'Gider avansı tamamlandı',
-      tamam: giderAvanslari.every((f) => f.odemeDurumu === 'odendi'),
+      // Kayıt hiç yoksa da eksik sayılır (harç gibi): gider avansı henüz
+      // yatırılmamış olabilir ve eksikliği davanın açılmamış sayılmasına yol
+      // açar (HMK m. 120/2). Boş liste `every` ile "tamam" görünmemeli.
+      tamam:
+        giderAvanslari.length > 0 &&
+        giderAvanslari.every((f) => f.odemeDurumu === 'odendi'),
       agirlik: 2,
-      eylem: 'Gider avansını tamamlayın',
+      eylem:
+        giderAvanslari.length === 0
+          ? 'Gider avansını kaydedin'
+          : 'Gider avansını tamamlayın',
     },
     odemeler: {
       anahtar: 'odemeler',
