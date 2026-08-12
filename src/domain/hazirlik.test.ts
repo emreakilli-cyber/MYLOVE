@@ -108,6 +108,22 @@ function odenmisGiderAvansi(): FinansKaydi {
   }
 }
 
+function acikSure(sonTarih: string): Sure {
+  return {
+    id: `s-${sonTarih}`,
+    olusturmaTarihi: AN,
+    guncellemeTarihi: AN,
+    dosyaId: 'd1',
+    kuralId: 'istinaf-hmk-345',
+    kuralAdi: 'İstinaf süresi',
+    kanunReferansi: 'HMK m. 345',
+    baslangicTarihi: '2020-01-01',
+    hamSonTarih: sonTarih,
+    sonTarih,
+    durum: 'acik',
+  }
+}
+
 function kacmisSure(): Sure {
   return {
     id: 's1',
@@ -186,6 +202,26 @@ describe('hazırlık — yüzde ve seviye', () => {
       expect(ozet.yuzde, tur).toBe(100)
       expect(ozet.seviye, tur).toBe('iyi')
     }
+  })
+
+  it('vadesi geçmiş AÇIK süre kaçırılmış sayılır (durum kacirildi olmasa da)', () => {
+    // Hiçbir kod süreyi otomatik `kacirildi`'ya çevirmiyor; yalnızca duruma
+    // bakmak vadesi geçmiş açık süreyi (en tehlikeli hâli) gizlerdi.
+    const g = tamGirdi('hukuk')
+    g.sureler = [acikSure('2020-01-15')] // durum: 'acik', son gün çok geçmiş
+    const ozet = hazirlikHesapla(g)
+    const madde = ozet.maddeler.find((m) => m.anahtar === 'sureler')
+    expect(madde?.tamam).toBe(false)
+    expect(madde?.etiketEksik).toBe('Kaçırılmış süre var')
+    expect(ozet.yuzde).toBeLessThan(100)
+  })
+
+  it('vadesi gelmemiş AÇIK süre kaçırılmış sayılmaz', () => {
+    const g = tamGirdi('hukuk')
+    g.sureler = [acikSure('2099-12-31')] // uzak gelecek, açık
+    const madde = hazirlikHesapla(g).maddeler.find((m) => m.anahtar === 'sureler')
+    expect(madde?.tamam).toBe(true)
+    expect(madde?.etiket).toBe('Kaçırılmış süre yok')
   })
 
   it('gider avansı kaydı hiç yoksa madde eksik sayılır (harç gibi)', () => {

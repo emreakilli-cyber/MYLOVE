@@ -125,7 +125,16 @@ export function hazirlikHesapla(girdi: HazirlikGirdisi): HazirlikOzeti {
   const bekleyenGiderler = finans.filter(
     (f) => f.yon === 'gider' && f.odemeDurumu !== 'odendi',
   )
-  const kacmisSure = sureler.some((s) => s.durum === 'kacirildi')
+  // "Kaçırılmış süre" iki hâli kapsar: (a) elle `kacirildi` işaretlenmiş süre,
+  // (b) hâlâ `acik` olup son günü GEÇMİŞ süre. (b) kritiktir: hiçbir kod süreyi
+  // otomatik `kacirildi`'ya çevirmiyor, dolayısıyla yalnızca duruma bakmak
+  // vadesi geçmiş açık süreyi (en tehlikeli hâli) gözden kaçırırdı. Gün farkı
+  // aynı gün 0 döner — son gün henüz geçmemiş sayılır (yalnızca < 0 kaçmış).
+  const kacmisSure = sureler.some(
+    (s) =>
+      s.durum === 'kacirildi' ||
+      (s.durum === 'acik' && gunFarki(s.sonTarih, bugun) < 0),
+  )
   const gecikmisGorev = gorevler.filter(
     (g) =>
       g.durum === 'bekliyor' &&
