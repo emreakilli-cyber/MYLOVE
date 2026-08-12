@@ -103,6 +103,18 @@ describe('süre hesabı', () => {
     expect(s.gerekceler.some((g) => g.includes('adli tatil'))).toBe(true)
   })
 
+  it('adli tatil uzaması 7 Eylül hafta sonuna denk gelirse ilk iş gününe kaydırır', () => {
+    // 2025'te 7 Eylül PAZAR. İstinaf 2 hafta, 1 Ağu 2025 → ham 15 Ağu (adli
+    // tatilde) → 7 Eylül'e uzar (Pazar) → HMK m.93 ile 8 Eylül'e (Pzt) kaydırılır.
+    // İki kaydırmanın zincirlendiğini ve doğru sırada olduğunu doğrular.
+    const s = sureHesapla(kural('istinaf-hmk-345'), '2025-08-01')
+    expect(s.hamSonTarih).toBe('2025-08-15')
+    expect(s.adliTatilUygulandi).toBe(true)
+    expect(s.sonTarih).toBe('2025-09-08') // 7 Eylül Pazar → 8 Eylül Pzt
+    expect(s.gerekceler.some((g) => g.includes('adli tatil'))).toBe(true)
+    expect(s.gerekceler.some((g) => g.toLowerCase().includes('pazar'))).toBe(true)
+  })
+
   it('adli tatile tabi olmayan icra süresi uzamaz', () => {
     // Ödeme emri 7 gün, 10 Ağustos → ham 17 Ağustos (Pzt, adli tatilde ama tabi değil)
     const s = sureHesapla(kural('odeme-emrine-itiraz-iik-62'), '2026-08-10')
