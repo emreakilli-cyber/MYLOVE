@@ -16,6 +16,7 @@ import {
   bugunIso,
   dateToIsoDate,
   gunBaslangici,
+  gunFarki,
   yerelGun,
 } from '../domain/tarih'
 
@@ -309,8 +310,8 @@ export function useHazirlikDurumlari(
   }, [limit])
 }
 
-/** Dosyanın "şu an neyi bekliyor" cümlesi. */
-function durumNotuUret(
+/** Dosyanın "şu an neyi bekliyor" cümlesi. Saf: test için dışa açık. */
+export function durumNotuUret(
   olaylar: Olay[],
   sureler: Sure[],
   finans: Array<{ kategori: string; odemeDurumu: string; baslik: string }>,
@@ -330,7 +331,13 @@ function durumNotuUret(
   const acikSure = sureler
     .filter((s) => s.durum === 'acik')
     .sort((a, b) => a.sonTarih.localeCompare(b.sonTarih))[0]
-  if (acikSure) return `${acikSure.kuralAdi} yaklaşıyor`
+  if (acikSure) {
+    // Son günü geçmiş açık süre "yaklaşıyor" denemez — geçmiştir. Aynı gün
+    // (fark 0) hâlâ son gün, "yaklaşıyor" doğru.
+    return gunFarki(acikSure.sonTarih, bugun) < 0
+      ? `${acikSure.kuralAdi} son günü geçti`
+      : `${acikSure.kuralAdi} yaklaşıyor`
+  }
 
   const bekleyenOdeme = finans.find((f) => f.odemeDurumu === 'bekliyor')
   if (bekleyenOdeme) return `${bekleyenOdeme.baslik} bekliyor`
