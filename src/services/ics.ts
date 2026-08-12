@@ -1,5 +1,6 @@
 import type { Olay, Sure } from '../domain/types'
 import { olayGorunumleri } from '../domain/olay'
+import { yerelGun } from '../domain/tarih'
 
 /*
  * iCalendar (RFC 5545) dışa aktarma. Takvimi Google / Apple / Outlook'a
@@ -84,7 +85,10 @@ export function icsUret(baglam: IcsBaglami): string {
       `SUMMARY:${metinKacis(ozet)}`,
     ]
     if (olay.tumGun) {
-      const gun = olay.baslangic.slice(0, 10)
+      // Tüm gün olayı YEREL güne göre yazılmalı: baslangic UTC saklanır
+      // (ör. yerel 15 Ağu 00:00 = 14 Ağu 21:00Z), ham `slice(0,10)` UTC gününü
+      // (14 Ağu) verip olayı takvim uygulamasında bir gün ERKEN gösterirdi.
+      const gun = yerelGun(olay.baslangic)
       satirlar.push(`DTSTART;VALUE=DATE:${tarihDamga(gun)}`)
       satirlar.push(`DTEND;VALUE=DATE:${gunSonraki(gun)}`)
     } else {
