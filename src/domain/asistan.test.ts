@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   dosyaBulgulari,
+  dosyaOzeti,
   niyetCikar,
   soruyuCevapla,
   type DosyaBaglami,
@@ -119,6 +120,22 @@ describe('asistan kural motoru', () => {
   it('sorunsuz dosyada olumlu cevap verir', () => {
     const cevap = soruyuCevapla(baglam({}), 'Bu dosyada eksik bir işlem var mı?')
     expect(cevap).toContain('eksik işlem görünmüyor')
+  })
+})
+
+describe('dosya özeti', () => {
+  it('bekleyen ödemeyi kanonik para biçimiyle yazar (₺ önde, iki ondalık)', () => {
+    // Küsuratlı (tam lira olmayan) tutar: eski `/100 .toLocaleString` "10.500,5 ₺"
+    // verirdi (ondalık yutulur, ₺ sonda). Kanonik `tutarTam` → "₺10.500,50".
+    const kusuratli: FinansKaydi = {
+      ...bilirkisiKaydi,
+      id: 'f-kusur',
+      tutar: 1_050_050, // 10.500,50 ₺
+      odenenTutar: 0,
+    }
+    const ozet = dosyaOzeti(baglam({ finans: [kusuratli] }))
+    expect(ozet).toContain('Bekleyen ödeme: ₺10.500,50.')
+    expect(ozet).not.toContain('10.500,5 ₺')
   })
 })
 

@@ -16,6 +16,7 @@ import {
   yerelGun,
 } from './tarih'
 import { hazirlikHesapla } from './hazirlik'
+import { tutarTam } from './para'
 
 /*
  * Asistan kural motoru (şartname md. 10).
@@ -265,9 +266,10 @@ export function dosyaOzeti(baglam: DosyaBaglami): string {
     .filter((f) => f.yon === 'gider' && f.odemeDurumu !== 'odendi')
     .reduce((t, f) => t + (f.tutar - f.odenenTutar), 0)
   if (bekleyen > 0) {
-    parcalar.push(
-      `Bekleyen ödeme: ${(bekleyen / 100).toLocaleString('tr-TR')} ₺.`,
-    )
+    // Uygulamanın kanonik para biçimi (₺ önde, iki ondalık). Ad-hoc
+    // `/100 .toLocaleString` kuruşu yutup "10.500,5 ₺" gibi tutarsız çıktı
+    // verirdi (uygulamanın her yerinde "₺10.500,50").
+    parcalar.push(`Bekleyen ödeme: ${tutarTam(bekleyen)}.`)
   }
 
   parcalar.push(`${belgeler.length} belge dosyada.`)
