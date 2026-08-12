@@ -40,6 +40,22 @@ export interface RaporVerisi {
   toplamGider: number
 }
 
+/**
+ * Bir tarih/zaman damgasını YEREL güne indirger. `finans.tarih` gibi saf
+ * "YYYY-MM-DD" değerler olduğu gibi döner; `olay.baslangic` / `gorev.
+ * tamamlanmaTarihi` gibi UTC zaman damgaları (`…Z`) yerel güne çevrilir.
+ *
+ * Neden: takvim olayları yerel güne göre kovalanıyor (`dateToIsoDate(new
+ * Date(baslangic))`, bkz. takvimSorgulari). Raporlar UTC gününü (`slice(0,10)`)
+ * alsaydı, gece yarısı civarındaki bir olay (ör. 22:00Z = UTC+3'te ertesi gün
+ * 01:00) takvimde bir ayda, raporda başka ayda görünür — iki görünüm çelişirdi.
+ */
+export function raporGunu(isoTarih: string): IsoDate {
+  return isoTarih.includes('T')
+    ? dateToIsoDate(new Date(isoTarih))
+    : isoTarih.slice(0, 10)
+}
+
 /** Aralığın dokunduğu her ay için bir kova (en çok 24 — grafik okunur kalsın). */
 function aylikKovanlar(
   baslangic: IsoDate,
@@ -87,10 +103,10 @@ export function useRaporVerisi(
       db.dosyalar.toArray(),
     ])
 
-    // Aralık içindeki günler (dahil). Tarih alanları "YYYY-MM-DD" ile başladığı
-    // için metin karşılaştırması gün karşılaştırmasıyla aynı.
+    // Aralık içindeki günler (dahil). Zaman damgaları (olay/görev) yerel güne
+    // indirgenir ki takvimle aynı gün kovasına düşsün (bkz. raporGunu).
     const aralikta = (isoTarih: string): boolean => {
-      const g = isoTarih.slice(0, 10)
+      const g = raporGunu(isoTarih)
       return g >= baslangic && g <= bitis
     }
     const finans = tumFinans.filter((f) => aralikta(f.tarih))
