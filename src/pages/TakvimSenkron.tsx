@@ -80,8 +80,8 @@ export function TakvimSenkron() {
         <p className="field-hint">
           Duruşmalarınızı, işlemlerinizi ve hesaplanan hukuki süreleri standart
           bir takvim dosyası (.ics) olarak indirip Apple, Google veya Outlook
-          takviminize ekleyebilirsiniz. Dosya cihazınızda üretilir; hiçbir bilgi
-          dışarı gönderilmez.
+          takviminize ekleyebilirsiniz. Dosya cihazınızda üretilir ve
+          cihazınızdan dışarı çıkmaz.
         </p>
         <button
           type="button"

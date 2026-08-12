@@ -400,8 +400,8 @@ export function Raporlar() {
           </button>
 
           <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
-            Raporlar cihazdaki veriden hesaplanır; hiçbir bilgi dışarı
-            gönderilmez.
+            Raporlar cihazdaki veriden hesaplanır; veri cihazınızdan dışarı
+            çıkmaz.
           </p>
         </>
       )}

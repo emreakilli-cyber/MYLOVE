@@ -22,6 +22,7 @@ import './styles/dokunmatik.css'
 
 import App from './App'
 import { HataSiniri } from './components/HataSiniri'
+import { gunlukHata } from './services/gunluk'
 
 // İlk açılışta örnek veriyi yaz. Dexie'nin canlı sorguları veri gelince
 // kendiliğinden yeniden yayın yaptığı için render'ı beklemeye gerek yok.
@@ -30,9 +31,10 @@ import { HataSiniri } from './components/HataSiniri'
 void import('./data/seed')
   .then((modul) => modul.tohumlaGerekiyorsa())
   .catch((hata) => {
-    void import('./services/gunluk').then((g) =>
-      g.gunlukHata(hata, 'Örnek veri yazılamadı'),
-    )
+    // gunluk zaten ana pakette (HataSiniri onu erken içe aktarır); dinamik
+    // import ayrı parça oluşturmadığı gibi hata yolunu ikinci bir async
+    // yüklemeye bağımlı kılıyordu. Doğrudan çağır.
+    gunlukHata(hata, 'Örnek veri yazılamadı')
   })
 
 const container = document.getElementById('root')
