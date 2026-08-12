@@ -80,7 +80,13 @@ export function MuvekkilDetay({ id }: { id?: string }) {
         {/* Hızlı iletişim */}
         <div className="quick-actions">
           {muvekkil.telefon ? (
-            <a href={`tel:${muvekkil.telefon}`} className="quick-action">
+            // tel: URI'de boşluk/tire/parantez geçmemeli (RFC 3966); kullanıcı
+            // "+90 555 111 22 33" gibi biçimli girse de arama açılsın diye
+            // yalnızca rakam ve baştaki + bırakılır.
+            <a
+              href={`tel:${muvekkil.telefon.replace(/[^\d+]/g, '')}`}
+              className="quick-action"
+            >
               <Icon name="phone" size={16} />
               Ara
             </a>
