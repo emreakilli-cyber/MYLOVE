@@ -7,6 +7,7 @@ import type {
   DosyaTuru,
   KisiRolu,
   Muvekkil,
+  MuvekkilTuru,
   NotTuru,
 } from '../domain/types'
 
@@ -53,6 +54,22 @@ function bosaCevir(deger: string | undefined): string | undefined {
   return kirpik ? kirpik : undefined
 }
 
+/**
+ * Ada göre tüzel/gerçek kişi tahmini — satır içi müvekkil eklerken ön seçim
+ * (kullanıcı sonra düzeltebilir). Şirket eklerini (A.Ş., Ltd., Şti., Holding,
+ * İnşaat) arar.
+ *
+ * Neden `\b` değil `[\s.]`: JS'te `\b` yalnızca ASCII `\w` üzerinde çalışır;
+ * Türkçe "ş/ı/İ" sözcük karakteri sayılmadığından `\b(a\.?ş)\b` gibi kalıplar
+ * "A.Ş." / "Şti." / "İnşaat" için HİÇ eşleşmiyordu (yani en yaygın tüzel ekler
+ * kaçıyor, şirketler "gerçek" işaretleniyordu). Önce `tr` küçük harfe indirip
+ * (İ→i) sınırları elle `[\s.]` ile kuruyoruz; ada baş/son boşluk eklenir.
+ */
+export function muvekkilTuruTahmin(ad: string): MuvekkilTuru {
+  const k = ` ${ad.toLocaleLowerCase('tr')} `
+  return /[\s.](a\.?ş|ltd|şti|holding|inşaat)[\s.]/.test(k) ? 'tuzel' : 'gercek'
+}
+
 export async function dosyaEkle(girdi: DosyaGirdisi): Promise<string> {
   const zaman = simdi()
 
@@ -65,9 +82,7 @@ export async function dosyaEkle(girdi: DosyaGirdisi): Promise<string> {
       id: muvekkilId,
       ad: yeniAd,
       // Şirket eklerini basit bir sezgiyle tüzel say; kullanıcı sonra düzeltebilir.
-      tur: /\b(a\.?ş\.?|ltd\.?|şti\.?|holding|inş)\b/i.test(yeniAd)
-        ? 'tuzel'
-        : 'gercek',
+      tur: muvekkilTuruTahmin(yeniAd),
       etiketler: [],
       arsivlendi: false,
       olusturmaTarihi: zaman,
