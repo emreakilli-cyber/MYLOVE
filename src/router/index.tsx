@@ -112,6 +112,20 @@ export function useBack() {
 }
 
 /**
+ * Yüzde kodlamasını çözer; bozuk dizide (elle yazılmış `%ZZ` gibi)
+ * `decodeURIComponent` URIError fırlatır — bunu yutup ham değeri döneriz ki
+ * `matchPath` asla patlamasın. Bozuk parametre gerçek bir kayda eşleşmez →
+ * ekran çökmek yerine "bulunamadı" yer tutucusuna düşer.
+ */
+function guvenliCoz(deger: string): string {
+  try {
+    return decodeURIComponent(deger)
+  } catch {
+    return deger
+  }
+}
+
+/**
  * "/dosyalar/:id" kalıbını "/dosyalar/42" yoluna eşler.
  * Eşleşmezse null, eşleşirse parametre sözlüğü döner.
  */
@@ -132,7 +146,7 @@ export function matchPath(pattern: string, path: string): RouteParams | null {
     if (pathPart === undefined) return null
     if (patternPart === undefined) return null
     if (patternPart.startsWith(':')) {
-      params[patternPart.slice(1)] = decodeURIComponent(pathPart)
+      params[patternPart.slice(1)] = guvenliCoz(pathPart)
     } else if (patternPart !== pathPart) {
       return null
     }

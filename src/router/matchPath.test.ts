@@ -35,6 +35,15 @@ describe('matchPath', () => {
     })
   })
 
+  it('bozuk yüzde kodlamasında patlamaz, ham değeri döner', () => {
+    // Elle yazılmış geçersiz `%` dizisi decodeURIComponent'i URIError'a sokar;
+    // matchPath bunu yutup ham parametreyi döndürmeli (ekran çökmesin, gerçek
+    // kayda eşleşmeyip "bulunamadı"ya düşsün).
+    expect(() => matchPath('/dosyalar/:id', '/dosyalar/foo%')).not.toThrow()
+    expect(matchPath('/dosyalar/:id', '/dosyalar/foo%')).toEqual({ id: 'foo%' })
+    expect(matchPath('/dosyalar/:id', '/dosyalar/%ZZ')).toEqual({ id: '%ZZ' })
+  })
+
   it('joker sondaki segmentleri yutar', () => {
     expect(matchPath('/belgeler/*', '/belgeler/2026/agustos/dosya')).toEqual({})
     expect(matchPath('/belgeler/*', '/belgeler')).toEqual({})
