@@ -5,6 +5,7 @@ import { CevrimdisiUyari } from './CevrimdisiUyari'
 import { SurumYenile } from './SurumYenile'
 import { useLocation, useNavigate } from '../router'
 import { useAktifHatirlatmaSayisi } from '../data/hatirlatmaSorgulari'
+import { useCihazBildirimTetikleyici } from '../data/bildirimTetikleyici'
 
 interface AppShellProps {
   readonly children: ReactNode
@@ -16,6 +17,10 @@ export function AppShell({ children }: AppShellProps) {
   const navigate = useNavigate()
   const { path } = useLocation()
   const hatirlatmaSayisi = useAktifHatirlatmaSayisi() ?? 0
+
+  // Tetik anı gelen hatırlatmaları (izin + push kanalı + sessiz saat kapıları
+  // ile) cihaz bildirimi olarak düşür — Ayarlar/Bildirimler'deki sözün gereği.
+  useCihazBildirimTetikleyici()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4)
