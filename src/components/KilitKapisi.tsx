@@ -96,11 +96,16 @@ export function KilitKapisi({ children }: KilitKapisiProps) {
     if (await biyometriDogrula(biyometriKimlik)) ac()
   }, [biyometriKimlik, ac])
 
+  // PIN 4–8 hane olabilir; özet uzunluğu vermediğinden hedef uzunluğu
+  // ayarlardan okuyup TAM o uzunlukta doğrularız. Eski kayıtta yoksa 4.
+  // (Aksi hâlde 4. hanede kontrol edilip sıfırlanır, >4 haneli PIN girilemez.)
+  const hedefUzunluk = ayarlar?.pinUzunlugu ?? 4
+
   const rakamGir = (r: string) => {
     setHata(false)
-    const yeni = (pin + r).slice(0, 8)
+    const yeni = (pin + r).slice(0, hedefUzunluk)
     setPin(yeni)
-    if (yeni.length >= 4) void dogrula(yeni)
+    if (yeni.length >= hedefUzunluk) void dogrula(yeni)
   }
 
   return (
@@ -118,7 +123,7 @@ export function KilitKapisi({ children }: KilitKapisiProps) {
           <p className="kilit-alt">Devam etmek için PIN girin</p>
 
           <div className="pin-noktalar" aria-hidden="true">
-            {Array.from({ length: Math.max(4, pin.length) }, (_, i) => (
+            {Array.from({ length: hedefUzunluk }, (_, i) => (
               <span key={i} className="pin-nokta" data-dolu={i < pin.length} />
             ))}
           </div>

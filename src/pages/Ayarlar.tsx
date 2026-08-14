@@ -176,7 +176,11 @@ export function Ayarlar() {
       return
     }
     const ozet = await pinOzetiUret(pin1)
-    await ayarlariGuncelle({ pinOzeti: ozet, kilitEtkin: true })
+    await ayarlariGuncelle({
+      pinOzeti: ozet,
+      pinUzunlugu: pin1.length,
+      kilitEtkin: true,
+    })
     setPinFormu(false)
     setPin1('')
     setPin2('')

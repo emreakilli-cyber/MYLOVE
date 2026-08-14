@@ -366,6 +366,12 @@ export interface Ayarlar {
   sessizSaatBitis?: string // "08:00"
   /** Uygulama kilidi açıksa PIN'in türetilmiş özeti. */
   pinOzeti?: string
+  /**
+   * PIN'in rakam sayısı (4–8). Kilit ekranı, girişi tam bu uzunlukta
+   * doğrulamalı: özet uzunluğu açığa vurmadığından bu olmadan >4 haneli PIN
+   * girilemez (4. hanede kontrol edilip sıfırlanır). Eski kayıtta yoksa 4.
+   */
+  pinUzunlugu?: number
   kilitEtkin: boolean
   /** Arka planda kalınca kaç dakika sonra yeniden kilitlensin (0 = hemen). */
   oturumZamanAsimiDk?: number
