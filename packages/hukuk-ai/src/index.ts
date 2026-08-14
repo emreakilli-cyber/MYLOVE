@@ -47,6 +47,16 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export { correlateWithCase, summarizeDocuments } from './research/summarize'
+export type {
+  CorrelateOptions,
+  CorrelationBackend,
+  CorrelationResult,
+  CorrelationVerdict,
+  DocumentSummary,
+  SummaryBackend,
+} from './research/summarize'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
@@ -75,3 +85,37 @@ export type {
   JobEstimate,
   ThermalState,
 } from './handoff/threshold'
+
+export { extractStructure } from './write/structure'
+export type { DocumentStructure, HeadingInfo, NumberingScheme } from './write/structure'
+
+export { emptyStyleProfile, extractStyleProfile, mergeStyleProfiles } from './write/style'
+export type { Histogram, NumericDistribution, PhraseFrequency, StyleProfile } from './write/style'
+
+export { estimateTokens, selectFewShotExamples } from './write/fewshot'
+export type {
+  FewShotCandidate,
+  FewShotExample,
+  FewShotOptions,
+  FewShotSelection,
+} from './write/fewshot'
+
+export {
+  checkDocumentConsistency,
+  checkNumberingConsistency,
+  generateOutline,
+  generateSections,
+} from './write/draft'
+export type {
+  ConsistencyBackend,
+  ConsistencyIssue,
+  DocumentOutline,
+  GeneratedSection,
+  OutlineBackend,
+  OutlineInput,
+  OutlineSection,
+  SectionBackend,
+  SectionContext,
+  SectionGenerationInput,
+  SectionSummary,
+} from './write/draft'
