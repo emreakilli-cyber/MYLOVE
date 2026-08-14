@@ -108,3 +108,24 @@ alternatiflerine sıfırsız sabit hat deseni eklenir.
 **Not:** `Egeperla AVM sahibi Ahmet Yılmaz` örneği bundan farklıdır — orada
 aralıklar kesişmiyor, ikisi de ayrı ayrı maskeleniyor.
 **Değiştirmek gerekirse:** `src/mask/overlap.ts` içindeki `compare` sıralaması.
+
+---
+
+## S8 — `M10`'un "masaüstü yarısı" hangi alt maddeler?
+
+**Bağlam:** Öncelik kuralı §1 diyor ki: "M9 (TRAINING) ve M10'un masaüstü
+yarısı B'dir; en sona kalır." Ama M10.1–M10.6 alt maddeleri tek tek A/B diye
+etiketlenmemiş; `docs/ARCHITECTURE.md` yazılırken hangi alt maddenin
+ertelenmesi gerektiği belirsizdi.
+
+| Seçenek | Sonuç |
+|---|---|
+| **A (seçildi)** | M10'un TAMAMI şimdi yazılır. "Masaüstü yarısı" B'ye ayrılan şey, masaüstünün GERÇEK KODU'dur (WebSocket taşıması, eşleştirme UI'ı vb.) — bunlar zaten `packages/hukuk-ai` kapsamı dışında (oturum kuralı: yalnız bu paket içinde çalışılır) ve B1–B3'te ayrıca ele alınıyor. `ARCHITECTURE.md`'nin devir bölümü (§3) yalnız bu paketin PROTOCOL'e verdiği üç parçayı belgeliyor, masaüstü kodu üretmiyor |
+| B | Yalnız M10.1/M10.2/M10.4/M10.5/M10.6 yazılır; M10.3 (devir teslim mimarisi) M9 ile birlikte en sona bırakılır |
+
+**Varsayım:** A. Dokümantasyon üretmek bir B-listesi yeteneği (bölünemez
+yerleşik bellek) değildir; `PROTOCOL.md` zaten tam sözleşmeyi taşıyor,
+`ARCHITECTURE.md` yalnız ona **atıf** yapıyor ve bu paketin sınırını
+netleştiriyor. Ertelemenin bir kazancı yok, netliğin kaybı var.
+**Değiştirmek gerekirse:** `docs/ARCHITECTURE.md` §3'ü M9 ile birlikte son
+oturuma taşımak yeterli; diğer bölümler etkilenmez.

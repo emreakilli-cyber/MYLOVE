@@ -5,8 +5,9 @@ import { describe, expect, it } from 'vitest'
 import { mask } from '../mask/mask'
 import { createDictionaryNerBackend } from '../mask/ner'
 import { preflightCheck } from '../mask/preflight'
-import { ResearchClient, type ResearchTransport } from './client'
+import { ResearchClient, type ResearchDocument, type ResearchTransport } from './client'
 import { UnmaskedContentError, assertMasked, findUnmaskedContent } from './guard'
+import { correlateWithCase, summarizeDocuments } from './summarize'
 
 const RAW = 'Müvekkil 10000000146 TC no ile 0532 111 22 33 numarasından arandı.'
 
@@ -118,6 +119,91 @@ describe('preflight kapısı (M11)', () => {
     const result = preflightCheck('Kimlik 12345678901', { destination: 'network' })
     expect(result.clean).toBe(false)
     expect(result.suspects).toHaveLength(1)
+  })
+})
+
+describe('özetleme ve olayla ilişkilendirme (M7.6)', () => {
+  const docs: ResearchDocument[] = [
+    { id: 'k1', title: 'Karar 1', excerpt: 'kira tespiti' },
+    { id: 'k2', title: 'Karar 2', excerpt: 'tahliye' },
+    { id: 'k3', title: 'Karar 3', excerpt: 'alacak' },
+  ]
+
+  it('her belgeyi bağımsız özetler — her çağrı tam olarak kendi belgesini alır', async () => {
+    const received: ResearchDocument[] = []
+    const summaries = await summarizeDocuments(docs, {
+      summarize: (document) => {
+        received.push(document)
+        return `özet:${document.id}`
+      },
+    })
+
+    expect(summaries).toEqual([
+      { documentId: 'k1', summary: 'özet:k1' },
+      { documentId: 'k2', summary: 'özet:k2' },
+      { documentId: 'k3', summary: 'özet:k3' },
+    ])
+    // Her çağrı, kendi karşılığı olan belgenin ta kendisini aldı — başka bir
+    // belge referansı ya da dizi değil.
+    expect(received).toEqual(docs)
+  })
+
+  it('maskelenmemiş olay özeti kapıdan geçemez (M7.2 ile aynı kapı)', async () => {
+    await expect(
+      correlateWithCase('TC 10000000146 ile başvurdu', docs, {
+        correlate: () => ({ relevant: true, rationale: '', confidence: 1 }),
+      }),
+    ).rejects.toThrow(UnmaskedContentError)
+  })
+
+  it('K bağımsız geçiş eşzamanlı başlar — hiçbiri diğerinin sonucunu beklemez', async () => {
+    const startedOrder: string[] = []
+    const receivedDocs: ResearchDocument[] = []
+    const resolvers: Array<() => void> = []
+    const backend = {
+      correlate: (_caseSummary: string, document: ResearchDocument) => {
+        startedOrder.push(document.id)
+        receivedDocs.push(document)
+        return new Promise<{ relevant: boolean; rationale: string; confidence: number }>(
+          (resolve) => {
+            resolvers.push(() =>
+              resolve({ relevant: document.id === 'k2', rationale: document.id, confidence: 0.5 }),
+            )
+          },
+        )
+      },
+    }
+
+    const pending = correlateWithCase('maskeli olay özeti: tahliye talebi', docs, backend)
+
+    // Hiçbiri henüz çözülmeden ÖNCE üçü de başlamış olmalı — sıralı `await`
+    // olsaydı burada yalnız 'k1' görünürdü.
+    expect(startedOrder).toEqual(['k1', 'k2', 'k3'])
+    expect(receivedDocs).toEqual(docs)
+
+    for (const resolve of resolvers) resolve()
+    const results = await pending
+
+    expect(results).toHaveLength(3)
+    expect(results.find((result) => result.documentId === 'k2')?.relevant).toBe(true)
+  })
+
+  it('limit verilirse yalnız ilk-K aday değerlendirilir', async () => {
+    const seenIds: string[] = []
+    const results = await correlateWithCase(
+      'maskeli olay özeti',
+      docs,
+      {
+        correlate: (_summary, document) => {
+          seenIds.push(document.id)
+          return { relevant: false, rationale: '', confidence: 0 }
+        },
+      },
+      { limit: 2 },
+    )
+
+    expect(results).toHaveLength(2)
+    expect(seenIds).toEqual(['k1', 'k2'])
   })
 })
 
