@@ -573,6 +573,11 @@
   max-width: 460px;
   margin: 0 auto;
   min-height: 0;
+  /* Kısa ekranda (ör. 360×640) metin + 5 onay kutusu yüksekliğe sığmayınca
+     içeride KAYSIN; aksi hâlde kutular taşıp alttaki "Kabul et" düğmesinin
+     ALTINA düşüyor ve düğme onları örtüp tıklanamaz kılıyordu (onay tamamlanamaz
+     → uygulamaya girilemez). */
+  overflow-y: auto;
 }
 .onay-baslik-h {
   text-align: start;
