@@ -132,6 +132,11 @@ export function Dosyalar() {
               </Link>
             ))}
           </section>
+
+          <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
+            Satırlarda gösterilen hukuki süreler bilgilendirme amaçlıdır; son
+            günün doğruluğunu teyit etmek kullanıcının sorumluluğundadır.
+          </p>
         </>
       )}
 
