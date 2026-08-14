@@ -229,7 +229,13 @@
 /* Takvimdeki kayan ekleme düğmesi */
 .fab {
   position: fixed;
-  right: max(var(--space-5), var(--safe-right));
+  /* Geniş ekranda viewport kenarına değil, ortalı içerik sütununun (max 640px)
+     sağ kenarına hizalan. Mobilde calc terimi ≤ space-5 olur → davranış aynı. */
+  right: max(
+    var(--space-5),
+    var(--safe-right),
+    calc(50% - var(--content-max) / 2 + var(--space-5))
+  );
   bottom: calc(var(--space-6) + var(--safe-bottom));
   z-index: var(--z-topbar);
   display: flex;
@@ -333,7 +339,12 @@
 /* Takvimde iki düğmeli kayan küme */
 .fab-cluster {
   position: fixed;
-  right: max(var(--space-5), var(--safe-right));
+  /* .fab ile aynı: geniş ekranda içerik sütununun sağ kenarına hizalanır. */
+  right: max(
+    var(--space-5),
+    var(--safe-right),
+    calc(50% - var(--content-max) / 2 + var(--space-5))
+  );
   bottom: calc(var(--space-6) + var(--safe-bottom));
   z-index: var(--z-topbar);
   display: flex;
