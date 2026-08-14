@@ -27,16 +27,26 @@
   z-index: var(--z-topbar);
   height: calc(var(--topbar-height) + var(--safe-top));
   padding-top: var(--safe-top);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding-inline: max(var(--space-4), var(--safe-left));
   background: color-mix(in srgb, var(--surface-page) 88%, transparent);
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
   border-bottom: 1px solid transparent;
   transition: border-color var(--duration-base) var(--ease-out);
+}
+
+/* İç sarmalayıcı: arka plan/blur tüm genişlikte kalırken kontroller içerik
+   sütunuyla (max 640px, ortalı) hizalansın — geniş ekranda menü/aksiyonlar
+   viewport kenarına kaçmasın (mobilde 640px = tam genişlik, davranış aynı). */
+.topbar-inner {
+  max-width: var(--content-max);
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-left: max(var(--space-4), var(--safe-left));
+  padding-right: max(var(--space-4), var(--safe-right));
 }
 
 .topbar[data-scrolled='true'] {

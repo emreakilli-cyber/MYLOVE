@@ -59,41 +59,43 @@ export function AppShell({ children }: AppShellProps) {
         İçeriğe geç
       </a>
       <header className="topbar" data-scrolled={scrolled}>
-        <button
-          type="button"
-          className="topbar-menu"
-          data-tur="menu"
-          onClick={() => setDrawerOpen(true)}
-          aria-expanded={drawerOpen}
-        >
-          <Icon name="menu" size={22} title="Menüyü aç" />
-        </button>
+        <div className="topbar-inner">
+          <button
+            type="button"
+            className="topbar-menu"
+            data-tur="menu"
+            onClick={() => setDrawerOpen(true)}
+            aria-expanded={drawerOpen}
+          >
+            <Icon name="menu" size={22} title="Menüyü aç" />
+          </button>
 
-        <div className="topbar-actions">
-          {/* GEÇİCİ: test sırasında sürümü tıkla-yenile. Ürün öncesi silinecek. */}
-          <SurumYenile />
-          <button
-            type="button"
-            className="icon-button"
-            onClick={() => navigate('/ara')}
-          >
-            <Icon name="search" size={19} title="Ara" />
-          </button>
-          <button
-            type="button"
-            className="icon-button"
-            aria-label={
-              hatirlatmaSayisi > 0
-                ? `Bildirimler, ${hatirlatmaSayisi} aktif hatırlatma`
-                : 'Bildirimler'
-            }
-            onClick={() => navigate('/bildirimler')}
-          >
-            <Icon name="bell" size={19} />
-            {hatirlatmaSayisi > 0 ? (
-              <span className="icon-button-dot" aria-hidden="true" />
-            ) : null}
-          </button>
+          <div className="topbar-actions">
+            {/* GEÇİCİ: test sırasında sürümü tıkla-yenile. Ürün öncesi silinecek. */}
+            <SurumYenile />
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => navigate('/ara')}
+            >
+              <Icon name="search" size={19} title="Ara" />
+            </button>
+            <button
+              type="button"
+              className="icon-button"
+              aria-label={
+                hatirlatmaSayisi > 0
+                  ? `Bildirimler, ${hatirlatmaSayisi} aktif hatırlatma`
+                  : 'Bildirimler'
+              }
+              onClick={() => navigate('/bildirimler')}
+            >
+              <Icon name="bell" size={19} />
+              {hatirlatmaSayisi > 0 ? (
+                <span className="icon-button-dot" aria-hidden="true" />
+              ) : null}
+            </button>
+          </div>
         </div>
       </header>
 
