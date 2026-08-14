@@ -40,7 +40,6 @@ export function SureHesapla() {
   const [kuralId, setKuralId] = useState<string>('istinaf-hmk-345')
   const [baslangic, setBaslangic] = useState<string>(bugunIso())
   const [dosyaId, setDosyaId] = useState<string>(onDosya)
-  const [takvimeEkle, setTakvimeEkle] = useState(true)
   const [kaydediliyor, setKaydediliyor] = useState(false)
 
   const kural = kuralBul(kuralId)
@@ -54,7 +53,7 @@ export function SureHesapla() {
     if (!sonuc || !dosyaId) return
     setKaydediliyor(true)
     try {
-      await sureKaydet({ dosyaId, sonuc, takvimeEkle })
+      await sureKaydet({ dosyaId, sonuc })
       navigate(`/dosyalar/${dosyaId}`)
     } finally {
       setKaydediliyor(false)
@@ -176,28 +175,10 @@ export function SureHesapla() {
             ))}
           </select>
           <span className="field-hint">
-            Dosya seçilirse süre dosyaya işlenir.
+            Dosya seçilirse süre dosyaya işlenir ve son gün takvimde,
+            hatırlatmalarda ve dışa aktarımda görünür.
           </span>
         </label>
-
-        {dosyaId ? (
-          <button
-            type="button"
-            className="switch-row"
-            aria-pressed={takvimeEkle}
-            onClick={() => setTakvimeEkle((a) => !a)}
-          >
-            <span>
-              <span style={{ display: 'block' }}>Takvime ekle</span>
-              <span className="field-hint">
-                Son günü takvimde bir hatırlatma olarak göster
-              </span>
-            </span>
-            <span className="switch-track" aria-hidden="true">
-              <span className="switch-thumb" />
-            </span>
-          </button>
-        ) : null}
 
         <button
           type="button"

@@ -48,7 +48,10 @@ export function TakvimSenkron() {
       db.dosyalar.toArray(),
     ])
     return {
-      olaylar,
+      // Süre motorunun son-tarih olayları dışa aktarımdan çıkarılır: aynı son
+      // gün zaten `sureler`'den bir VEVENT olarak yazılıyor, ikisi çift kayıt
+      // üretirdi. (Eski kayıtlar için burada eleniyor.)
+      olaylar: olaylar.filter((o) => o.kaynak !== 'sure-hesabi'),
       sureler,
       dosyaAdlari: new Map(dosyalar.map((d) => [d.id, d.baslik])),
     }

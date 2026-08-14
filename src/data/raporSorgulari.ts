@@ -195,6 +195,16 @@ export function useRaporVerisi(
   }, [baslangic, bitis])
 }
 
+/**
+ * Kuruşu Türkçe ondalıklı TL metnine çevirir ("18450050" → "184500,50").
+ * CSV `;` ayraçlı ve Türkçe Excel hedefli olduğundan ondalık ayracı virgül
+ * olmalı; `toFixed` her zaman nokta verir ve Türkçe Excel "184500.50"'yi
+ * yanlış (metin ya da 18450050) okurdu.
+ */
+function csvTutar(kurus: number): string {
+  return (kurus / 100).toFixed(2).replace('.', ',')
+}
+
 /** Rapor verisini CSV'ye çevirir (aylık gelir-gider). */
 export function raporCsv(veri: RaporVerisi): string {
   const satirlar: string[] = ['Ay;Tahsilat (TL);Gider (TL)']
@@ -202,14 +212,12 @@ export function raporCsv(veri: RaporVerisi): string {
     const t = veri.aylikTahsilat[i]
     const g = veri.aylikGider[i]
     if (!t || !g) continue
-    satirlar.push(
-      `${t.onEk};${(t.deger / 100).toFixed(2)};${(g.deger / 100).toFixed(2)}`,
-    )
+    satirlar.push(`${t.onEk};${csvTutar(t.deger)};${csvTutar(g.deger)}`)
   }
   satirlar.push('')
   satirlar.push('Kategori;Gider (TL)')
   for (const g of veri.giderDagilimi) {
-    satirlar.push(`${g.etiket};${(g.tutar / 100).toFixed(2)}`)
+    satirlar.push(`${g.etiket};${csvTutar(g.tutar)}`)
   }
   // Excel Türkçe yerel ayarında ; ayracı ve UTF-8 BOM ile açılsın.
   return '﻿' + satirlar.join('\n')

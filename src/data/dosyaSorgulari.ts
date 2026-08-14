@@ -204,7 +204,11 @@ export function useDosyaDetayi(
         finans,
         belgeler,
       }),
-      olaylar: olaylar.sort((a, b) => b.baslangic.localeCompare(a.baslangic)),
+      // Süre motorunun son-tarih olayları "Duruşmalar" sekmesinde gösterilmez:
+      // son gün "Süreler" sekmesinde zaten var. (Eski kayıtlar için eleniyor.)
+      olaylar: olaylar
+        .filter((o) => o.kaynak !== 'sure-hesabi')
+        .sort((a, b) => b.baslangic.localeCompare(a.baslangic)),
       sureler: sureler.sort((a, b) => a.sonTarih.localeCompare(b.sonTarih)),
       gorevler: gorevler.sort((a, b) => {
         if (a.durum !== b.durum) return a.durum === 'bekliyor' ? -1 : 1

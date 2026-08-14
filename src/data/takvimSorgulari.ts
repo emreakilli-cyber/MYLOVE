@@ -67,6 +67,10 @@ async function araliktakiOgeler(
 
   for (const olay of olaylar) {
     if (olay.durum === 'iptal') continue
+    // Süre motorunun ürettiği son-tarih olayları burada gösterilmez: aynı son
+    // gün zaten aşağıda `sureler`'den çiziliyor. (Eski sürümlerde bu olaylar
+    // yazılmış olabilir; okuma anında eleyerek çift satırı önlüyoruz.)
+    if (olay.kaynak === 'sure-hesabi') continue
     const gorunum = olayGorunumleri[olay.tur]
     const baslangicTarihi = new Date(olay.baslangic)
     const gun = dateToIsoDate(baslangicTarihi)

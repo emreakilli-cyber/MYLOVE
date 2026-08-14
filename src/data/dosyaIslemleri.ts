@@ -137,7 +137,7 @@ export async function dosyaGuncelle(
   girdi: DosyaGirdisi,
 ): Promise<void> {
   const onceki = await db.dosyalar.get(id)
-  await db.dosyalar.update(id, {
+  const guncelleme = {
     baslik: girdi.baslik.trim(),
     muvekkilId: girdi.muvekkilId,
     tur: girdi.tur,
@@ -152,21 +152,30 @@ export async function dosyaGuncelle(
       ? { kapanisTarihi: bugunIso() }
       : { kapanisTarihi: undefined }),
     guncellemeTarihi: simdi(),
-  })
+  }
 
   // Müvekkil değiştiyse dosyaya bağlı kayıtlardaki denormalize `muvekkilId`'yi
   // eşitle. finans/olay/görev kayıtları oluşturulurken dosyanın müvekkilini
   // kopyalar; dosya başka müvekkile taşınınca bu kopyalar bayatlar. Özellikle
   // müvekkil bazlı finans (bekleyen ödeme) `finans.muvekkilId`'den okunduğu için
   // eski müvekkile yazılmaya devam ederdi. Kaynak doğruluğu dosyada; kopyalar
-  // onu izlemeli.
+  // onu izlemeli. Dosya güncellemesi ile kopya eşitleme TEK transaction'da
+  // olmalı: ikisi arasında bir hata dosyayı yeni müvekkile taşırken kopyaları
+  // eskide bırakır — tam da önlenmek istenen bayatlık.
   if (onceki && onceki.muvekkilId !== girdi.muvekkilId) {
     const yeni = { muvekkilId: girdi.muvekkilId }
-    await db.transaction('rw', [db.finans, db.olaylar, db.gorevler], async () => {
-      await db.finans.where('dosyaId').equals(id).modify(yeni)
-      await db.olaylar.where('dosyaId').equals(id).modify(yeni)
-      await db.gorevler.where('dosyaId').equals(id).modify(yeni)
-    })
+    await db.transaction(
+      'rw',
+      [db.dosyalar, db.finans, db.olaylar, db.gorevler],
+      async () => {
+        await db.dosyalar.update(id, guncelleme)
+        await db.finans.where('dosyaId').equals(id).modify(yeni)
+        await db.olaylar.where('dosyaId').equals(id).modify(yeni)
+        await db.gorevler.where('dosyaId').equals(id).modify(yeni)
+      },
+    )
+  } else {
+    await db.dosyalar.update(id, guncelleme)
   }
 }
 

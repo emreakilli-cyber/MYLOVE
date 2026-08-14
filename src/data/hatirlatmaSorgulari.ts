@@ -62,9 +62,12 @@ export function useYaklasanHatirlatmalar(
 
     const sonuc: YaklasanHatirlatma[] = []
 
-    // Takvim olaylarından.
+    // Takvim olaylarından. Süre motorunun son-tarih olayları hariç: son gün
+    // hatırlatması aşağıda doğrudan `sureler`'den türetiliyor; ikisi birden
+    // çift bildirim üretirdi. (Eski kayıtlar için okuma anında eleniyor.)
     for (const olay of olaylar) {
       if (olay.durum !== 'planlandi') continue
+      if (olay.kaynak === 'sure-hesabi') continue
       const hedef = new Date(olay.baslangic).getTime()
       if (hedef < simdi) continue
       const ofsetler = profiller[olay.tur] ?? varsayilan
@@ -147,6 +150,7 @@ export function useAktifHatirlatmaSayisi(): number | undefined {
     let sayi = 0
 
     for (const olay of olaylar) {
+      if (olay.kaynak === 'sure-hesabi') continue // son gün süreden sayılıyor
       const hedef = new Date(olay.baslangic).getTime()
       if (hedef < simdi) continue
       for (const ofset of profiller[olay.tur] ?? varsayilan) {
