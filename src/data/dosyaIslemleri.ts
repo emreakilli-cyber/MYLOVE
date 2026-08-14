@@ -73,24 +73,22 @@ export function muvekkilTuruTahmin(ad: string): MuvekkilTuru {
 export async function dosyaEkle(girdi: DosyaGirdisi): Promise<string> {
   const zaman = simdi()
 
-  // Gerekliyse önce müvekkili oluştur.
+  // Gerekliyse yeni müvekkili hazırla (yazımı aşağıdaki transaction içinde).
   let muvekkilId = girdi.muvekkilId
   const yeniAd = bosaCevir(girdi.yeniMuvekkilAdi)
-  if (yeniAd) {
-    muvekkilId = yeniId()
-    const muvekkil: Muvekkil = {
-      id: muvekkilId,
-      ad: yeniAd,
-      // Şirket eklerini basit bir sezgiyle tüzel say; kullanıcı sonra düzeltebilir.
-      tur: muvekkilTuruTahmin(yeniAd),
-      etiketler: [],
-      arsivlendi: false,
-      olusturmaTarihi: zaman,
-      guncellemeTarihi: zaman,
-    }
-    await db.muvekkiller.add(muvekkil)
-    await hareketYaz('muvekkil-eklendi', 'Müvekkil eklendi', yeniAd)
-  }
+  const yeniMuvekkil: Muvekkil | null = yeniAd
+    ? {
+        id: yeniId(),
+        ad: yeniAd,
+        // Şirket eklerini basit bir sezgiyle tüzel say; kullanıcı sonra düzeltebilir.
+        tur: muvekkilTuruTahmin(yeniAd),
+        etiketler: [],
+        arsivlendi: false,
+        olusturmaTarihi: zaman,
+        guncellemeTarihi: zaman,
+      }
+    : null
+  if (yeniMuvekkil) muvekkilId = yeniMuvekkil.id
 
   const dosya: Dosya = {
     id: yeniId(),
@@ -111,13 +109,25 @@ export async function dosyaEkle(girdi: DosyaGirdisi): Promise<string> {
     guncellemeTarihi: zaman,
   }
 
-  await db.dosyalar.add(dosya)
-  const muvekkil = await db.muvekkiller.get(muvekkilId)
-  await hareketYaz(
-    'dosya-olusturuldu',
-    'Yeni dosya oluşturuldu',
-    muvekkil ? `${dosya.baslik} · ${muvekkil.ad}` : dosya.baslik,
-    dosya.id,
+  // Satır içi müvekkil + dosya tek transaction'da: dosya yazımı başarısız
+  // olursa yetim müvekkil kalmasın (ikisi de yazılır ya da hiçbiri).
+  await db.transaction(
+    'rw',
+    [db.muvekkiller, db.dosyalar, db.hareketler],
+    async () => {
+      if (yeniMuvekkil) {
+        await db.muvekkiller.add(yeniMuvekkil)
+        await hareketYaz('muvekkil-eklendi', 'Müvekkil eklendi', yeniMuvekkil.ad)
+      }
+      await db.dosyalar.add(dosya)
+      const muvekkil = yeniMuvekkil ?? (await db.muvekkiller.get(muvekkilId))
+      await hareketYaz(
+        'dosya-olusturuldu',
+        'Yeni dosya oluşturuldu',
+        muvekkil ? `${dosya.baslik} · ${muvekkil.ad}` : dosya.baslik,
+        dosya.id,
+      )
+    },
   )
   return dosya.id
 }
