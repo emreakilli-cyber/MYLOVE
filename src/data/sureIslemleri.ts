@@ -25,58 +25,64 @@ export async function sureKaydet({
   const zaman = simdi()
   const sureId = yeniId()
   const dosya = await db.dosyalar.get(dosyaId)
+  const olayId = takvimeEkle ? yeniId() : undefined
 
-  await db.sureler.add({
-    id: sureId,
-    dosyaId,
-    kuralId: sonuc.kural.id,
-    kuralAdi: sonuc.kural.ad,
-    kanunReferansi: sonuc.kural.kanun,
-    baslangicTarihi: sonuc.baslangic,
-    hamSonTarih: sonuc.hamSonTarih,
-    sonTarih: sonuc.sonTarih,
-    ...(sonuc.gerekceler.length > 0
-      ? { kaydirmaGerekcesi: sonuc.gerekceler.join(' ') }
-      : {}),
-    durum: 'acik',
-    ...(not?.trim() ? { not: not.trim() } : {}),
-    olusturmaTarihi: zaman,
-    guncellemeTarihi: zaman,
-  })
+  // Süre + (istenirse) takvim olayı + hareket tek transaction'da atomik yazılır:
+  // yarıda kalırsa ne bağsız (yetim) olay ne de olaysız-ama-`olayId`'li süre
+  // kalsın. `olayId` süreye baştan konur (ayrı `update` yok) → hem atomik hem
+  // sadeleşmiş.
+  await db.transaction(
+    'rw',
+    [db.sureler, db.olaylar, db.hareketler],
+    async () => {
+      await db.sureler.add({
+        id: sureId,
+        dosyaId,
+        kuralId: sonuc.kural.id,
+        kuralAdi: sonuc.kural.ad,
+        kanunReferansi: sonuc.kural.kanun,
+        baslangicTarihi: sonuc.baslangic,
+        hamSonTarih: sonuc.hamSonTarih,
+        sonTarih: sonuc.sonTarih,
+        ...(sonuc.gerekceler.length > 0
+          ? { kaydirmaGerekcesi: sonuc.gerekceler.join(' ') }
+          : {}),
+        durum: 'acik',
+        ...(olayId ? { olayId } : {}),
+        ...(not?.trim() ? { not: not.trim() } : {}),
+        olusturmaTarihi: zaman,
+        guncellemeTarihi: zaman,
+      })
 
-  let olayId: string | undefined
-  if (takvimeEkle) {
-    olayId = yeniId()
-    // Son gün tüm gün bir kayıt; saat taşımaz.
-    await db.olaylar.add({
-      id: olayId,
-      baslik: sonuc.kural.ad,
-      tur: 'son-tarih',
-      dosyaId,
-      ...(dosya ? { muvekkilId: dosya.muvekkilId } : {}),
-      baslangic: `${sonuc.sonTarih}T00:00:00.000Z`,
-      tumGun: true,
-      aciklama: `${sonuc.kural.kanun} · ${sonuc.baslangic} tarihinden hesaplandı.`,
-      durum: 'planlandi',
-      kaynak: 'sure-hesabi',
-      sureId,
-      olusturmaTarihi: zaman,
-      guncellemeTarihi: zaman,
-    })
-    // Süreyi olaya da bağla.
-    await db.sureler.update(sureId, { olayId })
-  }
+      if (olayId) {
+        // Son gün tüm gün bir kayıt; saat taşımaz.
+        await db.olaylar.add({
+          id: olayId,
+          baslik: sonuc.kural.ad,
+          tur: 'son-tarih',
+          dosyaId,
+          ...(dosya ? { muvekkilId: dosya.muvekkilId } : {}),
+          baslangic: `${sonuc.sonTarih}T00:00:00.000Z`,
+          tumGun: true,
+          aciklama: `${sonuc.kural.kanun} · ${sonuc.baslangic} tarihinden hesaplandı.`,
+          durum: 'planlandi',
+          kaynak: 'sure-hesabi',
+          sureId,
+          olusturmaTarihi: zaman,
+          guncellemeTarihi: zaman,
+        })
+      }
 
-  await db.hareketler.add({
-    id: yeniId(),
-    tur: 'sure-hesaplandi',
-    baslik: 'Süre hesaplandı',
-    ayrinti: dosya
-      ? `${sonuc.kural.ad} · ${dosya.baslik}`
-      : sonuc.kural.ad,
-    dosyaId,
-    zaman,
-  })
+      await db.hareketler.add({
+        id: yeniId(),
+        tur: 'sure-hesaplandi',
+        baslik: 'Süre hesaplandı',
+        ayrinti: dosya ? `${sonuc.kural.ad} · ${dosya.baslik}` : sonuc.kural.ad,
+        dosyaId,
+        zaman,
+      })
+    },
+  )
 
   return sureId
 }
