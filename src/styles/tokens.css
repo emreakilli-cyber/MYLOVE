@@ -62,6 +62,18 @@
   --cat-slate-bg: #f0efec;
   --cat-slate-br: #e4e1db;
 
+  /* Kategori renklerinin METİN (ve tinted zemindeki ikon) varyantı: `-fg`
+   * tonları küçük metin olarak WCAG AA'yı karşılamıyordu (~2.0–2.3:1). Bunlar
+   * aynı tonun koyusu; beyaz, kırık beyaz, ilgili tinted zemin ve `surface-sunken`
+   * üzerinde ≥4.55:1 (script ile doğrulandı). YALNIZCA ön plan (metin/ikon) için;
+   * nokta/kenarlık/rozet zemini/sol aksan hâlâ `-fg` (marka kimliği pastel kalır). */
+  --cat-red-text: #a2564a;
+  --cat-amber-text: #866638;
+  --cat-purple-text: #71639c;
+  --cat-blue-text: #526e8a;
+  --cat-green-text: #3e7566;
+  --cat-slate-text: #656d6b;
+
   /* ---- Anlamsal eşlemeler ---- */
   --status-critical: var(--cat-red-fg);
   --status-warning: var(--cat-amber-fg);

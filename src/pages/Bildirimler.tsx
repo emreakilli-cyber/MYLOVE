@@ -161,7 +161,7 @@ function HatirlatmaSatiri({
         </span>
         <span
           className="deadline-kalan"
-          style={{ color: vurgulu ? 'var(--cat-red-fg)' : 'var(--text-muted)' }}
+          style={{ color: vurgulu ? 'var(--cat-red-text)' : 'var(--text-muted)' }}
         >
           {vurgulu
             ? goreliZaman(h.zaman)

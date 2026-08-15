@@ -116,9 +116,9 @@ export function Finans() {
                     className="money-amount"
                     style={{
                       color: bekliyor
-                        ? 'var(--cat-amber-fg)'
+                        ? 'var(--cat-amber-text)'
                         : kayit.yon === 'gelir'
-                          ? 'var(--cat-green-fg)'
+                          ? 'var(--cat-green-text)'
                           : 'var(--text-secondary)',
                     }}
                   >

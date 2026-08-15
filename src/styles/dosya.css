@@ -115,7 +115,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-small);
   font-variant-numeric: tabular-nums;
-  color: var(--acc-fg);
+  color: var(--acc-text);
   flex: none;
 }
 
@@ -142,7 +142,7 @@
   padding: 3px var(--space-2);
   border-radius: var(--radius-sm);
   background: var(--acc-bg);
-  color: var(--acc-fg);
+  color: var(--acc-text);
   white-space: nowrap;
 }
 
@@ -163,7 +163,7 @@
 
 .file-next > svg {
   flex: none;
-  color: var(--acc-fg);
+  color: var(--acc-text);
 }
 
 /* ---------------------------------------------------------------- *
@@ -207,7 +207,7 @@
 .detail-progress-value {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  color: var(--acc-fg);
+  color: var(--acc-text);
 }
 
 /* Sekmeler */
@@ -300,7 +300,7 @@
   flex: none;
   margin-top: 1px;
   background: var(--cat-green-bg);
-  color: var(--cat-green-fg);
+  color: var(--cat-green-text);
 }
 
 .check-mark[data-tamam='false'] {
@@ -326,7 +326,7 @@
 .check-action {
   display: block;
   font-size: var(--text-small);
-  color: var(--cat-amber-fg);
+  color: var(--cat-amber-text);
   margin-top: 1px;
 }
 
@@ -370,7 +370,7 @@
   font-size: var(--text-subtitle);
   font-variant-numeric: tabular-nums;
   margin-top: var(--space-1);
-  color: var(--acc-fg);
+  color: var(--acc-text);
 }
 
 .money-amount {
@@ -378,7 +378,7 @@
   font-size: var(--text-small);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: var(--acc-fg);
+  color: var(--acc-text);
 }
 
 /* Detay başlığı üstündeki geri + düzenle satırı */
@@ -475,12 +475,12 @@
 
 .avatar-gercek {
   background: var(--cat-blue-bg);
-  color: var(--cat-blue-fg);
+  color: var(--cat-blue-text);
 }
 
 .avatar-tuzel {
   background: var(--cat-purple-bg);
-  color: var(--cat-purple-fg);
+  color: var(--cat-purple-text);
 }
 
 .quick-actions {

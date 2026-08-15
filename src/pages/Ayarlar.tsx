@@ -610,7 +610,7 @@ export function Ayarlar() {
                 className="kanal-rozet"
                 style={{
                   background: 'var(--cat-green-bg)',
-                  color: 'var(--cat-green-fg)',
+                  color: 'var(--cat-green-text)',
                 }}
               >
                 Açık

@@ -3,35 +3,43 @@
  * Referans: docs/design-reference/01…06 — ölçüler ve hiyerarşi oradan.
  */
 
-/* Satır ve rozetlerde kullanılan kategori renkleri. */
+/* Satır ve rozetlerde kullanılan kategori renkleri.
+ * `--acc-fg`  : dekoratif ön plan (nokta, ince kenarlık, rozet zemini pastel).
+ * `--acc-text`: METİN/ikon ön planı — AA uyumlu koyu varyant (bkz. tokens.css). */
 .accent-red {
   --acc-bg: var(--cat-red-bg);
   --acc-fg: var(--cat-red-fg);
+  --acc-text: var(--cat-red-text);
   --acc-br: var(--cat-red-br);
 }
 .accent-amber {
   --acc-bg: var(--cat-amber-bg);
   --acc-fg: var(--cat-amber-fg);
+  --acc-text: var(--cat-amber-text);
   --acc-br: var(--cat-amber-br);
 }
 .accent-purple {
   --acc-bg: var(--cat-purple-bg);
   --acc-fg: var(--cat-purple-fg);
+  --acc-text: var(--cat-purple-text);
   --acc-br: var(--cat-purple-br);
 }
 .accent-blue {
   --acc-bg: var(--cat-blue-bg);
   --acc-fg: var(--cat-blue-fg);
+  --acc-text: var(--cat-blue-text);
   --acc-br: var(--cat-blue-br);
 }
 .accent-green {
   --acc-bg: var(--cat-green-bg);
   --acc-fg: var(--cat-green-fg);
+  --acc-text: var(--cat-green-text);
   --acc-br: var(--cat-green-br);
 }
 .accent-slate {
   --acc-bg: var(--cat-slate-bg);
   --acc-fg: var(--cat-slate-fg);
+  --acc-text: var(--cat-slate-text);
   --acc-br: var(--cat-slate-br);
 }
 
@@ -167,7 +175,7 @@
 
 .stat-caption {
   font-size: var(--text-small);
-  color: var(--acc-fg);
+  color: var(--acc-text);
 }
 
 /* ---------------------------------------------------------------- *
@@ -260,7 +268,7 @@ button.row:active {
   height: 38px;
   border-radius: var(--radius-sm);
   background: var(--acc-bg);
-  color: var(--acc-fg);
+  color: var(--acc-text);
   flex: none;
 }
 
@@ -272,7 +280,7 @@ button.row:active {
   font-family: var(--font-mono);
   font-size: var(--text-tiny);
   letter-spacing: var(--tracking-mono);
-  color: var(--acc-fg);
+  color: var(--acc-text);
   white-space: nowrap;
 }
 
@@ -288,7 +296,7 @@ button.row:active {
   height: 44px;
   border-radius: var(--radius-md);
   background: var(--acc-bg);
-  color: var(--acc-fg);
+  color: var(--acc-text);
   flex: none;
   line-height: 1;
 }
@@ -375,7 +383,7 @@ button.row:active {
   padding: 4px var(--space-2);
   border-radius: var(--radius-sm);
   background: var(--acc-bg);
-  color: var(--acc-fg);
+  color: var(--acc-text);
   white-space: nowrap;
 }
 
@@ -490,7 +498,7 @@ button.row:active {
 }
 
 .health-level {
-  color: var(--acc-fg);
+  color: var(--acc-text);
   flex: none;
 }
 

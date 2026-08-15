@@ -15,7 +15,7 @@
   font-family: var(--font-mono);
   font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
-  color: var(--acc-fg);
+  color: var(--acc-text);
   line-height: 1.1;
 }
 

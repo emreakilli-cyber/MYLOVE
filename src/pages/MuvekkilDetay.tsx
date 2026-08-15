@@ -131,7 +131,7 @@ export function MuvekkilDetay({ id }: { id?: string }) {
               style={{
                 color:
                   finansOzet.bekleyen > 0
-                    ? 'var(--cat-amber-fg)'
+                    ? 'var(--cat-amber-text)'
                     : 'var(--text-primary)',
               }}
             >

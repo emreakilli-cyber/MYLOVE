@@ -378,8 +378,8 @@ export function Raporlar() {
                       style={{
                         color:
                           d.gelir - d.gider >= 0
-                            ? 'var(--cat-green-fg)'
-                            : 'var(--cat-red-fg)',
+                            ? 'var(--cat-green-text)'
+                            : 'var(--cat-red-text)',
                       }}
                     >
                       {tutarKisa(d.gelir - d.gider)}

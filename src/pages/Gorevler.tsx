@@ -58,7 +58,7 @@ function GorevSatirBileseni({ satir }: { satir: GorevSatiri }) {
         </span>
       </Link>
       {gorev.oncelik === 'yuksek' && !tamam ? (
-        <span className="task-badge" style={{ background: 'var(--cat-red-bg)', color: 'var(--cat-red-fg)' }}>
+        <span className="task-badge" style={{ background: 'var(--cat-red-bg)', color: 'var(--cat-red-text)' }}>
           öncelikli
         </span>
       ) : null}
