@@ -330,10 +330,15 @@ export function Takvim() {
   })
 
   const ayKaydir = (yon: -1 | 1) => {
-    setAnkraj((mevcut) => {
-      const yeni = new Date(mevcut.getFullYear(), mevcut.getMonth() + yon, 1)
-      return yeni
-    })
+    const yeni = new Date(ankraj.getFullYear(), ankraj.getMonth() + yon, 1)
+    // Seçili günü de yeni aya taşı; aksi hâlde önceki ayın günü, yeni ayın
+    // veri penceresi (useAyOgeleri) dışında kaldığından gün-detay kartında
+    // dolu olsa bile yanlışlıkla "boş" görünürdü. Gün numarasını koru, kısa
+    // aya taşarken ayın son gününe sabitle.
+    const ayinSonGunu = new Date(yeni.getFullYear(), yeni.getMonth() + 1, 0).getDate()
+    const gunNo = Math.min(isoDateToDate(secili).getDate(), ayinSonGunu)
+    setAnkraj(yeni)
+    setSecili(dateToIsoDate(new Date(yeni.getFullYear(), yeni.getMonth(), gunNo)))
   }
 
   const haftaKaydir = (yon: -1 | 1) => {
