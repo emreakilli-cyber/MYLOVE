@@ -48,13 +48,15 @@ function presetAralik(p: Preset): { baslangic: IsoDate; bitis: IsoDate } {
  * token'lardan gelir. Boyutlar viewBox ile oransal, kapsayıcıya göre esner.
  */
 
+// Grafik renkleri kategori token'larından okunur (satır içi SVG `var()`'ı
+// çözer). Böylece grafikler uygulamanın geri kalanıyla aynı paleti kullanır ve
+// token değişince (ör. AA-kontrast güncellemesi) grafik de otomatik izler.
 const RENK = {
-  yesil: '#5fb49c',
-  kirmizi: '#c96a5b',
-  turuncu: '#d9a45b',
-  mor: '#8e7cc3',
-  mavi: '#6e93b8',
-  slate: '#9aa0a0',
+  yesil: 'var(--cat-green-fg)',
+  kirmizi: 'var(--cat-red-fg)',
+  turuncu: 'var(--cat-amber-fg)',
+  mor: 'var(--cat-purple-fg)',
+  mavi: 'var(--cat-blue-fg)',
 }
 
 /* ---- Sütun grafiği: son 6 ay tahsilat vs gider ---- */
@@ -84,7 +86,7 @@ function SutunGrafigi({ veri }: { veri: RaporVerisi }) {
         aria-label="Son altı ay tahsilat ve gider"
       >
         {/* taban çizgisi */}
-        <line x1="0" y1={cizimY} x2={G} y2={cizimY} stroke="#ece9e4" strokeWidth="1" />
+        <line x1="0" y1={cizimY} x2={G} y2={cizimY} stroke="var(--border-hairline)" strokeWidth="1" />
         {veri.aylikTahsilat.map((ay, i) => {
           const merkez = i * grupGenislik + grupGenislik / 2
           const gh = yukseklik(ay.deger)
@@ -151,7 +153,7 @@ function Halka({ veri }: { veri: RaporVerisi }) {
   return (
     <div className="donut-wrap">
       <svg className="donut" width="96" height="96" viewBox="0 0 96 96">
-        <circle cx="48" cy="48" r={r} fill="none" stroke="#f2f0ec" strokeWidth="12" />
+        <circle cx="48" cy="48" r={r} fill="none" stroke="var(--surface-sunken)" strokeWidth="12" />
         {toplam > 0 &&
           dilimler.map((d, i) => {
             if (d.deger === 0) return null
