@@ -19,6 +19,7 @@ import './styles/onboarding.css'
 import './styles/tur.css'
 import './styles/durum.css'
 import './styles/dokunmatik.css'
+import './styles/print.css'
 
 import App from './App'
 import { HataSiniri } from './components/HataSiniri'

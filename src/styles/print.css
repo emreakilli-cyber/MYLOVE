@@ -1,0 +1,63 @@
+/*
+ * Yazdırma / PDF çıktısı.
+ *
+ * Uygulama telefon-öncelikli bir PWA; yine de hukukçu bir SÜRE HESABINI, dosya
+ * özetini ya da raporu kâğıda veya PDF'e alıp dosyaya koymak isteyebilir. Tüm
+ * kurallar yalnızca `@media print` içinde — ekran görünümünü hiç etkilemez.
+ *
+ * İlke: içerik dışı kabuğu (üst çubuk, menü, FAB, rehberli tur, çevrimdışı
+ * şeridi, geri/dışa-aktar bağlantıları) gizle; içeriği tam genişlikte, gölgesiz
+ * ve degradesiz (mürekkep dostu) bas; kartları sayfa aralarında bölme.
+ * Bilgilendirme uyarısı içerik olduğundan basılmaya devam eder.
+ */
+@media print {
+  /* Kabuk ve yalnızca-etkileşim öğeleri kâğıda çıkmaz. */
+  .skip-link,
+  .topbar,
+  .drawer,
+  .scrim,
+  .fab-cluster,
+  .fab,
+  .fab-spacer,
+  .fab-spacer-cluster,
+  .tur,
+  .cevrimdisi,
+  .page-back,
+  .cal-export-link {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  /* Telefon düzeni yerine sayfayı kapla. */
+  .shell,
+  .shell-content {
+    display: block !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .shell-content {
+    padding: 0 !important;
+  }
+
+  /* Gölge/degrade mürekkep yemesin; kart sayfa arasında ikiye bölünmesin. */
+  .card,
+  .section-card,
+  .hero,
+  .form-card,
+  .sonuc-card {
+    box-shadow: none !important;
+    background: #fff !important;
+    border: 1px solid #d0ccc4 !important;
+    break-inside: avoid;
+    margin: 0 0 12px 0 !important;
+  }
+
+  @page {
+    margin: 1.6cm;
+  }
+}
