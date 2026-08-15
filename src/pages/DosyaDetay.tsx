@@ -492,7 +492,11 @@ function FinansSekmesi({ detay }: { detay: Detay }) {
                 <span className="row-sub truncate">
                   {kategoriEtiketleri[kayit.kategori] ?? kayit.kategori} ·{' '}
                   {kisaTarih(kayit.tarih)}
-                  {kayit.odemeDurumu !== 'odendi' ? ' · bekliyor' : ''}
+                  {kayit.odemeDurumu === 'kismi'
+                    ? ' · kısmi'
+                    : kayit.odemeDurumu === 'bekliyor'
+                      ? ' · bekliyor'
+                      : ''}
                 </span>
               </span>
               <span className="money-amount">

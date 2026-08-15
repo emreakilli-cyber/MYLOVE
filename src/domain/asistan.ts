@@ -129,15 +129,26 @@ export function dosyaBulgulari(baglam: DosyaBaglami): Bulgu[] {
     const vadeMetni = f.vadeTarihi
       ? ` (vade ${kisaTarih(f.vadeTarihi)})`
       : ''
-    const gecikti =
-      f.vadeTarihi && gunFarki(f.vadeTarihi) < 0
+    const gecikti = f.vadeTarihi && gunFarki(f.vadeTarihi) < 0
+    // Kısmen ödenmiş kalemde "henüz yatırılmadı" demek yanlış olur; kalan
+    // tutarı kanonik para biçimiyle bildir (dosyaOzeti ile aynı hesap).
+    const kismiOdendi = f.odemeDurumu === 'kismi' && f.odenenTutar > 0
+    const kalanTutar = f.tutar - f.odenenTutar
+    let mesaj: string
+    if (kismiOdendi) {
+      mesaj = gecikti
+        ? `${ad} kısmen ödendi; kalan ${tutarTam(kalanTutar)} vadesi geçti${vadeMetni}.`
+        : `${ad} kısmen ödendi; kalan ${tutarTam(kalanTutar)}${vadeMetni}.`
+    } else {
+      mesaj = gecikti
+        ? `${ad} vadesi geçti${vadeMetni}, henüz ödenmedi.`
+        : `${ad} henüz yatırılmadı${vadeMetni}.`
+    }
     bulgular.push({
       id: `odeme-${f.id}`,
       tur: 'odeme',
       oncelik: gecikti ? 'kritik' : 'uyari',
-      mesaj: gecikti
-        ? `${ad} vadesi geçti${vadeMetni}, henüz ödenmedi.`
-        : `${ad} henüz yatırılmadı${vadeMetni}.`,
+      mesaj,
       dosyaId: dosya.id,
       dosyaBaslik: dosya.baslik,
       yol,

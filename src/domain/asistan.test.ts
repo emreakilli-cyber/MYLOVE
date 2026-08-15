@@ -93,6 +93,24 @@ describe('asistan kural motoru', () => {
     expect(odeme!.mesaj).toContain('Bilirkişi ücreti')
   })
 
+  it('kısmen ödenmiş kalemi "yatırılmadı" değil, kalanıyla bildirir', () => {
+    const kismiKayit: FinansKaydi = {
+      ...bilirkisiKaydi,
+      id: 'f-kismi',
+      tutar: 1_250_000, // ₺12.500,00
+      odenenTutar: 500_000, // ₺5.000,00 ödendi → kalan ₺7.500,00
+      odemeDurumu: 'kismi',
+    }
+    const bulgular = dosyaBulgulari(baglam({ finans: [kismiKayit] }))
+    const odeme = bulgular.find((b) => b.tur === 'odeme')
+    expect(odeme).toBeDefined()
+    expect(odeme!.mesaj).toContain('kısmen ödendi')
+    expect(odeme!.mesaj).toContain('kalan ₺7.500,00')
+    // Kısmi ödemede "yatırılmadı/ödenmedi" gibi yanlış ifade geçmemeli.
+    expect(odeme!.mesaj).not.toContain('yatırılmadı')
+    expect(odeme!.mesaj).not.toContain('ödenmedi')
+  })
+
   it('iki gün kalan istinaf süresini kritik bulgu yapar', () => {
     const bulgular = dosyaBulgulari(baglam({ sureler: [istinafSuresi] }))
     const sure = bulgular.find((b) => b.tur === 'sure')
