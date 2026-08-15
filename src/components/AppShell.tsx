@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Icon } from './Icon'
 import { Drawer } from './Drawer'
 import { CevrimdisiUyari } from './CevrimdisiUyari'
@@ -31,6 +31,25 @@ export function AppShell({ children }: AppShellProps) {
 
   // Sayfa değişince menü kapanmalı (tarayıcı geri tuşu dahil).
   useEffect(() => setDrawerOpen(false), [path])
+
+  // Gezinince odağı ana içeriğe taşı: klavye/ekran okuyucu kullanıcısı yeni
+  // sayfada baştan devam etsin. Aksi hâlde odak <body>'ye (satır içi bağlantıdan
+  // gidilince) ya da menü düğmesine (drawer'dan gidilince) düşüp "kayboluyordu".
+  // İlk yüklemede odağı taşımayız. rAF ile ertelenir ki drawer'ın kendi
+  // odak-iadesinden SONRA çalışıp odağı yeni sayfaya oturtsun; menüyü kapatıp
+  // (yolu değiştirmeden) çıkışta yol değişmediği için bu tetiklenmez, drawer'ın
+  // odağı tetikleyiciye iade etmesi korunur.
+  const ilkYuk = useRef(true)
+  useEffect(() => {
+    if (ilkYuk.current) {
+      ilkYuk.current = false
+      return
+    }
+    const id = requestAnimationFrame(() => {
+      document.getElementById('ana-icerik')?.focus({ preventScroll: true })
+    })
+    return () => cancelAnimationFrame(id)
+  }, [path])
 
   // Rehberli tur menüyü açıp kapatabilsin (juris-drawer olayı).
   useEffect(() => {
