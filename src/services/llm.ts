@@ -30,6 +30,11 @@ export function llmDurumu(ayarlar: Ayarlar | undefined): LlmDurumu {
 
 export class LlmHatasi extends Error {}
 
+/** Ağ isteği için varsayılan zaman aşımı (ms). Uzun tamamlamalar için cömert
+ * ama sonsuz askıyı önler: yanıt vermeyen bir uç nokta UI'yı "Yanıtlanıyor…"da
+ * kilitli bırakmasın, kullanıcı yeniden deneyebilsin. */
+const ZAMAN_ASIMI_MS = 60_000
+
 const SISTEM_ISTEMI =
   'Sen bir Türk hukuk bürosuna yardımcı olan dikkatli bir asistansın. ' +
   'Yalnızca sana verilen dosya özetine dayan; emin olmadığın bilgiyi uydurma. ' +
@@ -48,6 +53,7 @@ export async function llmSor(
   ayarlar: Ayarlar,
   baglamMetni: string,
   soru: string,
+  zamanAsimiMs: number = ZAMAN_ASIMI_MS,
 ): Promise<string> {
   const ucNokta = ayarlar.llmUcNokta?.trim()
   const anahtar = ayarlar.llmAnahtar?.trim()
@@ -56,50 +62,65 @@ export async function llmSor(
   }
   const model = ayarlar.llmModel?.trim() || 'gpt-4o-mini'
 
-  let yanit: Response
+  // Zaman aşımı: yanıt vermeyen uç nokta isteği sonsuza dek askıda bırakmasın.
+  const kontrolcu = new AbortController()
+  const zamanlayici = setTimeout(() => kontrolcu.abort(), zamanAsimiMs)
   try {
-    yanit = await fetch(ucNokta, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${anahtar}`,
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.2,
-        messages: [
-          { role: 'system', content: SISTEM_ISTEMI },
-          {
-            role: 'user',
-            content: `Dosya özeti:\n${baglamMetni}\n\nSoru: ${soru}`,
-          },
-        ],
-      }),
-    })
-  } catch {
-    throw new LlmHatasi(
-      'LLM sunucusuna ulaşılamadı. Uç noktayı ve bağlantınızı kontrol edin.',
-    )
-  }
+    let yanit: Response
+    try {
+      yanit = await fetch(ucNokta, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${anahtar}`,
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.2,
+          messages: [
+            { role: 'system', content: SISTEM_ISTEMI },
+            {
+              role: 'user',
+              content: `Dosya özeti:\n${baglamMetni}\n\nSoru: ${soru}`,
+            },
+          ],
+        }),
+        signal: kontrolcu.signal,
+      })
+    } catch {
+      // Abort mı (zaman aşımı) yoksa gerçek ağ hatası mı? Sinyal daha güvenilir
+      // (hata tipi ortamdan ortama değişir).
+      if (kontrolcu.signal.aborted) {
+        throw new LlmHatasi(
+          `LLM sunucusu ${Math.round(zamanAsimiMs / 1000)} sn içinde yanıt vermedi; daha sonra tekrar deneyin.`,
+        )
+      }
+      throw new LlmHatasi(
+        'LLM sunucusuna ulaşılamadı. Uç noktayı ve bağlantınızı kontrol edin.',
+      )
+    }
 
-  if (!yanit.ok) {
-    throw new LlmHatasi(
-      `LLM sağlayıcı hatası (${yanit.status}). Anahtarı ve modeli kontrol edin.`,
-    )
-  }
+    if (!yanit.ok) {
+      throw new LlmHatasi(
+        `LLM sağlayıcı hatası (${yanit.status}). Anahtarı ve modeli kontrol edin.`,
+      )
+    }
 
-  let veri: SohbetYaniti
-  try {
-    veri = (await yanit.json()) as SohbetYaniti
-  } catch {
-    throw new LlmHatasi('LLM yanıtı okunamadı.')
-  }
+    let veri: SohbetYaniti
+    try {
+      veri = (await yanit.json()) as SohbetYaniti
+    } catch {
+      throw new LlmHatasi('LLM yanıtı okunamadı.')
+    }
 
-  const metin = veri.choices?.[0]?.message?.content
-  if (typeof metin !== 'string' || !metin.trim()) {
-    throw new LlmHatasi('LLM boş yanıt döndürdü.')
+    const metin = veri.choices?.[0]?.message?.content
+    if (typeof metin !== 'string' || !metin.trim()) {
+      throw new LlmHatasi('LLM boş yanıt döndürdü.')
+    }
+    return metin.trim()
+  } finally {
+    clearTimeout(zamanlayici)
   }
-  return metin.trim()
 }
 
 /** Uç noktanın ana bilgisayar adı — "bu veri nereye gidiyor" notu için. */
