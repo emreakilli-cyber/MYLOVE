@@ -147,6 +147,11 @@ export function Tur({ onBitti }: TurProps) {
   const bitir = useCallback(() => {
     drawerAyarla(false)
     onBitti()
+    // Tur kapanınca odak, kaybolan balonla birlikte <body>'ye düşmesin:
+    // ana içeriğe taşı (kabuk turAktif iken devretmediği için burada yapılır).
+    requestAnimationFrame(() => {
+      document.getElementById('ana-icerik')?.focus({ preventScroll: true })
+    })
   }, [drawerAyarla, onBitti])
 
   // "İleri": metin ANINDA değişsin; kutu'yu null'lamıyoruz (sıçrama olmasın).
@@ -157,6 +162,45 @@ export function Tur({ onBitti }: TurProps) {
     }
     setIdx((n) => n + 1)
   }, [sonMu, bitir])
+
+  // Erişilebilirlik (diğer modallarla aynı desen): her adımda birincil eyleme
+  // ("İleri") odaklan ki klavye/ekran okuyucu kullanıcısı turu sürebilsin.
+  // preventScroll: balon sabit konumlu, odaklanınca sayfa zıplamasın.
+  useEffect(() => {
+    balonRef.current
+      ?.querySelector<HTMLElement>('.tur-ileri')
+      ?.focus({ preventScroll: true })
+  }, [idx])
+
+  // Esc ile kapat, Tab'ı balon içinde döndür (arka plan tur boyunca
+  // erişilemez kalsın). Kabuk turAktif iken gezinme-odağını devretmediğinden
+  // bu odak çalınmaz.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        bitir()
+        return
+      }
+      if (event.key !== 'Tab') return
+      const odaklanabilir = balonRef.current?.querySelectorAll<HTMLElement>(
+        'button:not([disabled])',
+      )
+      if (!odaklanabilir || odaklanabilir.length === 0) return
+      const ilk = odaklanabilir[0]
+      const son = odaklanabilir[odaklanabilir.length - 1]
+      if (!ilk || !son) return
+      if (event.shiftKey && document.activeElement === ilk) {
+        event.preventDefault()
+        son.focus({ preventScroll: true })
+      } else if (!event.shiftKey && document.activeElement === son) {
+        event.preventDefault()
+        ilk.focus({ preventScroll: true })
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [bitir])
 
   if (!adim) return null
 

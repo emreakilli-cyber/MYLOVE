@@ -39,7 +39,7 @@ export default function App() {
   return (
     <RouterProvider>
       <KilitKapisi>
-        <AppShell>
+        <AppShell turAktif={turGoster}>
           <Routes routes={routes} fallback={<NotFound />} />
         </AppShell>
         {turGoster ? (

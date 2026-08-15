@@ -9,14 +9,21 @@ import { useCihazBildirimTetikleyici } from '../data/bildirimTetikleyici'
 
 interface AppShellProps {
   readonly children: ReactNode
+  /** Rehberli tur açıkken kabuk gezinme odağını TUR'a bırakır (çakışmasın). */
+  readonly turAktif?: boolean
 }
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, turAktif = false }: AppShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
   const { path } = useLocation()
   const hatirlatmaSayisi = useAktifHatirlatmaSayisi() ?? 0
+
+  // Tur açıkken kabuğun gezinme-odağı devrini atlarız (tur kendi balonuna
+  // odaklanır); ref ile okunur ki tur bitince efekt gereksiz yeniden çalışmasın.
+  const turAktifRef = useRef(turAktif)
+  turAktifRef.current = turAktif
 
   // Tetik anı gelen hatırlatmaları (izin + push kanalı + sessiz saat kapıları
   // ile) cihaz bildirimi olarak düşür — Ayarlar/Bildirimler'deki sözün gereği.
@@ -45,6 +52,8 @@ export function AppShell({ children }: AppShellProps) {
       ilkYuk.current = false
       return
     }
+    // Tur açıkken odağı tur yönetir; kabuk araya girip balondan çalmasın.
+    if (turAktifRef.current) return
     const id = requestAnimationFrame(() => {
       document.getElementById('ana-icerik')?.focus({ preventScroll: true })
     })
@@ -118,7 +127,7 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </header>
 
-      <Drawer open={drawerOpen} onClose={closeDrawer} />
+      <Drawer open={drawerOpen} onClose={closeDrawer} turAktif={turAktif} />
 
       <main id="ana-icerik" className="shell-content" tabIndex={-1}>
         <CevrimdisiUyari />

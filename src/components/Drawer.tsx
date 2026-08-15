@@ -16,6 +16,9 @@ function basHarfleri(ad: string): string {
 interface DrawerProps {
   readonly open: boolean
   readonly onClose: () => void
+  /** Rehberli tur açıkken menü yalnızca GÖSTERİLİR; odak/Esc/kaydırma kilidini
+   * tur yönetir (aksi hâlde menü açılınca odak turun balonundan çalınırdı). */
+  readonly turAktif?: boolean
 }
 
 function DrawerLink({
@@ -40,7 +43,7 @@ function DrawerLink({
   )
 }
 
-export function Drawer({ open, onClose }: DrawerProps) {
+export function Drawer({ open, onClose, turAktif = false }: DrawerProps) {
   const panelRef = useRef<HTMLElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const ayarlar = useAyarlar()
@@ -57,8 +60,10 @@ export function Drawer({ open, onClose }: DrawerProps) {
   }, [open])
 
   // Açıkken arka planın kaymasını durdur, Esc ile kapat, odağı panele al.
+  // Tur açıkken atlanır: menü yalnızca spotlight için gösterilir, odak/Esc/
+  // kaydırma kilidini tur yönetir (yoksa menü açılınca odak balondan çalınır).
   useEffect(() => {
-    if (!open) return
+    if (!open || turAktif) return
 
     const previouslyFocused = document.activeElement as HTMLElement | null
     closeRef.current?.focus()
@@ -97,7 +102,7 @@ export function Drawer({ open, onClose }: DrawerProps) {
       document.body.style.overflow = overflow
       previouslyFocused?.focus()
     }
-  }, [open, onClose])
+  }, [open, onClose, turAktif])
 
   return (
     <>
