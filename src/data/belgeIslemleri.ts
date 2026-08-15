@@ -117,7 +117,10 @@ export function belgeyiIndir(belge: Belge): void {
   baglanti.href = adres
   baglanti.download = belge.ad
   baglanti.click()
-  URL.revokeObjectURL(adres)
+  // Revoke'u ertele: `click`'in hemen ardından iptal etmek Safari/Firefox'ta
+  // indirmeyi (blob URL akış kurulmadan geçersizleşince) iptal edebiliyor.
+  // Hedef platform iOS Safari olduğundan bir sonraki tura bırakıyoruz.
+  setTimeout(() => URL.revokeObjectURL(adres), 0)
 }
 
 /** Bir finans kaydına bağlı dekont/makbuzlar. */

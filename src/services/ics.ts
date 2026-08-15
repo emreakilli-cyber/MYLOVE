@@ -183,5 +183,6 @@ export function icsIndir(ics: string, adKoku: string): void {
   a.href = adres
   a.download = `${dosyaAdiTemizle(adKoku)}.ics`
   a.click()
-  URL.revokeObjectURL(adres)
+  // Revoke'u ertele: hemen iptal Safari/Firefox'ta indirmeyi bozabiliyor.
+  setTimeout(() => URL.revokeObjectURL(adres), 0)
 }

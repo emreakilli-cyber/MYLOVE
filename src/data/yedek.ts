@@ -142,7 +142,8 @@ function indir(icerik: string, mime: string, ad: string): void {
   baglanti.href = adres
   baglanti.download = ad
   baglanti.click()
-  URL.revokeObjectURL(adres)
+  // Revoke'u ertele: hemen iptal Safari/Firefox'ta indirmeyi bozabiliyor.
+  setTimeout(() => URL.revokeObjectURL(adres), 0)
 }
 
 /**

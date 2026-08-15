@@ -196,12 +196,14 @@ export function useGunlukGorevler(limit = 6): GorevSatiri[] | undefined {
       return true
     })
 
+    // Yalnızca vadeye göre sırala (duruma göre DEĞİL): durumu öne alıp sonra
+    // `slice(limit)` yapmak, bekleyenler limiti doldurunca bugün tamamlananları
+    // listeden ATIYORDU — kullanıcı bir işi işaretleyince satır kayıp yerine
+    // üstü çizili KALMALI (yukarıdaki not). Vade sırasıyla, tamamlanan iş yerinde
+    // (üstü çizili) durur.
     const siraDegeri = (g: Gorev) => g.vadeTarihi ?? '9999-12-31'
     const siralanmis = uygun
-      .sort((a, b) => {
-        if (a.durum !== b.durum) return a.durum === 'bekliyor' ? -1 : 1
-        return siraDegeri(a).localeCompare(siraDegeri(b))
-      })
+      .sort((a, b) => siraDegeri(a).localeCompare(siraDegeri(b)))
       .slice(0, limit)
 
     return Promise.all(
@@ -285,10 +287,24 @@ export function useHazirlikDurumlari(
         // Yakında bir işi olan dosya, eksiği olan dosyadan daha aciledir:
         // hiç duruşması ve süresi olmayan bir dosyanın %40'ta durması sorun
         // değil, iki gün sonra duruşması olanın %60'ta durması sorundur.
-        const ufuk = new Date(Date.now() + 14 * GUN_MS).toISOString()
+        // "Yaklaşan iş" = bugünden önümüzdeki 14 güne kadar. Alt sınır şart:
+        // aksi hâlde geçmişte kalıp "planlandi" bırakılmış (işaretlenmemiş) bir
+        // olay da dosyayı acil gösterip iyi hazırlanmış eski dosyayı geride
+        // kalanın üstüne çıkarırdı. Karşılaştırma YEREL güne göre (yerelGun):
+        // ham UTC damgası ile "bugün" kıyası, tüm-gün olaylarını (yerel gece
+        // yarısı = UTC'de önceki gün 21:00) sınırda yanlış eler. (Açık SÜRE ise
+        // geçmişte bile olsa kaçırılmış son tarihtir; onda alt sınır aranmaz.)
+        const bugun = bugunIso()
+        const ufukGun = yerelGun(
+          new Date(Date.now() + 14 * GUN_MS).toISOString(),
+        )
         const acilIs =
           sureler.some((s) => s.durum === 'acik') ||
-          olaylar.some((o) => o.durum === 'planlandi' && o.baslangic <= ufuk)
+          olaylar.some((o) => {
+            if (o.durum !== 'planlandi') return false
+            const gun = yerelGun(o.baslangic)
+            return gun >= bugun && gun <= ufukGun
+          })
 
         return {
           dosya,
