@@ -54,6 +54,14 @@
   border: 1px solid var(--border-hairline);
 }
 
+/* Sekme paneli sarmalayıcısı, shell-content'in dikey akış boşluğunu (section-gap)
+   taşır; aksi hâlde ızgara ile gün-detay kartı arasındaki boşluk kaybolurdu. */
+.cal-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+}
+
 .cal-tab {
   padding: var(--space-2);
   border-radius: var(--radius-pill);

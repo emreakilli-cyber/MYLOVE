@@ -404,6 +404,8 @@ export function Takvim() {
             key={deger}
             type="button"
             role="tab"
+            id={`cal-tab-${deger}`}
+            aria-controls="cal-panel"
             className="cal-tab"
             aria-selected={gorunum === deger}
             onClick={() => setGorunum(deger)}
@@ -413,26 +415,35 @@ export function Takvim() {
         ))}
       </div>
 
-      {gorunum === 'ay' ? (
-        <AyGorunumu
-          ankraj={ankraj}
-          secili={secili}
-          onSec={(gun) => {
-            setSecili(gun)
-            const d = isoDateToDate(gun)
-            // Başka aya ait bir güne dokunulduysa ızgara o aya kaysın.
-            if (d.getMonth() !== ankraj.getMonth()) {
-              setAnkraj(new Date(d.getFullYear(), d.getMonth(), 1))
-            }
-          }}
-        />
-      ) : null}
+      {/* Sekmelerin (Ay/Hafta/Ajanda) yönettiği tek panel; etkin sekme etiketler.
+          role="tab" + aria-selected'ın vaat ettiği tab/panel ilişkisini tamamlar. */}
+      <div
+        role="tabpanel"
+        id="cal-panel"
+        className="cal-panel"
+        aria-labelledby={`cal-tab-${gorunum}`}
+      >
+        {gorunum === 'ay' ? (
+          <AyGorunumu
+            ankraj={ankraj}
+            secili={secili}
+            onSec={(gun) => {
+              setSecili(gun)
+              const d = isoDateToDate(gun)
+              // Başka aya ait bir güne dokunulduysa ızgara o aya kaysın.
+              if (d.getMonth() !== ankraj.getMonth()) {
+                setAnkraj(new Date(d.getFullYear(), d.getMonth(), 1))
+              }
+            }}
+          />
+        ) : null}
 
-      {gorunum === 'hafta' ? (
-        <HaftaGorunumu secili={secili} onSec={setSecili} />
-      ) : null}
+        {gorunum === 'hafta' ? (
+          <HaftaGorunumu secili={secili} onSec={setSecili} />
+        ) : null}
 
-      {gorunum === 'ajanda' ? <AjandaGorunumu /> : null}
+        {gorunum === 'ajanda' ? <AjandaGorunumu /> : null}
+      </div>
 
       <Link to="/takvim/disa-aktar" className="cal-export-link">
         <Icon name="arrow-up-right" size={15} />
