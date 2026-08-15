@@ -306,7 +306,15 @@ function GorevListesi({ satirlar }: { satirlar: GorevSatiri[] | undefined }) {
       <div className="divide-rows">
         {satirlar.map(({ gorev, dosya }) => {
           const tamam = gorev.durum === 'tamamlandi'
-          const rozet = vadeRozeti(gorev.vadeTarihi)
+          // Tamamlanmış işte aciliyet anlamsızdır: üstü çizili bir satırda
+          // kırmızı "gecikti" rozeti çelişkili sinyal verir. Referanstaki gibi
+          // (04-task-list) tamamlananda nötr TARİH rozeti göster; bekleyende
+          // aciliyet rozeti kalır.
+          const rozet: { metin: string; accent: Accent } | null = tamam
+            ? gorev.vadeTarihi
+              ? { metin: kisaTarih(gorev.vadeTarihi), accent: 'slate' }
+              : null
+            : vadeRozeti(gorev.vadeTarihi)
           return (
             <div
               key={gorev.id}
