@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
-import { bugunIso, gunFarki } from '../domain/tarih'
+import { dateToIsoDate, gunFarki } from '../domain/tarih'
 import type { Dosya, FinansKaydi } from '../domain/types'
 
 /*
@@ -25,35 +25,50 @@ export interface FinansGenelOzet {
   yaklasanOdeme: number
 }
 
-export function useFinansGenelOzet(): FinansGenelOzet | undefined {
-  return useLiveQuery(async () => {
-    const kayitlar = await db.finans.toArray()
-    const bugun = new Date()
-    const onEk = `${bugun.getFullYear()}-${String(bugun.getMonth() + 1).padStart(2, '0')}`
-    const bugunStr = bugunIso()
+/**
+ * Büro geneli finans özeti — saf çekirdek (DB/DOM'suz test edilebilir).
+ *
+ * "Bekleyen ÖDEME" ve "yaklaşan ödeme" yalnızca GİDER kalemlerini sayar:
+ * büronun ödemesi gereken tutardır. Tahsil edilmemiş gelir (müvekkilin borcu)
+ * bekleyen TAHSİLATtır, ödeme değil; buraya katılırsa "ödemem gereken" tutar
+ * yanlışça şişerdi. Asistanın aynı adlı hesabıyla (dosyaOzeti — yalnızca
+ * gider) da tutarlı.
+ */
+export function finansGenelOzetHesapla(
+  kayitlar: FinansKaydi[],
+  bugun: Date = new Date(),
+): FinansGenelOzet {
+  const onEk = `${bugun.getFullYear()}-${String(bugun.getMonth() + 1).padStart(2, '0')}`
+  const bugunStr = dateToIsoDate(bugun)
 
-    let buAyTahsilat = 0
-    let buAyGider = 0
-    let toplamBekleyen = 0
-    let yaklasanOdeme = 0
+  let buAyTahsilat = 0
+  let buAyGider = 0
+  let toplamBekleyen = 0
+  let yaklasanOdeme = 0
 
-    for (const f of kayitlar) {
-      if (f.tarih.startsWith(onEk)) {
-        if (f.yon === 'gelir') buAyTahsilat += f.odenenTutar
-        else buAyGider += f.odenenTutar
-      }
-      if (f.odemeDurumu !== 'odendi') {
-        const kalan = f.tutar - f.odenenTutar
-        toplamBekleyen += kalan
-        if (f.vadeTarihi) {
-          const fark = gunFarki(f.vadeTarihi, bugunStr)
-          if (fark >= 0 && fark <= 7) yaklasanOdeme += 1
-        }
+  for (const f of kayitlar) {
+    if (f.tarih.startsWith(onEk)) {
+      if (f.yon === 'gelir') buAyTahsilat += f.odenenTutar
+      else buAyGider += f.odenenTutar
+    }
+    if (f.yon === 'gider' && f.odemeDurumu !== 'odendi') {
+      const kalan = f.tutar - f.odenenTutar
+      toplamBekleyen += kalan
+      if (f.vadeTarihi) {
+        const fark = gunFarki(f.vadeTarihi, bugunStr)
+        if (fark >= 0 && fark <= 7) yaklasanOdeme += 1
       }
     }
+  }
 
-    return { buAyTahsilat, buAyGider, toplamBekleyen, yaklasanOdeme }
-  }, [])
+  return { buAyTahsilat, buAyGider, toplamBekleyen, yaklasanOdeme }
+}
+
+export function useFinansGenelOzet(): FinansGenelOzet | undefined {
+  return useLiveQuery(
+    async () => finansGenelOzetHesapla(await db.finans.toArray()),
+    [],
+  )
 }
 
 export interface FinansSatiri {
