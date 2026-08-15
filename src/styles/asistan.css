@@ -4,7 +4,12 @@
   position: relative;
   overflow: hidden;
   padding: var(--space-5) var(--card-padding);
-  background: linear-gradient(150deg, #dcebe1 0%, #cfe3d7 60%, #c3dbcc 100%);
+  background: linear-gradient(
+    150deg,
+    var(--hero-surface-1) 0%,
+    var(--hero-surface-2) 60%,
+    var(--hero-surface-3) 100%
+  );
   border: none;
 }
 
@@ -13,17 +18,17 @@
 }
 
 .asistan-hero-icon {
-  color: #23453a;
+  color: var(--brand-sage-text);
   margin-bottom: var(--space-3);
 }
 
 .asistan-hero-title {
-  color: #16302a;
+  color: var(--hero-fg-strong);
   margin-bottom: var(--space-2);
 }
 
 .asistan-hero-text {
-  color: #3f5c4e;
+  color: var(--hero-fg);
   font-size: var(--text-small);
   max-width: 42ch;
 }

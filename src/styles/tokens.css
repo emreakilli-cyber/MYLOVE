@@ -35,6 +35,18 @@
   --brand-teal: #5fb49c;
   --brand-ink: #16262e;
 
+  /* ---- Yeşil hero kartları (Genel Bakış + Asistan) ve sage rozetleri ----
+   * Yeşil degrade zemin ile üstündeki AA-kontrastlı koyu-yeşil metin hiyerarşisi.
+   * Tek yerde tanımlı ki iki hero ve sage çip/mesajları sapmadan aynı kalsın
+   * (aksi hâlde sabit hex kopyaları zamanla ayrışır — bkz. tur-175 grafik kayması). */
+  --hero-surface-1: #dcebe1;
+  --hero-surface-2: #cfe3d7;
+  --hero-surface-3: #c3dbcc;
+  --hero-fg-strong: #16302a; /* hero başlığı */
+  --hero-fg: #3f5c4e; /* hero gövde metni */
+  --hero-fg-muted: #5b7a68; /* hero eyebrow / tarih */
+  --brand-sage-text: #23453a; /* sage/yeşil zeminde AA metin: buton, ikon, çip, mesaj */
+
   /* ---- Kategori / durum renkleri ----
    * Her biri üç katman: çizgi rengi (-fg), yumuşak zemin (-bg), kenarlık (-br).
    */

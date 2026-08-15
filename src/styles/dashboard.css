@@ -52,7 +52,12 @@
   overflow: hidden;
   border: none;
   padding: var(--space-6) var(--card-padding);
-  background: linear-gradient(150deg, #dcebe1 0%, #cfe3d7 55%, #c3dbcc 100%);
+  background: linear-gradient(
+    150deg,
+    var(--hero-surface-1) 0%,
+    var(--hero-surface-2) 55%,
+    var(--hero-surface-3) 100%
+  );
 }
 
 .hero-ring {
@@ -83,17 +88,17 @@
 }
 
 .hero-date {
-  color: #5b7a68;
+  color: var(--hero-fg-muted);
   margin-bottom: var(--space-3);
 }
 
 .hero-greeting {
   margin-bottom: var(--space-2);
-  color: #16302a;
+  color: var(--hero-fg-strong);
 }
 
 .hero-text {
-  color: #3f5c4e;
+  color: var(--hero-fg);
   max-width: 34ch;
   margin-bottom: var(--space-5);
 }
@@ -105,7 +110,7 @@
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.85);
-  color: #23453a;
+  color: var(--brand-sage-text);
   font-size: var(--text-small);
   border: 1px solid rgba(255, 255, 255, 0.9);
   transition: background var(--duration-fast) var(--ease-out);
