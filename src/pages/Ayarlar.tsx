@@ -144,7 +144,10 @@ export function Ayarlar() {
     }
     try {
       await yedektenGeriYukle(metin)
-      setMesaj('Yedek geri yüklendi.')
+      // Sayfayı taze aç (sıfırlama akışıyla aynı): profil/sessiz saat/LLM alanları
+      // kontrolsüz input'lar; yeniden yükleme olmadan geri yüklenen değerleri
+      // GÖSTERMEZ ve o alana dokunulunca eski değer sessizce geri yazılırdı.
+      window.location.reload()
     } catch (e) {
       setMesaj(e instanceof YedekHatasi ? e.message : 'Yedek okunamadı.')
     }
@@ -154,9 +157,9 @@ export function Ayarlar() {
     if (!bekleyenGeriYukleme) return
     try {
       await yedektenGeriYukle(bekleyenGeriYukleme, geriYuklemeParola)
-      setMesaj('Şifreli yedek geri yüklendi.')
-      setBekleyenGeriYukleme(null)
-      setGeriYuklemeParola('')
+      // Sayfayı taze aç ki geri yüklenen değerler kontrolsüz alanlara yansısın
+      // (bkz. geriYukle). Bekleyen durum reload ile zaten temizlenir.
+      window.location.reload()
     } catch (e) {
       setMesaj(
         e instanceof SifreCozmeHatasi || e instanceof YedekHatasi

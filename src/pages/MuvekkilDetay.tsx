@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '../components/Icon'
+import { SilDugmesi } from '../components/SilDugmesi'
 import { SatirIskeleti } from '../components/BolumKarti'
 import { Link } from '../router'
 import {
@@ -230,14 +231,10 @@ export function MuvekkilDetay({ id }: { id?: string }) {
                     {goreliZaman(not.olusturmaTarihi)}
                   </span>
                 </span>
-                <button
-                  type="button"
-                  className="row-remove"
-                  onClick={() => void notSil(not.id)}
-                  aria-label="Kaydı sil"
-                >
-                  <Icon name="close" size={16} />
-                </button>
+                <SilDugmesi
+                  onSil={() => void notSil(not.id)}
+                  etiket="Kaydı sil"
+                />
               </div>
             ))}
           </div>
@@ -249,7 +246,16 @@ export function MuvekkilDetay({ id }: { id?: string }) {
       <p className="t-small t-muted" style={{ padding: '0 var(--space-1)' }}>
         Müvekkile ait bilgiler yalnızca bu cihazda saklanır. Açılış tarihi ilk
         dosya:{' '}
-        {dosyalar.at(-1) ? tamTarih(dosyalar.at(-1)!.acilisTarihi) : '—'}
+        {/* `dosyalar` açık-önce sonra yeni→eski sıralı; en erken açılan dosya
+            `.at(-1)` DEĞİL (o, kapalı grubun en eskisi olur). Gerçekten en erken
+            açılış tarihini bul. */}
+        {dosyalar.length > 0
+          ? tamTarih(
+              dosyalar.reduce((en, d) =>
+                d.acilisTarihi < en.acilisTarihi ? d : en,
+              ).acilisTarihi,
+            )
+          : '—'}
       </p>
     </>
   )

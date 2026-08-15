@@ -449,7 +449,7 @@ export function Takvim() {
           Ekle
         </Link>
       </div>
-      <div className="fab-spacer" aria-hidden="true" />
+      <div className="fab-spacer fab-spacer-cluster" aria-hidden="true" />
     </>
   )
 }

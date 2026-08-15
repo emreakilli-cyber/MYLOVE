@@ -128,8 +128,10 @@
   color: var(--text-on-inverse);
   display: flex;
   flex-direction: column;
+  /* Sol kenara sabit; yatay/çentikli cihazda sol güvenli alan içeriği
+     kapatmasın diye sol dolgu `max(space-4, safe-left)`. */
   padding: calc(var(--space-5) + var(--safe-top)) var(--space-4)
-    calc(var(--space-4) + var(--safe-bottom));
+    calc(var(--space-4) + var(--safe-bottom)) max(var(--space-4), var(--safe-left));
   transform: translateX(-100%);
   overflow-y: auto;
   overscroll-behavior: contain;

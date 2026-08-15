@@ -24,6 +24,7 @@ import {
   belgeYukle,
 } from '../data/belgeIslemleri'
 import { BelgeOnizleme } from '../components/BelgeOnizleme'
+import { SilDugmesi } from '../components/SilDugmesi'
 import { olayGorunumleri } from '../domain/olay'
 import { seviyeMetni } from '../domain/hazirlik'
 import { tutarTam } from '../domain/para'
@@ -241,14 +242,10 @@ function SureSekmesi({ detay }: { detay: Detay }) {
                   ? 'tamamlandı'
                   : kalanSureMetni(sure.sonTarih)}
               </span>
-              <button
-                type="button"
-                className="row-remove"
-                onClick={() => void sureSil(sure.id)}
-                aria-label={`${sure.kuralAdi} süresini sil`}
-              >
-                <Icon name="close" size={16} />
-              </button>
+              <SilDugmesi
+                onSil={() => void sureSil(sure.id)}
+                etiket={`${sure.kuralAdi} süresini sil`}
+              />
             </div>
           ))}
         </section>
@@ -369,14 +366,10 @@ function BelgeSekmesi({ detay }: { detay: Detay }) {
                     · {goreliZaman(belge.olusturmaTarihi)}
                   </span>
                 </button>
-                <button
-                  type="button"
-                  className="row-remove"
-                  onClick={() => void belgeSil(belge.id)}
-                  aria-label="Belgeyi sil"
-                >
-                  <Icon name="close" size={16} />
-                </button>
+                <SilDugmesi
+                  onSil={() => void belgeSil(belge.id)}
+                  etiket="Belgeyi sil"
+                />
               </div>
               <BelgeEtiketEditor belge={belge} />
             </div>
@@ -605,14 +598,10 @@ function NotSekmesi({ detay }: { detay: Detay }) {
                     {kisiRolEtiketleri[kisi.rol]}
                   </span>
                 </span>
-                <button
-                  type="button"
-                  className="row-remove"
-                  onClick={() => void kisiSil(kisi.id)}
-                  aria-label={`${kisi.ad} kaydını sil`}
-                >
-                  <Icon name="close" size={16} />
-                </button>
+                <SilDugmesi
+                  onSil={() => void kisiSil(kisi.id)}
+                  etiket={`${kisi.ad} kaydını sil`}
+                />
               </div>
             ))}
           </div>
@@ -662,14 +651,10 @@ function NotSekmesi({ detay }: { detay: Detay }) {
                     {goreliZaman(not.olusturmaTarihi)}
                   </span>
                 </span>
-                <button
-                  type="button"
-                  className="row-remove"
-                  onClick={() => void notSil(not.id)}
-                  aria-label="Notu sil"
-                >
-                  <Icon name="close" size={16} />
-                </button>
+                <SilDugmesi
+                  onSil={() => void notSil(not.id)}
+                  etiket="Notu sil"
+                />
               </div>
             ))}
           </div>

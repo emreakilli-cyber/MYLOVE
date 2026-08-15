@@ -258,6 +258,12 @@
   height: 76px;
 }
 
+/* İki düğmeli kayan küme (Takvim) tek FAB'den yüksektir; son satırın (ör.
+   ajandadaki olay) sağ kenarını kapatmasın diye daha yüksek boşluk. */
+.fab-spacer-cluster {
+  height: 140px;
+}
+
 /* Süre hesabı sonuç kartı */
 .sonuc-card {
   padding: var(--space-5) var(--card-padding);

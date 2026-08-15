@@ -341,7 +341,17 @@
   padding: var(--card-padding);
 }
 
+/* Dar ekranda (ör. 320px) yedi haneli bir tutar iki sütuna sığmayıp sayfayı
+   yatay taşırırdı; o genişlikte tek sütuna in ki tutarlar kırpılmadan sığsın. */
+@media (max-width: 360px) {
+  .money-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .money-cell {
+  /* İçerik hücreyi zorlayıp taşırmasın diye küçülebilsin. */
+  min-width: 0;
   padding: var(--space-3);
   border-radius: var(--radius-md);
   background: var(--surface-page);
@@ -417,6 +427,20 @@
 .row-remove:active {
   background: var(--surface-sunken);
   color: var(--cat-red-fg);
+}
+
+/* İki dokunuşlu silme onayı: "Sil?" chip'i. Koyu metin + kırmızı tonlu zemin —
+   okunur (AA) ve tehlikeyi belli eder; ikonlu daireden genişler. */
+.row-remove-onay {
+  width: auto;
+  padding: 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-mono);
+  color: var(--text-primary);
+  background: var(--cat-red-bg);
+  border: 1px solid var(--cat-red-br);
 }
 
 /* Sekme üstündeki tekil eylem düğmesi (ör. Süre hesapla) */
