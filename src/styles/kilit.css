@@ -1,5 +1,11 @@
 /* Uygulama kilidi ve arka plan maskesi. */
 
+/* Uygulama içeriğinin sarmalayıcısı. Yerleşimi etkilemesin diye `display:
+ * contents`; yalnızca kilitliyken `inert` verilerek arka plan erişilemez olur. */
+.kilit-icerik {
+  display: contents;
+}
+
 .kilit-ekran,
 .kilit-maske {
   position: fixed;

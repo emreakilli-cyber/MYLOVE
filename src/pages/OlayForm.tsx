@@ -52,6 +52,7 @@ export function OlayForm({ id }: { id?: string }) {
   )
   const [hata, setHata] = useState<string | null>(null)
   const [silmeOnayi, setSilmeOnayi] = useState(false)
+  const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
   const [tekrar, setTekrar] = useState<TekrarSecim>('yok')
   const [tekrarAdet, setTekrarAdet] = useState(8)
@@ -116,9 +117,16 @@ export function OlayForm({ id }: { id?: string }) {
         ? { tekrar, tekrarAdet }
         : {}),
     }
-    if (duzenleme && id) await olayGuncelle(id, girdi)
-    else await olayEkle(girdi)
-    navigate('/takvim')
+    // Kayıt uçarken kilitle: çift dokunuş iki bağımsız seri (ör. 16 olay)
+    // oluşturmasın.
+    setKaydediliyor(true)
+    try {
+      if (duzenleme && id) await olayGuncelle(id, girdi)
+      else await olayEkle(girdi)
+      navigate('/takvim')
+    } finally {
+      setKaydediliyor(false)
+    }
   }
 
   const sil = async () => {
@@ -321,6 +329,7 @@ export function OlayForm({ id }: { id?: string }) {
           <button
             type="button"
             className="button-primary"
+            disabled={kaydediliyor}
             onClick={() => void kaydet()}
           >
             {duzenleme ? 'Değişikliği kaydet' : 'Takvime ekle'}

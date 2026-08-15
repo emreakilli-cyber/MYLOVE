@@ -78,6 +78,7 @@ export function FinansForm({ id }: { id?: string }) {
   )
   const [hata, setHata] = useState<string | null>(null)
   const [silmeOnayi, setSilmeOnayi] = useState(false)
+  const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
   const [yukleniyor, setYukleniyor] = useState(false)
 
@@ -143,12 +144,18 @@ export function FinansForm({ id }: { id?: string }) {
       aciklama: durum.aciklama,
     }
 
-    if (duzenleme && id) {
-      await finansGuncelle(id, girdi)
-      navigate(`/finans/${id}`)
-    } else {
-      const yeniId = await finansEkle(girdi)
-      navigate(`/finans/${yeniId}`)
+    // Çift dokunuşta iki finans kaydı oluşmasın diye kayıt uçarken kilitle.
+    setKaydediliyor(true)
+    try {
+      if (duzenleme && id) {
+        await finansGuncelle(id, girdi)
+        navigate(`/finans/${id}`)
+      } else {
+        const yeniId = await finansEkle(girdi)
+        navigate(`/finans/${yeniId}`)
+      }
+    } finally {
+      setKaydediliyor(false)
     }
   }
 
@@ -340,6 +347,7 @@ export function FinansForm({ id }: { id?: string }) {
           <button
             type="button"
             className="button-primary"
+            disabled={kaydediliyor}
             onClick={() => void kaydet()}
           >
             {duzenleme ? 'Değişikliği kaydet' : 'Kaydı ekle'}

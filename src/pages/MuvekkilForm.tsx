@@ -42,6 +42,7 @@ export function MuvekkilForm({ id }: { id?: string }) {
   const [durum, setDurum] = useState<Durum>(bosDurum)
   const [hata, setHata] = useState<string | null>(null)
   const [silmeOnayi, setSilmeOnayi] = useState(false)
+  const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
 
   useEffect(() => {
@@ -82,12 +83,18 @@ export function MuvekkilForm({ id }: { id?: string }) {
         .filter(Boolean),
       not: durum.not,
     }
-    if (duzenleme && id) {
-      await muvekkilGuncelle(id, girdi)
-      navigate(`/muvekkiller/${id}`)
-    } else {
-      const yeniId = await muvekkilEkle(girdi)
-      navigate(`/muvekkiller/${yeniId}`)
+    // Çift dokunuşta iki müvekkil oluşmasın diye kayıt uçarken kilitle.
+    setKaydediliyor(true)
+    try {
+      if (duzenleme && id) {
+        await muvekkilGuncelle(id, girdi)
+        navigate(`/muvekkiller/${id}`)
+      } else {
+        const yeniId = await muvekkilEkle(girdi)
+        navigate(`/muvekkiller/${yeniId}`)
+      }
+    } finally {
+      setKaydediliyor(false)
     }
   }
 
@@ -223,6 +230,7 @@ export function MuvekkilForm({ id }: { id?: string }) {
           <button
             type="button"
             className="button-primary"
+            disabled={kaydediliyor}
             onClick={() => void kaydet()}
           >
             {duzenleme ? 'Değişikliği kaydet' : 'Müvekkili ekle'}

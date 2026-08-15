@@ -48,6 +48,7 @@ export function GorevForm({ id }: { id?: string }) {
   const [durum, setDurum] = useState<Durum>(() => bosDurum(query.get('dosya') ?? ''))
   const [hata, setHata] = useState<string | null>(null)
   const [silmeOnayi, setSilmeOnayi] = useState(false)
+  const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
   const [tekrar, setTekrar] = useState<TekrarSecim>('yok')
   const [tekrarAdet, setTekrarAdet] = useState(8)
@@ -89,9 +90,15 @@ export function GorevForm({ id }: { id?: string }) {
       aciklama: durum.aciklama,
       ...(!duzenleme && tekrar !== 'yok' ? { tekrar, tekrarAdet } : {}),
     }
-    if (duzenleme && id) await gorevGuncelle(id, girdi)
-    else await gorevEkle(girdi)
-    navigate('/gorevler')
+    // Çift dokunuşta iki görev/seri oluşmasın diye kayıt uçarken kilitle.
+    setKaydediliyor(true)
+    try {
+      if (duzenleme && id) await gorevGuncelle(id, girdi)
+      else await gorevEkle(girdi)
+      navigate('/gorevler')
+    } finally {
+      setKaydediliyor(false)
+    }
   }
 
   const sil = async () => {
@@ -256,6 +263,7 @@ export function GorevForm({ id }: { id?: string }) {
           <button
             type="button"
             className="button-primary"
+            disabled={kaydediliyor}
             onClick={() => void kaydet()}
           >
             {duzenleme ? 'Değişikliği kaydet' : 'Görevi ekle'}

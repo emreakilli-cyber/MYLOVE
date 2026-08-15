@@ -47,6 +47,15 @@ export function Drawer({ open, onClose }: DrawerProps) {
   const ad = ayarlar?.kullaniciAdi?.trim() || 'JurisCalendar'
   const unvan = ayarlar?.unvan?.trim() || 'Kullanıcı'
 
+  // Kapalıyken panel ekran dışında ama `<a>`/`<button>` çocukları hâlâ odaklanır
+  // durumda kalıyordu: Tab ile görünmez, `aria-hidden` bir ağaca odak düşerdi
+  // (ARIA ihlali + klavye kullanıcısı için "kaybolan" odak). `inert` bunu kökten
+  // çözer — kapalıyken odak/etkileşim/AT dışı.
+  useEffect(() => {
+    const el = panelRef.current
+    if (el) el.inert = !open
+  }, [open])
+
   // Açıkken arka planın kaymasını durdur, Esc ile kapat, odağı panele al.
   useEffect(() => {
     if (!open) return

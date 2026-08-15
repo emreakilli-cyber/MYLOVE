@@ -136,10 +136,33 @@ export async function dosyaGuncelle(
   id: string,
   girdi: DosyaGirdisi,
 ): Promise<void> {
+  const zaman = simdi()
   const onceki = await db.dosyalar.get(id)
+
+  // Satır içi yeni müvekkil düzenleme sırasında da seçilebilir. Önce hazırla,
+  // yazımı aşağıdaki transaction içinde yap (dosyaEkle ile aynı akış). Hedef
+  // müvekkil: yeni oluşturulan ya da seçilen. Boş gelirse (beklenmedik) eski
+  // müvekkil korunur — dosya ASLA müvekkilsiz (`muvekkilId:''`) bırakılmaz;
+  // aksi hâlde `yeniMuvekkilAdi` yok sayılıp dosya ve tüm bağlı finans/olay/
+  // görev kayıtlarının `muvekkilId`'si silinirdi.
+  const yeniAd = bosaCevir(girdi.yeniMuvekkilAdi)
+  const yeniMuvekkil: Muvekkil | null = yeniAd
+    ? {
+        id: yeniId(),
+        ad: yeniAd,
+        tur: muvekkilTuruTahmin(yeniAd),
+        etiketler: [],
+        arsivlendi: false,
+        olusturmaTarihi: zaman,
+        guncellemeTarihi: zaman,
+      }
+    : null
+  const hedefMuvekkilId =
+    yeniMuvekkil?.id || girdi.muvekkilId || onceki?.muvekkilId || ''
+
   const guncelleme = {
     baslik: girdi.baslik.trim(),
-    muvekkilId: girdi.muvekkilId,
+    muvekkilId: hedefMuvekkilId,
     tur: girdi.tur,
     durum: girdi.durum,
     konu: bosaCevir(girdi.konu),
@@ -151,7 +174,7 @@ export async function dosyaGuncelle(
     ...(girdi.durum === 'kapali'
       ? { kapanisTarihi: bugunIso() }
       : { kapanisTarihi: undefined }),
-    guncellemeTarihi: simdi(),
+    guncellemeTarihi: zaman,
   }
 
   // Müvekkil değiştiyse dosyaya bağlı kayıtlardaki denormalize `muvekkilId`'yi
@@ -159,19 +182,25 @@ export async function dosyaGuncelle(
   // kopyalar; dosya başka müvekkile taşınınca bu kopyalar bayatlar. Özellikle
   // müvekkil bazlı finans (bekleyen ödeme) `finans.muvekkilId`'den okunduğu için
   // eski müvekkile yazılmaya devam ederdi. Kaynak doğruluğu dosyada; kopyalar
-  // onu izlemeli. Dosya güncellemesi ile kopya eşitleme TEK transaction'da
-  // olmalı: ikisi arasında bir hata dosyayı yeni müvekkile taşırken kopyaları
-  // eskide bırakır — tam da önlenmek istenen bayatlık.
-  if (onceki && onceki.muvekkilId !== girdi.muvekkilId) {
-    const yeni = { muvekkilId: girdi.muvekkilId }
+  // onu izlemeli. Yeni müvekkil yazımı + dosya güncellemesi + kopya eşitleme TEK
+  // transaction'da: aralarında bir hata tutarsız durum bırakmasın.
+  const muvekkilDegisti = !!onceki && onceki.muvekkilId !== hedefMuvekkilId
+  if (yeniMuvekkil || muvekkilDegisti) {
     await db.transaction(
       'rw',
-      [db.dosyalar, db.finans, db.olaylar, db.gorevler],
+      [db.muvekkiller, db.dosyalar, db.finans, db.olaylar, db.gorevler, db.hareketler],
       async () => {
+        if (yeniMuvekkil) {
+          await db.muvekkiller.add(yeniMuvekkil)
+          await hareketYaz('muvekkil-eklendi', 'Müvekkil eklendi', yeniMuvekkil.ad)
+        }
         await db.dosyalar.update(id, guncelleme)
-        await db.finans.where('dosyaId').equals(id).modify(yeni)
-        await db.olaylar.where('dosyaId').equals(id).modify(yeni)
-        await db.gorevler.where('dosyaId').equals(id).modify(yeni)
+        if (muvekkilDegisti) {
+          const yeni = { muvekkilId: hedefMuvekkilId }
+          await db.finans.where('dosyaId').equals(id).modify(yeni)
+          await db.olaylar.where('dosyaId').equals(id).modify(yeni)
+          await db.gorevler.where('dosyaId').equals(id).modify(yeni)
+        }
       },
     )
   } else {

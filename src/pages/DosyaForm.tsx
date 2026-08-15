@@ -81,6 +81,7 @@ export function DosyaForm({ id }: { id?: string }) {
   const [durum, setDurum] = useState<Durum>(bosDurum)
   const [hata, setHata] = useState<string | null>(null)
   const [silmeOnayi, setSilmeOnayi] = useState(false)
+  const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
 
   useEffect(() => {
@@ -134,12 +135,19 @@ export function DosyaForm({ id }: { id?: string }) {
       not: durum.not,
     }
 
-    if (duzenleme && id) {
-      await dosyaGuncelle(id, girdi)
-      navigate(`/dosyalar/${id}`)
-    } else {
-      const yeniId = await dosyaEkle(girdi)
-      navigate(`/dosyalar/${yeniId}`)
+    // Kayıt uçarken düğmeyi kilitle: mobilde çift dokunuş iki dosya (ya da iki
+    // müvekkil) oluşturmasın.
+    setKaydediliyor(true)
+    try {
+      if (duzenleme && id) {
+        await dosyaGuncelle(id, girdi)
+        navigate(`/dosyalar/${id}`)
+      } else {
+        const yeniId = await dosyaEkle(girdi)
+        navigate(`/dosyalar/${yeniId}`)
+      }
+    } finally {
+      setKaydediliyor(false)
     }
   }
 
@@ -313,6 +321,7 @@ export function DosyaForm({ id }: { id?: string }) {
           <button
             type="button"
             className="button-primary"
+            disabled={kaydediliyor}
             onClick={() => void kaydet()}
           >
             {duzenleme ? 'Değişikliği kaydet' : 'Dosyayı oluştur'}

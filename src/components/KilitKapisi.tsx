@@ -32,6 +32,8 @@ export function KilitKapisi({ children }: KilitKapisiProps) {
   const [pin, setPin] = useState('')
   const [hata, setHata] = useState(false)
   const gizlenmeAni = useRef<number | null>(null)
+  const icerikRef = useRef<HTMLDivElement>(null)
+  const ekranRef = useRef<HTMLDivElement>(null)
 
   // İlk yükleme / ayar değişiminde kilit durumunu belirle.
   useEffect(() => {
@@ -108,16 +110,60 @@ export function KilitKapisi({ children }: KilitKapisiProps) {
     if (yeni.length >= hedefUzunluk) void dogrula(yeni)
   }
 
+  // Kilitliyken arka planı ERİŞİLEMEZ kıl: `inert` odağı, tıklamayı ve ekran
+  // okuyucuyu engeller. Aksi hâlde klavye/AT kullanıcısı Tab ile kilidin
+  // ardındaki gezinme ve dosya verisine ulaşıp kapıyı aşabilirdi.
+  useEffect(() => {
+    const el = icerikRef.current
+    if (el) el.inert = kilitli
+  }, [kilitli])
+
+  // Kilit ekranı açılınca odağı oraya al (fiziksel klavye + ekran okuyucu).
+  useEffect(() => {
+    if (kilitli) ekranRef.current?.focus()
+  }, [kilitli])
+
+  // Fiziksel klavyeyle PIN girişi: rakam tuşları hane ekler, Backspace siler.
+  // Sanal tuş takımıyla aynı davranış; `pin` bağımlılığı taze kalsın diye
+  // dinleyici her hanede yeniden bağlanır (ucuz).
+  useEffect(() => {
+    if (!kilitli) return
+    const onTus = (e: KeyboardEvent) => {
+      if (/^[0-9]$/.test(e.key)) {
+        e.preventDefault()
+        setHata(false)
+        const yeni = (pin + e.key).slice(0, hedefUzunluk)
+        setPin(yeni)
+        if (yeni.length >= hedefUzunluk) void dogrula(yeni)
+      } else if (e.key === 'Backspace') {
+        e.preventDefault()
+        setHata(false)
+        setPin(pin.slice(0, -1))
+      }
+    }
+    window.addEventListener('keydown', onTus)
+    return () => window.removeEventListener('keydown', onTus)
+  }, [kilitli, pin, hedefUzunluk, dogrula])
+
   return (
     <>
-      {children}
+      <div ref={icerikRef} className="kilit-icerik">
+        {children}
+      </div>
       {maskeli && !kilitli ? (
         <div className="kilit-maske" aria-hidden="true">
           <span className="kilit-maske-mark">J</span>
         </div>
       ) : null}
       {kilitli ? (
-        <div className="kilit-ekran" role="dialog" aria-label="Uygulama kilidi">
+        <div
+          ref={ekranRef}
+          className="kilit-ekran"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Uygulama kilidi"
+          tabIndex={-1}
+        >
           <span className="kilit-mark">J</span>
           <p className="kilit-baslik">JurisCalendar kilitli</p>
           <p className="kilit-alt">Devam etmek için PIN girin</p>

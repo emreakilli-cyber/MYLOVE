@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { aydinlatmaMetni, onayMaddeleri } from './hukukiMetin'
 import { onayKaydet } from '../data/onayIslemleri'
@@ -27,6 +27,22 @@ export function HukukiOnay({ onOnaylandi }: HukukiOnayProps) {
     // 8 px tolerans: sona yakınsa "okundu" say.
     if (el.scrollTop + el.clientHeight >= el.scrollHeight - 8) setOkundu(true)
   }
+
+  // Metin kaydırma gerektirmeyecek kadar kısaysa (kısa nihai metin ya da uzun /
+  // yakınlaştırılmış ekran) `onScroll` HİÇ tetiklenmez; o hâlde kutular sonsuza
+  // dek kilitli kalıp onboarding'i tıkardı. Mount'ta ve yeniden boyutlandırmada
+  // "zaten tümü görünür mü" diye bakıp bu durumda da "okundu" işaretleriz.
+  useEffect(() => {
+    const el = metinRef.current
+    if (!el) return
+    const kontrol = () => {
+      if (el.scrollHeight - el.clientHeight <= 8) setOkundu(true)
+    }
+    kontrol()
+    const gozlem = new ResizeObserver(kontrol)
+    gozlem.observe(el)
+    return () => gozlem.disconnect()
+  }, [])
 
   const hepsiIsaretli = isaretli.every(Boolean)
   const aktif = okundu && hepsiIsaretli && !kaydediliyor
