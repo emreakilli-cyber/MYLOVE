@@ -102,7 +102,11 @@ export function useYaklasanHatirlatmalar(
     // Hukuki sürelerden (son-tarih profili).
     const sureOfsetleri = profiller['son-tarih'] ?? varsayilan
     for (const sure of sureler) {
-      // Süre günün başında (00:00) dolmuş sayılır.
+      // Hatırlatma çıpası son günün SABAHI (yerel 09:00): "aynı gün" ofseti
+      // mesai başında düşer, ofset merdiveni buna göre geriye sayılır. Çıpa
+      // geçince süre listeden düşer; böylece tek süre, her ofseti ayrı satır
+      // olarak tekrar tekrar "kaçırıldı" diye çoğalmaz (son gün panoda,
+      // takvimde ve dosya detayında ayrıca görünmeye devam eder).
       const hedef = new Date(`${sure.sonTarih}T09:00:00`).getTime()
       if (hedef < simdi) continue
       for (const ofset of sureOfsetleri) {
@@ -161,6 +165,8 @@ export function useAktifHatirlatmaSayisi(): number | undefined {
     }
     const sureOfsetleri = profiller['son-tarih'] ?? varsayilan
     for (const sure of sureler) {
+      // Çıpa: son günün sabahı (yerel 09:00) — yukarıdaki yaklaşan liste ile
+      // aynı kural, ki iki kanca aynı anları saysın.
       const hedef = new Date(`${sure.sonTarih}T09:00:00`).getTime()
       if (hedef < simdi) continue
       for (const ofset of sureOfsetleri) {
