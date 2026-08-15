@@ -19,6 +19,7 @@ import { goreliZaman, tamTarih } from '../domain/tarih'
 export function MuvekkilDetay({ id }: { id?: string }) {
   const profil = useMuvekkilProfili(id)
   const [gorusme, setGorusme] = useState('')
+  const [kaydediliyor, setKaydediliyor] = useState(false)
 
   if (profil === undefined) {
     return (
@@ -47,9 +48,15 @@ export function MuvekkilDetay({ id }: { id?: string }) {
   const acikDosyalar = dosyalar.filter((d) => d.durum !== 'kapali')
 
   const gorusmeKaydet = async () => {
-    if (!gorusme.trim()) return
-    await muvekkilNotEkle(muvekkil.id, gorusme, 'gorusme')
-    setGorusme('')
+    // Çift dokunuş iki özdeş görüşme notu oluşturmasın (kayıt uçarken kilitle).
+    if (!gorusme.trim() || kaydediliyor) return
+    setKaydediliyor(true)
+    try {
+      await muvekkilNotEkle(muvekkil.id, gorusme, 'gorusme')
+      setGorusme('')
+    } finally {
+      setKaydediliyor(false)
+    }
   }
 
   return (
@@ -208,7 +215,7 @@ export function MuvekkilDetay({ id }: { id?: string }) {
             type="button"
             className="button-primary"
             onClick={() => void gorusmeKaydet()}
-            disabled={!gorusme.trim()}
+            disabled={!gorusme.trim() || kaydediliyor}
           >
             Görüşmeyi kaydet
           </button>

@@ -528,18 +528,31 @@ function NotSekmesi({ detay }: { detay: Detay }) {
   const [kisiFormu, setKisiFormu] = useState(false)
   const [kisiAdi, setKisiAdi] = useState('')
   const [kisiRol, setKisiRol] = useState<KisiRolu>('karsi-taraf')
+  const [notKaydediliyor, setNotKaydediliyor] = useState(false)
+  const [kisiKaydediliyor, setKisiKaydediliyor] = useState(false)
 
   const notKaydet = async () => {
-    if (!notMetni.trim()) return
-    await notEkle(dosya.id, notMetni)
-    setNotMetni('')
+    // Çift dokunuş iki özdeş not oluşturmasın (kayıt uçarken kilitle).
+    if (!notMetni.trim() || notKaydediliyor) return
+    setNotKaydediliyor(true)
+    try {
+      await notEkle(dosya.id, notMetni)
+      setNotMetni('')
+    } finally {
+      setNotKaydediliyor(false)
+    }
   }
 
   const kisiKaydet = async () => {
-    if (!kisiAdi.trim()) return
-    await kisiEkle(dosya.id, kisiAdi, kisiRol)
-    setKisiAdi('')
-    setKisiFormu(false)
+    if (!kisiAdi.trim() || kisiKaydediliyor) return
+    setKisiKaydediliyor(true)
+    try {
+      await kisiEkle(dosya.id, kisiAdi, kisiRol)
+      setKisiAdi('')
+      setKisiFormu(false)
+    } finally {
+      setKisiKaydediliyor(false)
+    }
   }
 
   return (
@@ -583,6 +596,7 @@ function NotSekmesi({ detay }: { detay: Detay }) {
               type="button"
               className="button-primary"
               onClick={() => void kisiKaydet()}
+              disabled={!kisiAdi.trim() || kisiKaydediliyor}
             >
               Kişiyi ekle
             </button>
@@ -633,7 +647,7 @@ function NotSekmesi({ detay }: { detay: Detay }) {
             type="button"
             className="button-primary"
             onClick={() => void notKaydet()}
-            disabled={!notMetni.trim()}
+            disabled={!notMetni.trim() || notKaydediliyor}
           >
             Not ekle
           </button>
