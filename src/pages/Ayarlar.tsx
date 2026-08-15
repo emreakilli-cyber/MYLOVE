@@ -106,6 +106,15 @@ export function Ayarlar() {
     }
   }, [])
 
+  // En yıkıcı eylem (tüm veriyi sil) "kurulu" kalırsa birkaç saniye sonra kendini
+  // geri alsın: kullanıcı onaylamadan uzaklaşıp sonra kazara ikinci kez tıklamasın.
+  // Uygulamanın diğer yıkıcı onaylarıyla (SilDugmesi 3 sn geri alma) tutarlı.
+  useEffect(() => {
+    if (!sifirlamaOnayi) return
+    const t = window.setTimeout(() => setSifirlamaOnayi(false), 4000)
+    return () => window.clearTimeout(t)
+  }, [sifirlamaOnayi])
+
   if (!ayarlar) {
     return (
       <section className="card section-card">
