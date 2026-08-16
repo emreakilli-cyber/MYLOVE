@@ -227,14 +227,18 @@ export function MuvekkilForm({ id }: { id?: string }) {
         {hata ? <p className="field-error" role="alert">{hata}</p> : null}
 
         <div className="form-actions">
-          <button
-            type="button"
-            className="button-primary"
-            disabled={kaydediliyor}
-            onClick={() => void kaydet()}
-          >
-            {duzenleme ? 'Değişikliği kaydet' : 'Müvekkili ekle'}
-          </button>
+          {/* Silme onayı açıkken birincil kaydet düğmesini gizle (kaydet vs.
+              sil çakışan niyet); silme akışı tüm formlarda tek biçim kalsın. */}
+          {!silmeOnayi ? (
+            <button
+              type="button"
+              className="button-primary"
+              disabled={kaydediliyor}
+              onClick={() => void kaydet()}
+            >
+              {duzenleme ? 'Değişikliği kaydet' : 'Müvekkili ekle'}
+            </button>
+          ) : null}
           {duzenleme ? (
             <button
               type="button"

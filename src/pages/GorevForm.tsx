@@ -260,14 +260,19 @@ export function GorevForm({ id }: { id?: string }) {
         {hata ? <p className="field-error" role="alert">{hata}</p> : null}
 
         <div className="form-actions">
-          <button
-            type="button"
-            className="button-primary"
-            disabled={kaydediliyor}
-            onClick={() => void kaydet()}
-          >
-            {duzenleme ? 'Değişikliği kaydet' : 'Görevi ekle'}
-          </button>
+          {/* Silme onayı açıkken birincil kaydet düğmesini gizle: seri görevde
+              üç düğme (kaydet + "Yalnızca bu" + "Tüm seri") satıra sığmayıp
+              kaydet etiketini harf harf sarıyordu. Vazgeç ile geri gelir. */}
+          {!silmeOnayi ? (
+            <button
+              type="button"
+              className="button-primary"
+              disabled={kaydediliyor}
+              onClick={() => void kaydet()}
+            >
+              {duzenleme ? 'Değişikliği kaydet' : 'Görevi ekle'}
+            </button>
+          ) : null}
           {duzenleme && !silmeOnayi ? (
             <button
               type="button"

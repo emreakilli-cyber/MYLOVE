@@ -326,14 +326,20 @@ export function OlayForm({ id }: { id?: string }) {
         {hata ? <p className="field-error" role="alert">{hata}</p> : null}
 
         <div className="form-actions">
-          <button
-            type="button"
-            className="button-primary"
-            disabled={kaydediliyor}
-            onClick={() => void kaydet()}
-          >
-            {duzenleme ? 'Değişikliği kaydet' : 'Takvime ekle'}
-          </button>
+          {/* Silme onayı açıkken birincil kaydet düğmesini gizle: hem çakışan
+              niyeti (kaydet vs. sil) kaldırır hem de seri kaydında üç düğmenin
+              (kaydet + "Yalnızca bu" + "Tüm seri") satıra sığmayıp kaydet
+              etiketini harf harf sarmasını önler. Vazgeç ile geri gelir. */}
+          {!silmeOnayi ? (
+            <button
+              type="button"
+              className="button-primary"
+              disabled={kaydediliyor}
+              onClick={() => void kaydet()}
+            >
+              {duzenleme ? 'Değişikliği kaydet' : 'Takvime ekle'}
+            </button>
+          ) : null}
           {duzenleme && !silmeOnayi ? (
             <button
               type="button"
