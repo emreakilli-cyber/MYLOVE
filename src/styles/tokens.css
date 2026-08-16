@@ -97,6 +97,11 @@
   --status-info: var(--cat-blue-fg);
   --status-finance: var(--cat-purple-fg);
 
+  /* Koyu (inverse) yüzeyde hata metni: cat-red-fg (#c96a5b) koyu zeminde ~4.8:1
+   * kalıyor; bu daha açık kırmızı --surface-inverse üzerinde ~8.7:1 ile net okunur
+   * (ör. kilit ekranı PIN hata satırı). Açık zeminde hata metni için --cat-red-text. */
+  --danger-on-inverse: #e7a79c;
+
   /* ---- Tipografi ---- */
   --font-serif: 'Newsreader Variable', 'Newsreader', Georgia, 'Times New Roman',
     serif;
