@@ -13,6 +13,7 @@ import {
   dosyaDurumEtiketleri,
   dosyaTuruEtiketleri,
 } from '../data/dosyaSorgulari'
+import { useMuvekkil } from '../data/muvekkilIslemleri'
 import type { DosyaDurumu, DosyaTuru } from '../domain/types'
 
 /*
@@ -77,6 +78,9 @@ export function DosyaForm({ id }: { id?: string }) {
   const duzenleme = id !== undefined
   const mevcut = useDosya(id)
   const muvekkiller = useMuvekkiller()
+  // Dosyanın müvekkili arşivlenmişse `useMuvekkiller` onu listelemez; seçici
+  // boş görünmesin diye mevcut müvekkili ayrıca çekip seçeneğe ekliyoruz.
+  const mevcutMuvekkil = useMuvekkil(mevcut?.muvekkilId)
 
   const [durum, setDurum] = useState<Durum>(bosDurum)
   const [hata, setHata] = useState<string | null>(null)
@@ -217,6 +221,15 @@ export function DosyaForm({ id }: { id?: string }) {
                 {m.ad}
               </option>
             ))}
+            {/* Arşivli müvekkil listede yok; seçili ise onu da göster ki alan
+                boş görünmesin (aksi hâlde kimin dosyası olduğu kaybolur). */}
+            {mevcutMuvekkil &&
+            durum.muvekkilSecim === mevcutMuvekkil.id &&
+            !(muvekkiller ?? []).some((m) => m.id === mevcutMuvekkil.id) ? (
+              <option value={mevcutMuvekkil.id}>
+                {mevcutMuvekkil.ad} (arşivli)
+              </option>
+            ) : null}
             <option value={YENI_MUVEKKIL}>+ Yeni müvekkil ekle</option>
           </select>
         </label>
