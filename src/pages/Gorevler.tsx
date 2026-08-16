@@ -118,7 +118,9 @@ export function Gorevler() {
                 <h2
                   className="t-title"
                   style={{
-                    color: `var(--cat-${grupAksani[grup.anahtar]}-fg)`,
+                    // Metin rengi AA-uyumlu `-text` varyantı olmalı; `-fg`
+                    // pastelleri (özellikle amber/yeşil) başlıkta 3:1'i geçmez.
+                    color: `var(--cat-${grupAksani[grup.anahtar]}-text)`,
                   }}
                 >
                   {grup.baslik}
