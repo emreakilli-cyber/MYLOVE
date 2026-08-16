@@ -357,7 +357,7 @@ export function DosyaForm({ id }: { id?: string }) {
             <button
               type="button"
               onClick={() => setSilmeOnayi(false)}
-              style={{ color: 'var(--brand-teal)' }}
+              style={{ color: 'var(--brand-teal-text)' }}
             >
               Vazgeç
             </button>

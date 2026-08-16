@@ -52,7 +52,7 @@
   font-size: var(--text-tiny);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--brand-teal);
+  color: var(--brand-teal-text);
 }
 
 .ob-baslik {

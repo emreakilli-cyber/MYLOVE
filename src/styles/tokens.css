@@ -33,6 +33,10 @@
   --brand-sage-soft: #e4efe7;
   --brand-sage-deep: #7fa992;
   --brand-teal: #5fb49c;
+  /* Aynı teal'in AA-uyumlu koyu varyantı: AÇIK zeminde METİN/bağlantı rengi
+   * olarak kullanılır (brand-teal #5fb49c açık zeminde ~2.3:1 ile AA'yı geçmez).
+   * brand-teal dolgu/kenarlık/ikon ve KOYU zeminde metin için kalır. */
+  --brand-teal-text: #3e7566;
   --brand-ink: #16262e;
 
   /* ---- Yeşil hero kartları (Genel Bakış + Asistan) ve sage rozetleri ----
@@ -44,7 +48,7 @@
   --hero-surface-3: #c3dbcc;
   --hero-fg-strong: #16302a; /* hero başlığı */
   --hero-fg: #3f5c4e; /* hero gövde metni */
-  --hero-fg-muted: #5b7a68; /* hero eyebrow / tarih */
+  --hero-fg-muted: #46614f; /* hero eyebrow / tarih — yeşil degrade üstünde AA (≥4.6:1); eski #5b7a68 ~3.5:1 idi */
   --brand-sage-text: #23453a; /* sage/yeşil zeminde AA metin: buton, ikon, çip, mesaj */
 
   /* ---- Kategori / durum renkleri ----

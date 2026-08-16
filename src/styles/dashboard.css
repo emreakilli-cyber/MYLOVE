@@ -430,7 +430,7 @@ button.row:active {
 .task-add-detay {
   flex: none;
   font-size: var(--text-small);
-  color: var(--brand-teal);
+  color: var(--brand-teal-text);
   padding: var(--space-2);
 }
 

@@ -137,7 +137,9 @@
 }
 
 .cal-day[data-bugun='true'] .cal-day-num {
-  color: var(--brand-teal);
+  /* Bugün seçili değilken (açık hücre) okunur olsun; seçiliyken alttaki
+     [data-secili] kuralı zaten açık rengi (text-on-inverse) uyguluyor. */
+  color: var(--brand-teal-text);
   font-weight: var(--weight-medium);
 }
 
@@ -310,5 +312,5 @@
   align-self: flex-start;
   padding: var(--space-2) var(--space-1);
   font-size: var(--text-small);
-  color: var(--brand-teal);
+  color: var(--brand-teal-text);
 }
