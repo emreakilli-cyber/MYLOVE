@@ -212,6 +212,9 @@
   color: var(--text-secondary);
   flex: none;
   padding-bottom: 3px;
+  /* WCAG 2.5.8: dokunma hedefi ≥24px. Metin satırı ~23px kalıyordu; min-height
+     komşuya taşmadan (::after riski olmadan) hedefi tamamlar. */
+  min-height: 24px;
 }
 
 .section-empty {
@@ -559,6 +562,8 @@ button.row:active {
   gap: var(--space-2);
   color: var(--brand-teal);
   font-size: var(--text-small);
+  /* WCAG 2.5.8: dokunma hedefi ≥24px (metin satırı ~20px kalıyordu). */
+  min-height: 24px;
 }
 
 /* ---------------------------------------------------------------- *

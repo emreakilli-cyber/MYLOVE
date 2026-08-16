@@ -10,7 +10,8 @@
  *   - Yalıtık kare ikon düğmeleri iki eksende büyür.
  *   - Görev onay kutusu, sağdaki gezinme bağlantısına taşmadan sola + dikey büyür.
  * Liste satırları ve satır-içi başlık bağlantıları (row-main, section-link) sınır
- * çakışması riski yüzünden kapsam dışı; onlar zaten AA (≥24px) hedefini karşılıyor.
+ * çakışması riski yüzünden buradaki ::after desenine dahil DEĞİL; onlar hedefi
+ * kendi `min-height: 24px`'leriyle karşılar (bkz. dashboard.css section-link/safety-link).
  */
 
 /* --- Yalnızca dikey: geniş / satır kontrolleri --- */
