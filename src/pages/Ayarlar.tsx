@@ -587,7 +587,7 @@ export function Ayarlar() {
                 className="button-primary"
                 onClick={() => void pinKur()}
               >
-                Kilidi aç
+                Kilidi kur
               </button>
               <button
                 type="button"
