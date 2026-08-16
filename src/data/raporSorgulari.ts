@@ -205,6 +205,21 @@ function csvTutar(kurus: number): string {
   return (kurus / 100).toFixed(2).replace('.', ',')
 }
 
+/**
+ * Kullanıcı girdisi bir hücreyi CSV'ye güvenle yazar. İki risk:
+ *  1) `;`/tırnak/satır sonu içeren değer satırı bozar → RFC 4180 tırnaklama.
+ *  2) `=`,`+`,`-`,`@` (veya tab/CR) ile başlayan değer Excel/Sheets'te formül
+ *     olarak çalışır (CSV enjeksiyonu) → baştaki tek tırnakla metne çevrilir.
+ * Sabit etiketler (ay kodu, kategori) güvenli olduğundan yalnızca dosya adı
+ * gibi serbest metinlerde kullanılır.
+ */
+function csvHucre(deger: string): string {
+  let s = deger
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`
+  if (/["\n\r;]/.test(s)) s = `"${s.replace(/"/g, '""')}"`
+  return s
+}
+
 /** Rapor verisini CSV'ye çevirir (aylık gelir-gider). */
 export function raporCsv(veri: RaporVerisi): string {
   const satirlar: string[] = ['Ay;Tahsilat (TL);Gider (TL)']
@@ -218,6 +233,18 @@ export function raporCsv(veri: RaporVerisi): string {
   satirlar.push('Kategori;Gider (TL)')
   for (const g of veri.giderDagilimi) {
     satirlar.push(`${g.etiket};${csvTutar(g.tutar)}`)
+  }
+  // Dosya bazlı gelir-gider: ekranda görünen kırılım dışa aktarımda da bulunsun
+  // (muhasebe/faturalama için en işe yarar bölüm). Başlık serbest metin olduğu
+  // için csvHucre ile kaçışlanır.
+  if (veri.dosyaBakiye.length > 0) {
+    satirlar.push('')
+    satirlar.push('Dosya;Gelir (TL);Gider (TL)')
+    for (const d of veri.dosyaBakiye) {
+      satirlar.push(
+        `${csvHucre(d.baslik)};${csvTutar(d.gelir)};${csvTutar(d.gider)}`,
+      )
+    }
   }
   // Excel Türkçe yerel ayarında ; ayracı ve UTF-8 BOM ile açılsın.
   return '﻿' + satirlar.join('\n')

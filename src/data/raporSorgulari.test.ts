@@ -52,4 +52,41 @@ describe('raporCsv — Türkçe ondalık', () => {
     expect(csv.startsWith('﻿')).toBe(true)
     expect(csv).toContain('Ay;Tahsilat (TL);Gider (TL)')
   })
+
+  it('dosya bazlı gelir-gider bölümünü ekler', () => {
+    const csv = raporCsv(
+      veri({
+        dosyaBakiye: [
+          { dosyaId: 'd1', baslik: 'Yılmaz / Arslan', gelir: 5_500_000, gider: 61_500 },
+        ],
+      }),
+    )
+    expect(csv).toContain('Dosya;Gelir (TL);Gider (TL)')
+    expect(csv).toContain('Yılmaz / Arslan;55000,00;615,00')
+  })
+
+  it('dosya adındaki ; ve tırnağı RFC 4180 ile kaçışlar', () => {
+    const csv = raporCsv(
+      veri({
+        dosyaBakiye: [
+          { dosyaId: 'd1', baslik: 'Ali "Reis"; Veli', gelir: 0, gider: 0 },
+        ],
+      }),
+    )
+    // `;` ve `"` içeren başlık tırnaklanır, içteki tırnak ikilenir → satır bozulmaz
+    expect(csv).toContain('"Ali ""Reis""; Veli";0,00;0,00')
+  })
+
+  it('formül enjeksiyonunu (=,+,-,@) baştaki tırnakla etkisizler', () => {
+    const csv = raporCsv(
+      veri({
+        dosyaBakiye: [
+          { dosyaId: 'd1', baslik: '=HYPERLINK("http://x")', gelir: 0, gider: 0 },
+        ],
+      }),
+    )
+    // baştaki `=` → `'=…`; ayrıca `"` içerdiği için tümü tırnaklanır
+    expect(csv).toContain(`"'=HYPERLINK(""http://x"")";0,00;0,00`)
+    expect(csv).not.toContain('\n=HYPERLINK')
+  })
 })
