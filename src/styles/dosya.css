@@ -143,7 +143,12 @@
   border-radius: var(--radius-sm);
   background: var(--acc-bg);
   color: var(--acc-text);
+  /* Tek satırda kalır; patolojik uzun bir etiket (boşluksuz kelime) sayfayı
+     yatay taşırmasın diye kap genişliğinde "…" ile kırpılır. */
   white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tag-quiet {
