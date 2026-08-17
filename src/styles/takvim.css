@@ -131,7 +131,7 @@
   line-height: 1;
 }
 
-.cal-day[data-baskaAy='true'] .cal-day-num {
+.cal-day[data-baska-ay='true'] .cal-day-num {
   color: var(--text-muted);
   opacity: 0.55;
 }

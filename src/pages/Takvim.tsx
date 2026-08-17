@@ -145,7 +145,7 @@ function AyGorunumu({
                 key={iso}
                 type="button"
                 className="cal-day"
-                data-baskaAy={d.getMonth() !== ay}
+                data-baska-ay={d.getMonth() !== ay}
                 data-bugun={iso === bugun}
                 data-secili={iso === secili}
                 onClick={() => onSec(iso)}
