@@ -94,7 +94,12 @@
 
 .field-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr): ızgara ögelerinin öntanımlı `min-width: auto` değeri,
+   * yerel tarih girişlerinin içerik-asgari genişliğinde sütunu şişirip
+   * sayfayı yatay taşırıyordu (özellikle büyük yazı ölçeğinde, %125). min'i
+   * 0'a çekince sütunlar içeriğin altına küçülebilir; girişler zaten
+   * min-width:0 olduğundan sığar. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-3);
 }
 
@@ -103,6 +108,13 @@
   .field-row {
     grid-template-columns: 1fr;
   }
+}
+
+/* En büyük yazı ölçeğinde (%125) iki tarih alanı yan yana sıkışıp yıl görünümü
+ * kırpılıyordu; medya sorguları kök font ölçeğini göremediği için kökteki veri
+ * özniteliğine bakıp tek sütuna iniyoruz — alanlar tam genişlik ve okunur. */
+:root[data-yazi-olcegi='cokBuyuk'] .field-row {
+  grid-template-columns: 1fr;
 }
 
 /* Onay kutulu satır */

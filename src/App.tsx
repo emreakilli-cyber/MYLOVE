@@ -18,6 +18,10 @@ export default function App() {
   // Kanca koşulsuz çalışmalı, o yüzden erken dönüşten ÖNCE.
   useEffect(() => {
     document.documentElement.style.fontSize = yaziOlcegiCss(ayarlar?.yaziOlcegi)
+    // Ölçeği kökte bir veri özniteliği olarak da yaz: CSS, büyük yazıda dar
+    // kalan iki-sütunlu satırları (ör. tarih alanları) tek sütuna indirmek için
+    // buna bakar. Medya sorguları kök font-size ölçeğini göremediği için gerekli.
+    document.documentElement.dataset.yaziOlcegi = ayarlar?.yaziOlcegi ?? 'normal'
   }, [ayarlar?.yaziOlcegi])
 
   // Ayarlar yüklenene kadar kısa boşluk (dönen kullanıcıda kapı ekranı parlamasın).
