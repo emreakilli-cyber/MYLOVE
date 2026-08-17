@@ -283,9 +283,13 @@
   color: var(--text-muted);
 }
 
-/* Dosyadan müvekkile köprü (künye satırı) */
+/* Dosyadan müvekkile köprü (künye satırı). Dokunma hedefi ≥24px (WCAG 2.5.8):
+   satır-yüksekliğiyle sınırlı metin ~20px kalırdı; inline-flex + min-height ile
+   hücre genişliğinde, 24px yüksekliğinde tıklanır alan verilir. */
 .info-value-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
   font-size: var(--text-body);
   line-height: var(--leading-snug);
   color: var(--brand-teal-text);
