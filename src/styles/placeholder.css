@@ -82,9 +82,13 @@
   flex: none;
 }
 
+/* "Genel bakışa git" bağlantısı (404 / yer tutucu). Küçük yazının satır
+   yüksekliğiyle ~20px kalırdı; min-height ile dokunma hedefi ≥24px olur
+   (WCAG 2.5.8), metin dikeyde ortalı. */
 .placeholder-link {
   display: inline-flex;
   align-items: center;
+  min-height: 24px;
   gap: var(--space-2);
   font-size: var(--text-small);
   color: var(--brand-teal-text);
