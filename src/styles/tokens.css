@@ -37,6 +37,10 @@
    * olarak kullanılır (brand-teal #5fb49c açık zeminde ~2.3:1 ile AA'yı geçmez).
    * brand-teal dolgu/kenarlık/ikon ve KOYU zeminde metin için kalır. */
   --brand-teal-text: #3e7566;
+  /* Klavye odak halkası: brand-teal (#5fb49c) açık zeminde yalnız ~2.5:1 verir,
+   * WCAG 1.4.11 metin-dışı 3:1 eşiğinin altında. Bu koyu teal beyazda ~4.7:1,
+   * kırık-beyaz/sage zeminlerde de ≥3:1 — halka her yerde görünür kalır. */
+  --focus-ring: #35806b;
   --brand-ink: #16262e;
 
   /* ---- Yeşil hero kartları (Genel Bakış + Asistan) ve sage rozetleri ----
