@@ -158,7 +158,7 @@ export function SureHesapla() {
         </section>
       ) : null}
 
-      <section className="card form-card">
+      <section className="card form-card no-print">
         <label className="field">
           <span className="field-label">Dosya</span>
           <select

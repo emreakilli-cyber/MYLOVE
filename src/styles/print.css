@@ -11,7 +11,9 @@
  * Bilgilendirme uyarısı içerik olduğundan basılmaya devam eder.
  */
 @media print {
-  /* Kabuk ve yalnızca-etkileşim öğeleri kâğıda çıkmaz. */
+  /* Kabuk ve yalnızca-etkileşim öğeleri kâğıda çıkmaz. `.no-print` de kâğıtta
+   * anlamsız kalan bölümleri (ör. süre hesabını dosyaya kaydetme kutusu) gizler;
+   * basılan çıktı yalnız içeriği (hesap + uyarı) taşısın. */
   .skip-link,
   .topbar,
   .drawer,
@@ -23,7 +25,8 @@
   .tur,
   .cevrimdisi,
   .page-back,
-  .cal-export-link {
+  .cal-export-link,
+  .no-print {
     display: none !important;
   }
 
