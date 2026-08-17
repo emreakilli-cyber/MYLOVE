@@ -85,10 +85,21 @@ export async function muvekkilSilVeyaArsivle(
     })
     return 'arsivlendi'
   }
-  await db.transaction('rw', [db.muvekkiller, db.notlar], async () => {
-    await db.muvekkiller.delete(id)
-    await db.notlar.where('muvekkilId').equals(id).delete()
-  })
+  // Dosyası olmayan müvekkil siliniyor: ona bağlı müvekkil-düzeyi kayıtları da
+  // (görüşme notu, etkinlik günlüğü, dosyasız olay/görev/finans) temizle —
+  // yetim kayıt ve silinen müvekkilin izi kalmasın (dosyaSil ile tutarlı).
+  await db.transaction(
+    'rw',
+    [db.muvekkiller, db.notlar, db.hareketler, db.olaylar, db.gorevler, db.finans],
+    async () => {
+      await db.muvekkiller.delete(id)
+      await db.notlar.where('muvekkilId').equals(id).delete()
+      await db.hareketler.where('muvekkilId').equals(id).delete()
+      await db.olaylar.where('muvekkilId').equals(id).delete()
+      await db.gorevler.where('muvekkilId').equals(id).delete()
+      await db.finans.where('muvekkilId').equals(id).delete()
+    },
+  )
   return 'silindi'
 }
 

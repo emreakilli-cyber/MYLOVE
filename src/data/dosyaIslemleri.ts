@@ -209,10 +209,13 @@ export async function dosyaGuncelle(
 }
 
 export async function dosyaSil(id: string): Promise<void> {
-  // Dosyaya bağlı her şeyi de temizle; yetim kayıt bırakma.
+  // Dosyaya bağlı her şeyi de temizle; yetim kayıt bırakma. Hareket günlüğü de
+  // dahil: dosya silinince onun etkinlik satırları da gitmeli — hem tutarlılık
+  // (yön açıklaması "yetim kayıt bırakma") hem gizlilik (silinen dosyanın adı
+  // "Son hareketler" akışında kalmasın).
   await db.transaction(
     'rw',
-    [db.dosyalar, db.olaylar, db.sureler, db.gorevler, db.finans, db.belgeler, db.kisiler, db.notlar],
+    [db.dosyalar, db.olaylar, db.sureler, db.gorevler, db.finans, db.belgeler, db.kisiler, db.notlar, db.hareketler],
     async () => {
       await db.dosyalar.delete(id)
       await db.olaylar.where('dosyaId').equals(id).delete()
@@ -222,6 +225,7 @@ export async function dosyaSil(id: string): Promise<void> {
       await db.belgeler.where('dosyaId').equals(id).delete()
       await db.kisiler.where('dosyaId').equals(id).delete()
       await db.notlar.where('dosyaId').equals(id).delete()
+      await db.hareketler.where('dosyaId').equals(id).delete()
     },
   )
 }
