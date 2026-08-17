@@ -415,6 +415,11 @@
   font-variant-numeric: tabular-nums;
   margin-top: var(--space-1);
   color: var(--acc-text);
+  /* Olağan tutarlar tek satırda kalır. İki sütunlu özet kutusuna sığmayacak
+     kadar büyük bir tutar (ör. milyar) komşu kutunun üstüne taşmasın diye,
+     kendi hücresi içinde satır kırarak sığar — rakam gizlenmez, kırpılmaz. */
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .money-amount {
