@@ -109,14 +109,28 @@ function GenelSekmesi({ detay }: { detay: Detay }) {
     <>
       <section className="card">
         <div className="info-grid">
-          {alanlar.map(([etiket, deger]) => (
-            <span className="info-item" key={etiket}>
-              <span className="info-label">{etiket}</span>
-              <span className="info-value" data-bos={!deger}>
-                {deger ?? '—'}
+          {alanlar.map(([etiket, deger]) =>
+            etiket === 'Müvekkil' && muvekkil ? (
+              // Müvekkile köprü: dosyadan müvekkile geçiş — arşivli müvekkil de
+              // (listede gizli) yalnızca dosyaları üzerinden erişilebilir kalsın.
+              <span className="info-item" key={etiket}>
+                <span className="info-label">{etiket}</span>
+                <Link
+                  className="info-value info-value-link"
+                  to={`/muvekkiller/${muvekkil.id}`}
+                >
+                  {muvekkil.ad}
+                </Link>
               </span>
-            </span>
-          ))}
+            ) : (
+              <span className="info-item" key={etiket}>
+                <span className="info-label">{etiket}</span>
+                <span className="info-value" data-bos={!deger}>
+                  {deger ?? '—'}
+                </span>
+              </span>
+            ),
+          )}
         </div>
       </section>
 

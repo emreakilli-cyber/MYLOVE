@@ -103,6 +103,18 @@ export async function muvekkilSilVeyaArsivle(
   return 'silindi'
 }
 
+/**
+ * Arşivlenmiş müvekkili yeniden etkinleştirir (listede tekrar görünür).
+ * Arşivleme yalnızca silme akışında (dosyası olan müvekkil) oluşur; bu da onu
+ * geri alınabilir kılar — aksi hâlde müvekkil kalıcı olarak gizli kalırdı.
+ */
+export async function muvekkilArsivdenCikar(id: string): Promise<void> {
+  await db.muvekkiller.update(id, {
+    arsivlendi: false,
+    guncellemeTarihi: simdi(),
+  })
+}
+
 /** Müvekkile bağlı not ekler (görüşme geçmişi / genel not). */
 export async function muvekkilNotEkle(
   muvekkilId: string,

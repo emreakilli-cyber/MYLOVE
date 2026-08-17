@@ -283,6 +283,41 @@
   color: var(--text-muted);
 }
 
+/* Dosyadan müvekkile köprü (künye satırı) */
+.info-value-link {
+  display: block;
+  font-size: var(--text-body);
+  line-height: var(--leading-snug);
+  color: var(--brand-teal-text);
+  text-decoration: none;
+}
+.info-value-link:hover {
+  text-decoration: underline;
+}
+
+/* Arşivli müvekkil bildirimi: durumu görünür kılar + geri almayı sunar */
+.arsiv-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  background: var(--cat-amber-bg);
+  border-color: var(--cat-amber-br);
+}
+.arsiv-banner-metin {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--cat-amber-text);
+}
+.arsiv-banner .button-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 /* Hazırlık kontrol listesi */
 .check-item {
   display: flex;

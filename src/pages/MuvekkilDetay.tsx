@@ -7,7 +7,7 @@ import {
   muvekkilTurEtiketleri,
   useMuvekkilProfili,
 } from '../data/muvekkilSorgulari'
-import { muvekkilNotEkle } from '../data/muvekkilIslemleri'
+import { muvekkilArsivdenCikar, muvekkilNotEkle } from '../data/muvekkilIslemleri'
 import { notSil } from '../data/dosyaIslemleri'
 import {
   dosyaDurumEtiketleri,
@@ -107,6 +107,26 @@ export function MuvekkilDetay({ id }: { id?: string }) {
           ) : null}
         </div>
       </section>
+
+      {/* Arşivli müvekkil: durumu görünür kıl ve geri alınabilir yap. Arşivleme
+          yalnızca "sil" akışında (dosyası olan müvekkil) oluşur; geri alma yolu
+          olmazsa müvekkil kalıcı gizli kalırdı. */}
+      {muvekkil.arsivlendi ? (
+        <section className="card arsiv-banner">
+          <span className="arsiv-banner-metin">
+            <Icon name="folder" size={16} />
+            Bu müvekkil arşivli; müvekkil listesinde görünmez.
+          </span>
+          <button
+            type="button"
+            className="button-quiet"
+            onClick={() => void muvekkilArsivdenCikar(muvekkil.id)}
+          >
+            <Icon name="refresh" size={15} />
+            Arşivden çıkar
+          </button>
+        </section>
+      ) : null}
 
       {/* İletişim künyesi */}
       <section className="card">
