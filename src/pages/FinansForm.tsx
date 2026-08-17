@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { Link, useLocation, useNavigate } from '../router'
+import { useFormHata } from '../hooks/useFormHata'
 import {
   finansEkle,
   finansGuncelle,
@@ -76,7 +77,7 @@ export function FinansForm({ id }: { id?: string }) {
   const [durum, setDurum] = useState<Durum>(() =>
     bosDurum(query.get('dosya') ?? ''),
   )
-  const [hata, setHata] = useState<string | null>(null)
+  const { hata, basarisiz, temizle, alanHatasi, setHata } = useFormHata()
   const [silmeOnayi, setSilmeOnayi] = useState(false)
   const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
@@ -102,7 +103,7 @@ export function FinansForm({ id }: { id?: string }) {
 
   const guncelle = <K extends keyof Durum>(alan: K, deger: Durum[K]) => {
     setDurum((o) => ({ ...o, [alan]: deger }))
-    setHata(null)
+    temizle()
   }
 
   const kategoriSec = (kategori: FinansKategorisi) => {
@@ -112,15 +113,15 @@ export function FinansForm({ id }: { id?: string }) {
   const kaydet = async () => {
     const tutar = metindenKurus(durum.tutarMetni)
     if (!durum.baslik.trim()) {
-      setHata('Başlık girilmeli.')
+      basarisiz('baslik', 'Başlık girilmeli.')
       return
     }
     if (tutar === null || tutar <= 0) {
-      setHata('Geçerli bir tutar girilmeli.')
+      basarisiz('tutarMetni', 'Geçerli bir tutar girilmeli.')
       return
     }
     if (!durum.dosyaId) {
-      setHata('Dosya seçilmeli.')
+      basarisiz('dosyaId', 'Dosya seçilmeli.')
       return
     }
 
@@ -168,7 +169,7 @@ export function FinansForm({ id }: { id?: string }) {
   const dekontYukle = async (dosya: File | undefined) => {
     if (!dosya || !id) return
     setYukleniyor(true)
-    setHata(null)
+    temizle()
     try {
       await belgeYukle({
         dosya,
@@ -235,19 +236,23 @@ export function FinansForm({ id }: { id?: string }) {
         <label className="field">
           <span className="field-label">Başlık</span>
           <input
+            id="alan-baslik"
             className="input"
             value={durum.baslik}
             placeholder={kategoriEtiketleri[durum.kategori]}
             onChange={(e) => guncelle('baslik', e.target.value)}
+            {...alanHatasi('baslik')}
           />
         </label>
 
         <label className="field">
           <span className="field-label">Dosya</span>
           <select
+            id="alan-dosyaId"
             className="select"
             value={durum.dosyaId}
             onChange={(e) => guncelle('dosyaId', e.target.value)}
+            {...alanHatasi('dosyaId')}
           >
             <option value="" disabled>
               Dosya seçin
@@ -264,11 +269,13 @@ export function FinansForm({ id }: { id?: string }) {
         <label className="field">
           <span className="field-label">Tutar</span>
           <input
+            id="alan-tutarMetni"
             className="input"
             inputMode="decimal"
             value={durum.tutarMetni}
             placeholder="1.250,00"
             onChange={(e) => guncelle('tutarMetni', e.target.value)}
+            {...alanHatasi('tutarMetni')}
           />
           {onizlemeTutar !== null && onizlemeTutar > 0 ? (
             <span className="field-hint">{tutarTam(onizlemeTutar)}</span>

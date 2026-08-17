@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { Link, useLocation, useNavigate } from '../router'
+import { useFormHata } from '../hooks/useFormHata'
 import {
   gorevEkle,
   gorevGuncelle,
@@ -46,7 +47,7 @@ export function GorevForm({ id }: { id?: string }) {
   const kullanicilar = useKullanicilar()
 
   const [durum, setDurum] = useState<Durum>(() => bosDurum(query.get('dosya') ?? ''))
-  const [hata, setHata] = useState<string | null>(null)
+  const { hata, basarisiz, temizle, alanHatasi } = useFormHata()
   const [silmeOnayi, setSilmeOnayi] = useState(false)
   const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
@@ -69,16 +70,16 @@ export function GorevForm({ id }: { id?: string }) {
 
   const guncelle = <K extends keyof Durum>(alan: K, deger: Durum[K]) => {
     setDurum((o) => ({ ...o, [alan]: deger }))
-    setHata(null)
+    temizle()
   }
 
   const kaydet = async () => {
     if (!durum.baslik.trim()) {
-      setHata('Görev başlığı girilmeli.')
+      basarisiz('baslik', 'Görev başlığı girilmeli.')
       return
     }
     if (!duzenleme && tekrar !== 'yok' && !durum.vadeTarihi) {
-      setHata('Tekrar eden görev için vade tarihi gerekli.')
+      basarisiz('vadeTarihi', 'Tekrar eden görev için vade tarihi gerekli.')
       return
     }
     const girdi: GorevGirdisi = {
@@ -146,10 +147,12 @@ export function GorevForm({ id }: { id?: string }) {
         <label className="field">
           <span className="field-label">Görev</span>
           <input
+            id="alan-baslik"
             className="input"
             value={durum.baslik}
             placeholder="Harç yatırılacak"
             onChange={(e) => guncelle('baslik', e.target.value)}
+            {...alanHatasi('baslik')}
           />
         </label>
 
@@ -209,10 +212,12 @@ export function GorevForm({ id }: { id?: string }) {
           <label className="field">
             <span className="field-label">Vade</span>
             <input
+              id="alan-vadeTarihi"
               type="date"
               className="input"
               value={durum.vadeTarihi}
               onChange={(e) => guncelle('vadeTarihi', e.target.value)}
+              {...alanHatasi('vadeTarihi')}
             />
           </label>
         </div>

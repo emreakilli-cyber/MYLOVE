@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { Link, useNavigate } from '../router'
+import { useFormHata } from '../hooks/useFormHata'
 import {
   dosyaEkle,
   dosyaGuncelle,
@@ -83,7 +84,7 @@ export function DosyaForm({ id }: { id?: string }) {
   const mevcutMuvekkil = useMuvekkil(mevcut?.muvekkilId)
 
   const [durum, setDurum] = useState<Durum>(bosDurum)
-  const [hata, setHata] = useState<string | null>(null)
+  const { hata, basarisiz, temizle, alanHatasi } = useFormHata()
   const [silmeOnayi, setSilmeOnayi] = useState(false)
   const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
@@ -107,22 +108,22 @@ export function DosyaForm({ id }: { id?: string }) {
 
   const guncelle = <K extends keyof Durum>(alan: K, deger: Durum[K]) => {
     setDurum((o) => ({ ...o, [alan]: deger }))
-    setHata(null)
+    temizle()
   }
 
   const yeniMuvekkilModu = durum.muvekkilSecim === YENI_MUVEKKIL
 
   const kaydet = async () => {
     if (!durum.baslik.trim()) {
-      setHata('Dosya başlığı girilmeli.')
+      basarisiz('baslik', 'Dosya başlığı girilmeli.')
       return
     }
     if (yeniMuvekkilModu && !durum.yeniMuvekkilAdi.trim()) {
-      setHata('Yeni müvekkilin adı girilmeli.')
+      basarisiz('yeniMuvekkilAdi', 'Yeni müvekkilin adı girilmeli.')
       return
     }
     if (!yeniMuvekkilModu && !durum.muvekkilSecim) {
-      setHata('Müvekkil seçilmeli.')
+      basarisiz('muvekkilSecim', 'Müvekkil seçilmeli.')
       return
     }
 
@@ -196,10 +197,12 @@ export function DosyaForm({ id }: { id?: string }) {
         <label className="field">
           <span className="field-label">Dosya adı</span>
           <input
+            id="alan-baslik"
             className="input"
             value={durum.baslik}
             placeholder="Yılmaz / Arslan"
             onChange={(e) => guncelle('baslik', e.target.value)}
+            {...alanHatasi('baslik')}
           />
           <span className="field-hint">
             Listede görünecek kısa ad. Genelde taraf adlarıyla yazılır.
@@ -209,9 +212,11 @@ export function DosyaForm({ id }: { id?: string }) {
         <label className="field">
           <span className="field-label">Müvekkil</span>
           <select
+            id="alan-muvekkilSecim"
             className="select"
             value={durum.muvekkilSecim}
             onChange={(e) => guncelle('muvekkilSecim', e.target.value)}
+            {...alanHatasi('muvekkilSecim')}
           >
             <option value="" disabled>
               Müvekkil seçin
@@ -238,10 +243,12 @@ export function DosyaForm({ id }: { id?: string }) {
           <label className="field">
             <span className="field-label">Yeni müvekkil adı</span>
             <input
+              id="alan-yeniMuvekkilAdi"
               className="input"
               value={durum.yeniMuvekkilAdi}
               placeholder="Seda Yılmaz"
               onChange={(e) => guncelle('yeniMuvekkilAdi', e.target.value)}
+              {...alanHatasi('yeniMuvekkilAdi')}
             />
           </label>
         ) : null}

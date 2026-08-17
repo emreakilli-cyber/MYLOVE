@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { Link, useNavigate } from '../router'
+import { useFormHata } from '../hooks/useFormHata'
 import {
   muvekkilEkle,
   muvekkilGuncelle,
@@ -40,7 +41,7 @@ export function MuvekkilForm({ id }: { id?: string }) {
   const mevcut = useMuvekkil(id)
 
   const [durum, setDurum] = useState<Durum>(bosDurum)
-  const [hata, setHata] = useState<string | null>(null)
+  const { hata, basarisiz, temizle, alanHatasi } = useFormHata()
   const [silmeOnayi, setSilmeOnayi] = useState(false)
   const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
@@ -62,12 +63,12 @@ export function MuvekkilForm({ id }: { id?: string }) {
 
   const guncelle = <K extends keyof Durum>(alan: K, deger: Durum[K]) => {
     setDurum((o) => ({ ...o, [alan]: deger }))
-    setHata(null)
+    temizle()
   }
 
   const kaydet = async () => {
     if (!durum.ad.trim()) {
-      setHata('Ad girilmeli.')
+      basarisiz('ad', 'Ad girilmeli.')
       return
     }
     const girdi: MuvekkilGirdisi = {
@@ -140,10 +141,12 @@ export function MuvekkilForm({ id }: { id?: string }) {
         <label className="field">
           <span className="field-label">Ad / Unvan</span>
           <input
+            id="alan-ad"
             className="input"
             value={durum.ad}
             placeholder="Seda Yılmaz"
             onChange={(e) => guncelle('ad', e.target.value)}
+            {...alanHatasi('ad')}
           />
         </label>
 

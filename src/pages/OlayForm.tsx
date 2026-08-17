@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { Link, useLocation, useNavigate } from '../router'
+import { useFormHata } from '../hooks/useFormHata'
 import {
   olayEkle,
   olayGuncelle,
@@ -50,7 +51,7 @@ export function OlayForm({ id }: { id?: string }) {
   const [durum, setDurum] = useState<Durum>(() =>
     bosDurum(query.get('gun') ?? bugunIso()),
   )
-  const [hata, setHata] = useState<string | null>(null)
+  const { hata, basarisiz, temizle, alanHatasi } = useFormHata()
   const [silmeOnayi, setSilmeOnayi] = useState(false)
   const [kaydediliyor, setKaydediliyor] = useState(false)
   const [yuklendi, setYuklendi] = useState(!duzenleme)
@@ -78,7 +79,7 @@ export function OlayForm({ id }: { id?: string }) {
 
   const guncelle = <K extends keyof Durum>(alan: K, deger: Durum[K]) => {
     setDurum((onceki) => ({ ...onceki, [alan]: deger }))
-    setHata(null)
+    temizle()
   }
 
   const turSec = (tur: OlayTuru) => {
@@ -97,7 +98,7 @@ export function OlayForm({ id }: { id?: string }) {
   const kaydet = async () => {
     const baslik = durum.baslik.trim() || olayGorunumleri[durum.tur].etiket
     if (!durum.gun) {
-      setHata('Tarih girilmeli.')
+      basarisiz('gun', 'Tarih girilmeli.')
       return
     }
     if (
@@ -106,7 +107,7 @@ export function OlayForm({ id }: { id?: string }) {
       durum.baslangicSaati &&
       durum.bitisSaati < durum.baslangicSaati
     ) {
-      setHata('Bitiş saati başlangıçtan önce olamaz.')
+      basarisiz('bitisSaati', 'Bitiş saati başlangıçtan önce olamaz.')
       return
     }
 
@@ -239,10 +240,12 @@ export function OlayForm({ id }: { id?: string }) {
         <label className="field">
           <span className="field-label">Tarih</span>
           <input
+            id="alan-gun"
             type="date"
             className="input"
             value={durum.gun}
             onChange={(e) => guncelle('gun', e.target.value)}
+            {...alanHatasi('gun')}
           />
           {durum.gun ? (
             <span className="field-hint">{tamTarih(durum.gun)}</span>
@@ -280,10 +283,12 @@ export function OlayForm({ id }: { id?: string }) {
             <label className="field">
               <span className="field-label">Bitiş</span>
               <input
+                id="alan-bitisSaati"
                 type="time"
                 className="input"
                 value={durum.bitisSaati ?? ''}
                 onChange={(e) => guncelle('bitisSaati', e.target.value)}
+                {...alanHatasi('bitisSaati')}
               />
             </label>
           </div>
