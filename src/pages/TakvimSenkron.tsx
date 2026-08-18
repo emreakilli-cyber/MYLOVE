@@ -4,6 +4,7 @@ import { Icon } from '../components/Icon'
 import { Link } from '../router'
 import { db } from '../data/db'
 import { icsIndir, icsUret } from '../services/ics'
+import { bugunIso } from '../domain/tarih'
 
 /*
  * Takvim senkronu. Sunucu olmadan yapılabilecek şey: standart bir .ics dosyası
@@ -60,7 +61,7 @@ export function TakvimSenkron() {
   const disaAktar = () => {
     if (!veri) return
     const ics = icsUret({ ...veri, simdi: new Date() })
-    const damga = new Date().toISOString().slice(0, 10)
+    const damga = bugunIso()
     icsIndir(ics, `juriscalendar-takvim-${damga}`)
     setDurum(
       `${veri.olaylar.length} olay ve ${veri.sureler.length} süre dışa aktarıldı.`,

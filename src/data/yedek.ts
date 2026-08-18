@@ -1,5 +1,6 @@
 import { db } from './db'
 import { sifrele, sifreCoz, type SifreliZarf } from '../services/kripto'
+import { bugunIso } from '../domain/tarih'
 import type {
   Ayarlar,
   Belge,
@@ -152,7 +153,9 @@ function indir(icerik: string, mime: string, ad: string): void {
  */
 export async function yedegiIndir(parola?: string): Promise<void> {
   const yedek = await yedekOlustur()
-  const damga = new Date().toISOString().slice(0, 10)
+  // Yerel bugün (Türkiye) — `toISOString().slice(0,10)` UTC verir; gece
+  // yarısı–03:00 arası İstanbul'da dosya adı bir önceki günü gösterirdi.
+  const damga = bugunIso()
   const govde = JSON.stringify(yedek)
 
   if (parola?.trim()) {

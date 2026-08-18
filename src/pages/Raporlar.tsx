@@ -9,7 +9,7 @@ import {
   type RaporVerisi,
 } from '../data/raporSorgulari'
 import { tutarKisa } from '../domain/para'
-import { dateToIsoDate, kisaTarih } from '../domain/tarih'
+import { bugunIso, dateToIsoDate, kisaTarih } from '../domain/tarih'
 import type { IsoDate } from '../domain/types'
 
 type Preset = 'bu-ay' | 'son-3' | 'son-6' | 'son-12' | 'bu-yil' | 'serbest'
@@ -222,7 +222,7 @@ function GiderDagilimi({ veri }: { veri: RaporVerisi }) {
 function csvIndir(veri: RaporVerisi): void {
   const blob = new Blob([raporCsv(veri)], { type: 'text/csv;charset=utf-8' })
   const adres = URL.createObjectURL(blob)
-  const damga = new Date().toISOString().slice(0, 10)
+  const damga = bugunIso()
   const a = document.createElement('a')
   a.href = adres
   a.download = `juriscalendar-rapor-${damga}.csv`
