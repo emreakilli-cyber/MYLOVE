@@ -104,9 +104,10 @@ export function AppShell({ children, turAktif = false }: AppShellProps) {
             <button
               type="button"
               className="icon-button"
+              aria-label="Ara"
               onClick={() => navigate('/ara')}
             >
-              <Icon name="search" size={19} title="Ara" />
+              <Icon name="search" size={19} />
             </button>
             <button
               type="button"
