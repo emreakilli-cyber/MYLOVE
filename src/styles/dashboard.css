@@ -136,8 +136,26 @@
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* minmax(0,1fr): grid izleri, kırılamayan geniş tutar sayısının içsel
+   * genişliğinin altına inebilsin — yoksa büyük tutar sayfayı yatay taşırır. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
+}
+
+/* Tek sütuna düşürme kuralları — form alanlarındaki (`.field-row`,
+ * `.type-grid-3`) erişilebilirlik kalıbının aynısı.
+ *  • cokBuyuk: en büyük yazı ölçeğinde iki kart 320px'e sığmaz.
+ *  • ≤360px: dar telefonlarda (yaygın Android eni) yedi haneli tutar
+ *    ("₺1.250.000") kırılamadığı için iki sütun sayfayı yatay taşırırdı;
+ *    tek sütunda her kart tam eni alır, büyük tutar rahat sığar. */
+:root[data-yazi-olcegi='cokBuyuk'] .stat-grid {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 360px) {
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-card {
