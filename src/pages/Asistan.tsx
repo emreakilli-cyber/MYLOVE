@@ -61,6 +61,10 @@ export function Asistan() {
   const baglam = useDosyaBaglami(dosyaId || undefined)
   const llmHazir = llmDurumu(ayarlar) === 'hazir'
 
+  // Hero özeti Gündem listesinin TAMAMINI yansıtmalı: liste kritik+uyarı tüm
+  // bulguları gösteriyor, bu yüzden sayaç bulgular.length olmalı (yalnız kritik
+  // olursa "4 konu" der ama altta 12 satır görünürdü). kritikSayi kırılım için.
+  const bulguSayi = bulgular?.length ?? 0
   const kritikSayi = useMemo(
     () => bulgular?.filter((b) => b.oncelik === 'kritik').length ?? 0,
     [bulgular],
@@ -123,9 +127,11 @@ export function Asistan() {
           <Icon name="sparkles" size={24} className="asistan-hero-icon" />
           <h1 className="t-title asistan-hero-title">Asistan</h1>
           <p className="asistan-hero-text">
-            {kritikSayi > 0
-              ? `Dikkat gerektiren ${kritikSayi} konu var. Aşağıda önceliğe göre sıraladım.`
-              : 'Dosyalarınızı tarayıp yaklaşan süreleri ve eksik işlemleri önünüze koyarım. Değerlendirme cihazınızda, kendi verinizden yapılır.'}
+            {bulguSayi === 0
+              ? 'Dosyalarınızı tarayıp yaklaşan süreleri ve eksik işlemleri önünüze koyarım. Değerlendirme cihazınızda, kendi verinizden yapılır.'
+              : kritikSayi > 0
+                ? `Dikkat gerektiren ${bulguSayi} konu var; ${kritikSayi} tanesi kritik. Aşağıda önceliğe göre sıraladım.`
+                : `Dikkat gerektiren ${bulguSayi} konu var. Aşağıda önceliğe göre sıraladım.`}
           </p>
         </div>
       </section>
@@ -146,7 +152,10 @@ export function Asistan() {
           </p>
         ) : (
           <div className="divide-rows">
-            {bulgular.slice(0, 12).map((b) => (
+            {/* Hiçbir bulgu gizlenmez: Asistan tam gözden geçirme ekranıdır,
+                eksik bir hukuki iş kaçmasın diye tümü listelenir (hero sayacı da
+                bulgular.length; ikisi tutarlı). Bulgular önceliğe göre sıralı. */}
+            {bulgular.map((b) => (
               <BulguSatiri key={b.id} bulgu={b} />
             ))}
           </div>
