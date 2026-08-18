@@ -149,51 +149,51 @@ varsayımla devam edilir.
 - [x] M7.4 Test: maskelenmemiş metinle çağrı **her zaman** hata verir (kaçış yolu yok)
 - [x] M7.5 Test: ağ katmanı yalnız bu modülden erişilebilir; başka modülde ağ
       çağrısı yok
-- [ ] M7.6 Sonuç özetleme ve olayla ilişkilendirme (`CAPABILITIES.md` A6):
+- [x] M7.6 Sonuç özetleme ve olayla ilişkilendirme (`CAPABILITIES.md` A6):
       K bağımsız kısa geçiş, uzun bağlam yok
 - [x] M7.7 Çevrimdışı davranış: ağ yoksa yerel dizinden cevap, hata değil
 
 ## M8 — Yazma katmanı (lokal model, internet YOK)
 
-- [ ] M8.1 Ağ erişimi yasağı: modülde ağ çağrısı bulunmadığını doğrulayan test
-- [ ] M8.2 **(a) Yapı/iskelet çıkarma:** eski dilekçelerden başlık düzeni,
+- [x] M8.1 Ağ erişimi yasağı: modülde ağ çağrısı bulunmadığını doğrulayan test
+- [x] M8.2 **(a) Yapı/iskelet çıkarma:** eski dilekçelerden başlık düzeni,
       numaralandırma şeması, bölüm sırası
-- [ ] M8.3 **(b) Üslup profili JSON şeması:** cümle uzunluğu dağılımı, paragraf
+- [x] M8.3 **(b) Üslup profili JSON şeması:** cümle uzunluğu dağılımı, paragraf
       uzunluğu, kalıp ifadeler, numaralandırma biçimi, hitap/kapanış biçimi,
       atıf biçimi, terim tercihleri
-- [ ] M8.4 Profil **artımlı** üretilir: belge belge, birleştirilebilir
+- [x] M8.4 Profil **artımlı** üretilir: belge belge, birleştirilebilir
       (`CAPABILITIES.md` A8)
-- [ ] M8.5 **(c) Few-shot seçimi:** en benzer 2–3 dilekçeyi bağlama koyma;
+- [x] M8.5 **(c) Few-shot seçimi:** en benzer 2–3 dilekçeyi bağlama koyma;
       benzerlik ölçütü ve bağlam bütçesi (≤ 2.000 token) belgelenmiş
-- [ ] M8.6 **Fine-tuning ile başlanmaz.** Bu karar koda yorum olarak değil,
+- [x] M8.6 **Fine-tuning ile başlanmaz.** Bu karar koda yorum olarak değil,
       `MODEL.md` ve `TRAINING.md`'ye gerekçesiyle yazılır
-- [ ] M8.7 Üretim aşamalı: iskelet → bölüm bölüm → tutarlılık geçişi
+- [x] M8.7 Üretim aşamalı: iskelet → bölüm bölüm → tutarlılık geçişi
       (`CAPABILITIES.md` A13)
 
 ## M9 — `docs/TRAINING.md` *(B listesi — en sona)*
 
-- [ ] M9.1 Veri formatı: JSONL şeması, alan adları, örnek kayıt
-- [ ] M9.2 Veri hazırlama: maskelenmiş korpustan eğitim seti üretme; **ham
+- [x] M9.1 Veri formatı: JSONL şeması, alan adları, örnek kayıt
+- [x] M9.2 Veri hazırlama: maskelenmiş korpustan eğitim seti üretme; **ham
       müvekkil verisi eğitime girmez**
-- [ ] M9.3 Örnek sayısı: LoRA için alt sınır, önerilen aralık, doygunluk noktası
-- [ ] M9.4 Hiperparametreler: rank, alpha, dropout, öğrenme oranı, epoch, batch,
+- [x] M9.3 Örnek sayısı: LoRA için alt sınır, önerilen aralık, doygunluk noktası
+- [x] M9.4 Hiperparametreler: rank, alpha, dropout, öğrenme oranı, epoch, batch,
       gradyan biriktirme — tablo hâlinde, gerekçeli
-- [ ] M9.5 Donanım gereksinimi: VRAM tablosu (7B/9B/27B × LoRA/QLoRA)
-- [ ] M9.6 Tahminî süre ve maliyet: yerel GPU ve kiralık GPU için ayrı
-- [ ] M9.7 Adım adım çalıştırma yönergesi — kullanıcının kendisi koşabileceği
+- [x] M9.5 Donanım gereksinimi: VRAM tablosu (7B/9B/27B × LoRA/QLoRA)
+- [x] M9.6 Tahminî süre ve maliyet: yerel GPU ve kiralık GPU için ayrı
+- [x] M9.7 Adım adım çalıştırma yönergesi — kullanıcının kendisi koşabileceği
       netlikte, komut komut
-- [ ] M9.8 Değerlendirme: eğitim sonrası kalite nasıl ölçülür, geri alma nasıl yapılır
+- [x] M9.8 Değerlendirme: eğitim sonrası kalite nasıl ölçülür, geri alma nasıl yapılır
 
 ## M10 — `docs/ARCHITECTURE.md`
 
-- [ ] M10.1 Modül haritası ve bağımlılık yönü (ok diyagramı)
-- [ ] M10.2 Telefon-masaüstü iş bölümü, `CAPABILITIES.md` A/B listesiyle birebir
-- [ ] M10.3 Devir teslim mimarisi, `PROTOCOL.md`'ye birebir uyumlu
-- [ ] M10.4 **Telefon tek başına tam işlevsel** — masaüstü modülü hiç kurulmasa
+- [x] M10.1 Modül haritası ve bağımlılık yönü (ok diyagramı)
+- [x] M10.2 Telefon-masaüstü iş bölümü, `CAPABILITIES.md` A/B listesiyle birebir
+- [x] M10.3 Devir teslim mimarisi, `PROTOCOL.md`'ye birebir uyumlu
+- [x] M10.4 **Telefon tek başına tam işlevsel** — masaüstü modülü hiç kurulmasa
       hangi kod yolunun çalıştığı açıkça gösterilir
-- [ ] M10.5 Veri akışı diyagramı: ham metin → maske → (yerel işlem | araştırma |
+- [x] M10.5 Veri akışı diyagramı: ham metin → maske → (yerel işlem | araştırma |
       devir) → unmask → kullanıcı
-- [ ] M10.6 Kırmızı çizgiler: hangi modül hangi modülü **import edemez**
+- [x] M10.6 Kırmızı çizgiler: hangi modül hangi modülü **import edemez**
       (araştırma ↛ maske tablosu, yazma ↛ ağ, masaüstü ↛ kalıcı depolama)
 
 ## M11 — Kaçak kimlik bilgisi yakalama
@@ -231,11 +231,11 @@ varsayımla devam edilir.
 
 - [x] M13.1 Dışa açılan yüzey tek dosyada toplanır (`src/index.ts`); iç modüller
       dışarı sızmaz
-- [ ] M13.2 Her public fonksiyon: imza, parametreler, dönüş, fırlatabileceği
+- [x] M13.2 Her public fonksiyon: imza, parametreler, dönüş, fırlatabileceği
       hatalar, örnek
-- [ ] M13.3 Hata tipleri kataloğu
-- [ ] M13.4 `docs/API.md` üretilir ve `SPEC.md`/`PROTOCOL.md` ile çapraz bağlanır
-- [ ] M13.5 Kararlılık sözü: hangi API'ler kararlı, hangileri deneysel
+- [x] M13.3 Hata tipleri kataloğu
+- [x] M13.4 `docs/API.md` üretilir ve `SPEC.md`/`PROTOCOL.md` ile çapraz bağlanır
+- [x] M13.5 Kararlılık sözü: hangi API'ler kararlı, hangileri deneysel
 
 ---
 
@@ -256,3 +256,8 @@ varsayımla devam edilir.
 | 11 | 2026-08-07 | Kaçak kimlik yakalama (`preflightCheck`) | M11.1–M11.6 | Ağ hedefinde "maskesiz gönder" seçeneği hiç üretilmiyor |
 | 12 | 2026-08-07 | Devir eşiği motoru + sınır değeri testleri | M12.9 | Eşik altında `offer` üretilmediği kapsamlı taramayla doğrulandı |
 | 13 | 2026-08-07 | Belirsiz soyisim isaretleme, sifreli tablo saklama, ayni dizge iki tip testi | M5.3, M5.7, M12.7 | Guard da artik cakisma cozumu kosuyor; SPEC'e S7 degismezi eklendi |
+| 14 | 2026-08-18 | Araştırma sonucu özetleme + K bağımsız olay ilişkilendirme (`research/summarize.ts`) | M7.6 | Her aday karar ayrı geçişte; olay özeti bütçesi 3.200 karakter (~800 token) aşılırsa backend hiç çağrılmadan hata |
+| 15 | 2026-08-18 | Yazma katmanı: iskelet çıkarma, artımlı üslup profili, few-shot seçimi, üç aşamalı üretim (`write/*`) | M8.1–M8.7 | Sıfır bağımlı, ağ yok (M8.1 testi); `docs/TRAINING.md` M8.6 kararıyla oluşturuldu (yalnız §0, M9'un geri kalanı boş) |
+| 16 | 2026-08-18 | `docs/ARCHITECTURE.md`: modül haritası, telefon/masaüstü iş bölümü, veri akışı, kırmızı çizgiler | M10.1–M10.6 | PROTOCOL mesaj/durum makinesi kodu bu pakette henüz yok; bu paketin kapsamı dışında olduğu not düşüldü, M-maddesi açılmadı |
+| 17 | 2026-08-18 | `docs/API.md`: tüm public yüzey (imza/parametre/dönüş/hata/örnek), hata kataloğu, kararlılık sözü | M13.2–M13.5 | `runRuleLayer`'ın dönüş tipi `RuleResult` `index.ts`'ten hiç dışa açılmamıştı; `RuleDetector` ile birlikte eklendi (küçük API tamlığı düzeltmesi) |
+| 18 | 2026-08-18 | `docs/TRAINING.md` tamamlandı: JSONL şeması, veri hazırlama hattı, örnek sayısı, hiperparametreler, VRAM/süre/maliyet tahminleri, adım adım QLoRA yönergesi, değerlendirme+geri alma | M9.1–M9.8 | Fiyat/VRAM rakamları `tahmin` işaretli (ağ erişimi kısıtlı, `MODEL.md` disipliniyle aynı); **plan tamamlandı, `[ ]` işaretli madde kalmadı** |
