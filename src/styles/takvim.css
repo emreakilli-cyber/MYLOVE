@@ -105,10 +105,12 @@
   padding-bottom: var(--space-2);
 }
 
-/* Hafta sonu sütunları hafifçe soluk — iş günü ayrımı gözle görünsün. */
+/* Hafta sonu sütunları kırmızı — iş günü ayrımı gözle görünsün. AA metin için
+ * canlı dolgu (`cat-red-fg`, beyazda ~3.7:1) yerine AA-güvenli `cat-red-text`
+ * (~5.3:1); `opacity` kaldırıldı — soluklaştırma kontrastı 4.5'in altına
+ * düşürüyordu, kırmızının kendisi zaten ayrımı veriyor. */
 .cal-weekday[data-haftasonu='true'] {
-  color: var(--cat-red-fg);
-  opacity: 0.75;
+  color: var(--cat-red-text);
 }
 
 .cal-day {

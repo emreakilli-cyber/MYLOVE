@@ -60,7 +60,9 @@
   padding: 2px var(--space-2);
   border-radius: var(--radius-sm);
   background: var(--surface-sunken);
-  color: var(--text-muted);
+  /* text-muted (#6b7170) sunken zeminde yalnız ~4.37:1 (AA altı); text-secondary
+   * (#5b6462) ~5.36:1 — rozet hâlâ sessiz gri ama okunur. */
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 0.5625rem;
   letter-spacing: var(--tracking-label);
