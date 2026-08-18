@@ -47,6 +47,21 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export {
+  CASE_SUMMARY_CHAR_BUDGET,
+  CaseSummaryTooLongError,
+  correlateDocuments,
+  summarizeDocument,
+  summarizeDocuments,
+} from './research/summarize'
+export type {
+  CorrelationBackend,
+  CorrelationScore,
+  DocumentCorrelation,
+  DocumentSummary,
+  SummaryBackend,
+} from './research/summarize'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
@@ -61,7 +76,7 @@ export type { EncryptedMaskTable, MaskEntry, Occurrence } from './mask/table'
 export { isMaskToken } from './mask/token'
 
 export { isValidIban, isValidTckn, normalizePhone, runRuleLayer } from './mask/rules'
-export type { RuleLayerOptions } from './mask/rules'
+export type { RuleDetector, RuleLayerOptions, RuleResult } from './mask/rules'
 
 export { ENTITY_TYPES, TYPE_PRIORITY } from './types/entities'
 export type { DetectionLayer, EntitySpan, EntityType, SuspectSpan } from './types/entities'
@@ -75,3 +90,42 @@ export type {
   JobEstimate,
   ThermalState,
 } from './handoff/threshold'
+
+export { extractSkeleton } from './write/skeleton'
+export type { DocumentSkeleton, NumberingScheme, SkeletonHeading } from './write/skeleton'
+
+export {
+  emptyStyleProfile,
+  extractStyleProfile,
+  meanParagraphSentences,
+  meanSentenceWords,
+  mergeStyleProfiles,
+} from './write/style'
+export type { PhraseFrequency, RunningStats, StyleProfile } from './write/style'
+
+export { DEFAULT_FEW_SHOT_COUNT, FEW_SHOT_CHAR_BUDGET, FEW_SHOT_TOKEN_BUDGET, jaccardSimilarity, selectFewShot } from './write/fewshot'
+export type { FewShotExample, FewShotSelection, ScoredExample } from './write/fewshot'
+
+export {
+  CONSISTENCY_CONTEXT_CHAR_BUDGET,
+  ConsistencyContextTooLargeError,
+  SECTION_CONTEXT_CHAR_BUDGET,
+  SectionContextTooLargeError,
+  SKELETON_PLAN_CHAR_BUDGET,
+  SkeletonPlanContextTooLargeError,
+  buildConsistencyPrompt,
+  buildSectionPrompt,
+  buildSkeletonPlanPrompt,
+  generateSection,
+  generateSkeletonPlan,
+  generateStagedDraft,
+  runConsistencyPass,
+} from './write/generate'
+export type {
+  ConsistencyResult,
+  DraftSection,
+  GenerateStagedDraftOptions,
+  SectionContext,
+  StagedDraft,
+  WriteBackend,
+} from './write/generate'
