@@ -11,7 +11,13 @@ import { useState } from 'react'
  *
  * `setHata` alana bağlı olmayan genel hatalar için (ör. sunucu/yükleme hatası)
  * doğrudan kullanılabilir.
+ *
+ * Hata metni `<p id={FORM_HATA_ID} role="alert">` olarak basılır; `alanHatasi`
+ * hatalı alanı `aria-describedby` ile bu metne bağlar (ARIA1) — böylece alana
+ * her odaklanışta hata GEREKÇESİ de okunur, yalnız "geçersiz" değil.
  */
+export const FORM_HATA_ID = 'form-hata-metni'
+
 export function useFormHata() {
   const [hata, setHata] = useState<string | null>(null)
   const [hataAlani, setHataAlani] = useState<string | null>(null)
@@ -31,9 +37,18 @@ export function useFormHata() {
     setHataAlani(null)
   }
 
-  /** Hatalı alana yayılacak aria-invalid; diğer alanlara hiçbir şey eklemez. */
-  const alanHatasi = (alan: string): { 'aria-invalid'?: true } =>
-    hataAlani === alan ? { 'aria-invalid': true } : {}
+  /**
+   * Hatalı alana yayılacak aria-invalid + hata metnine `aria-describedby`
+   * bağı; diğer alanlara hiçbir şey eklemez. (Bağ yalnız alan hatalıyken
+   * kurulur; o an hata `<p id={FORM_HATA_ID}>` de basılı olduğundan referans
+   * hep var olan bir öğeye işaret eder.)
+   */
+  const alanHatasi = (
+    alan: string,
+  ): { 'aria-invalid'?: true; 'aria-describedby'?: string } =>
+    hataAlani === alan
+      ? { 'aria-invalid': true, 'aria-describedby': FORM_HATA_ID }
+      : {}
 
   return { hata, hataAlani, basarisiz, temizle, alanHatasi, setHata }
 }

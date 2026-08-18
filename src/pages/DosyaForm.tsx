@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../components/Icon'
 import { Link, useNavigate } from '../router'
-import { useFormHata } from '../hooks/useFormHata'
+import { FORM_HATA_ID, useFormHata } from '../hooks/useFormHata'
 import {
   dosyaEkle,
   dosyaGuncelle,
@@ -335,7 +335,7 @@ export function DosyaForm({ id }: { id?: string }) {
           />
         </label>
 
-        {hata ? <p className="field-error" role="alert">{hata}</p> : null}
+        {hata ? <p id={FORM_HATA_ID} className="field-error" role="alert">{hata}</p> : null}
 
         <div className="form-actions">
           {/* Silme onayı açıkken birincil kaydet düğmesini gizle (kaydet vs.
