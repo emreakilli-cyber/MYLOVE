@@ -166,6 +166,18 @@
   gap: var(--space-2);
 }
 
+/* Üç seçenekli segment (ör. ödeme durumu: Bekliyor / Kısmi / Ödendi). */
+.type-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* En büyük yazı ölçeğinde üç dar sütuna sığmayan "Bekliyor" sözcük-içi
+ * sarıyordu; medya sorguları kök font ölçeğini göremediğinden kökteki veri
+ * özniteliğine bakıp tek sütuna iniyoruz — çipler tam genişlik, sarma yok. */
+:root[data-yazi-olcegi='cokBuyuk'] .type-grid-3 {
+  grid-template-columns: 1fr;
+}
+
 .type-chip {
   display: flex;
   align-items: center;

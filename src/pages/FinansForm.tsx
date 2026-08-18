@@ -284,7 +284,7 @@ export function FinansForm({ id }: { id?: string }) {
 
         <div className="field">
           <span className="field-label">Ödeme durumu</span>
-          <div className="type-grid" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="type-grid type-grid-3">
             {(
               [
                 ['bekliyor', 'Bekliyor', 'amber'],
