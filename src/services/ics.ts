@@ -20,19 +20,34 @@ function metinKacis(deger: string): string {
     .replace(/\r?\n/g, '\\n')
 }
 
-/** 75 oktetlik satır katlaması (devam satırları bir boşlukla başlar). */
+/**
+ * 75 oktetlik satır katlaması (RFC 5545). Ölçü OKTET (UTF-8 bayt) üzerinden:
+ * `.length` kod-birimi sayar, Türkçe harfler (ç/ğ/ı/ş/ü/İ, 2 bayt) ve tire (—,
+ * 3 bayt) uzunca satırları eşiğin altında gösterip katlanmadan bırakırdı. Kod
+ * NOKTASI bazında ilerleyip çok baytlı karakteri asla ikiye bölmüyoruz; devam
+ * satırları bir boşlukla başlar (boşluk da oktetten sayılır, o yüzden içerik 74).
+ */
 function satirKatla(satir: string): string {
-  if (satir.length <= 75) return satir
+  const kodla = (s: string) => new TextEncoder().encode(s).length
+  if (kodla(satir) <= 75) return satir
   const parcalar: string[] = []
-  let kalan = satir
-  parcalar.push(kalan.slice(0, 75))
-  kalan = kalan.slice(75)
-  while (kalan.length > 74) {
-    parcalar.push(' ' + kalan.slice(0, 74))
-    kalan = kalan.slice(74)
+  let mevcut = ''
+  let oktet = 0
+  let limit = 75
+  for (const karakter of satir) {
+    const ek = kodla(karakter)
+    if (oktet + ek > limit) {
+      parcalar.push(mevcut)
+      mevcut = karakter
+      oktet = ek
+      limit = 74
+    } else {
+      mevcut += karakter
+      oktet += ek
+    }
   }
-  if (kalan.length > 0) parcalar.push(' ' + kalan)
-  return parcalar.join('\r\n')
+  if (mevcut.length > 0) parcalar.push(mevcut)
+  return parcalar.map((p, i) => (i === 0 ? p : ' ' + p)).join('\r\n')
 }
 
 /** Date → "20260803T093000Z" (UTC, zamanlı olaylar için). */

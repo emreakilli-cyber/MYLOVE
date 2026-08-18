@@ -144,4 +144,28 @@ describe('ICS üretimi', () => {
     })
     expect(ics).not.toContain('UID:olay-o4')
   })
+
+  it('uzun Türkçe satırı 75 OKTET sınırında katlar, çok baytlı harfi bölmez', () => {
+    // Türkçe harfler UTF-8'de 2 bayt; kod-birimi (`.length`) sayan eski katlama
+    // uzun Türkçe SUMMARY satırını eşiğin altında görüp katlamıyordu (>75 oktet).
+    const uzunAd =
+      'Şişecam İşçi Şirketi ve Çağrı Müdürlüğü Güçlü İnşaat Ünlü Öztürk Çelik Ağır Sanayi'
+    const ics = icsUret({
+      olaylar: [{ ...tumGunOlay, id: 'o5', dosyaId: 'dLong' }],
+      sureler: [],
+      dosyaAdlari: new Map([['dLong', uzunAd]]),
+      simdi: SIMDI,
+    })
+    const enc = new TextEncoder()
+    const satirlar = ics.split('\r\n')
+    // Her fiziksel satır ≤75 oktet (CRLF hariç).
+    for (const s of satirlar) {
+      expect(enc.encode(s).length).toBeLessThanOrEqual(75)
+    }
+    // En az bir satır katlanmış (devam satırı tek boşlukla başlar).
+    expect(satirlar.some((s) => s.startsWith(' '))).toBe(true)
+    // Katlama açıldığında özgün Türkçe ad bozulmadan geri gelir (harf bölünmedi).
+    const acilmis = ics.replace(/\r\n /g, '')
+    expect(acilmis).toContain(uzunAd)
+  })
 })
