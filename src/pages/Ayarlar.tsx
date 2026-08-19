@@ -79,7 +79,13 @@ export function Ayarlar() {
   const ayarlar = useAyarlar()
   const dosyaGirisRef = useRef<HTMLInputElement>(null)
   const [kanallar, setKanallar] = useState(kanalDurumlari())
-  const [mesaj, setMesaj] = useState<string | null>(null)
+  // Durum bildirimi: başarı yeşil, hata kırmızı gösterilir (yoksa "Yedek
+  // okunamadı" gibi hatalar başarı yeşiliyle çıkıp yanıltıyordu).
+  const [mesaj, setMesaj] = useState<{ text: string; hata?: boolean } | null>(
+    null,
+  )
+  const bildir = (text: string) => setMesaj({ text })
+  const bildirHata = (text: string) => setMesaj({ text, hata: true })
   const [sifirlamaOnayi, setSifirlamaOnayi] = useState(false)
   // PIN kurulum durumu
   const [pinFormu, setPinFormu] = useState(false)
@@ -134,7 +140,7 @@ export function Ayarlar() {
       const durum = await pushIzniIste()
       setKanallar(kanalDurumlari())
       if (durum !== 'hazir') {
-        setMesaj('Cihaz bildirimi için izin verilmedi.')
+        bildirHata('Cihaz bildirimi için izin verilmedi.')
         liste = liste.filter((x) => x !== 'push')
       }
     }
@@ -158,7 +164,7 @@ export function Ayarlar() {
       // GÖSTERMEZ ve o alana dokunulunca eski değer sessizce geri yazılırdı.
       window.location.reload()
     } catch (e) {
-      setMesaj(e instanceof YedekHatasi ? e.message : 'Yedek okunamadı.')
+      bildirHata(e instanceof YedekHatasi ? e.message : 'Yedek okunamadı.')
     }
   }
 
@@ -170,7 +176,7 @@ export function Ayarlar() {
       // (bkz. geriYukle). Bekleyen durum reload ile zaten temizlenir.
       window.location.reload()
     } catch (e) {
-      setMesaj(
+      bildirHata(
         e instanceof SifreCozmeHatasi || e instanceof YedekHatasi
           ? e.message
           : 'Yedek okunamadı.',
@@ -197,7 +203,7 @@ export function Ayarlar() {
     setPin1('')
     setPin2('')
     setPinHata(null)
-    setMesaj('Uygulama kilidi açıldı.')
+    bildir('Uygulama kilidi açıldı.')
   }
 
   const kilidiKaldir = async () => {
@@ -206,22 +212,22 @@ export function Ayarlar() {
       pinOzeti: undefined,
       biyometriKimlikB64: undefined,
     })
-    setMesaj('Uygulama kilidi kapatıldı.')
+    bildir('Uygulama kilidi kapatıldı.')
   }
 
   const biyometriAc = async () => {
     const kimlik = await biyometriKaydet()
     if (kimlik) {
       await ayarlariGuncelle({ biyometriKimlikB64: kimlik })
-      setMesaj('Biyometrik açış etkinleştirildi.')
+      bildir('Biyometrik açış etkinleştirildi.')
     } else {
-      setMesaj('Biyometrik açış kurulamadı ya da iptal edildi.')
+      bildirHata('Biyometrik açış kurulamadı ya da iptal edildi.')
     }
   }
 
   const biyometriKapat = async () => {
     await ayarlariGuncelle({ biyometriKimlikB64: undefined })
-    setMesaj('Biyometrik açış kapatıldı.')
+    bildir('Biyometrik açış kapatıldı.')
   }
 
   const verileriSifirla = async () => {
@@ -238,8 +244,13 @@ export function Ayarlar() {
       </div>
 
       {mesaj ? (
-        <p className="ayar-mesaj" role="status" aria-live="polite">
-          {mesaj}
+        <p
+          className="ayar-mesaj"
+          data-hata={mesaj.hata ? 'true' : undefined}
+          role="status"
+          aria-live="polite"
+        >
+          {mesaj.text}
         </p>
       ) : null}
 
@@ -721,7 +732,7 @@ export function Ayarlar() {
           style={{ alignSelf: 'flex-start' }}
           onClick={() => {
             void ayarlariGuncelle({ turGoruldu: false })
-            setMesaj('Uygulama turu yeniden başlatıldı.')
+            bildir('Uygulama turu yeniden başlatıldı.')
           }}
         >
           Uygulama turunu yeniden başlat

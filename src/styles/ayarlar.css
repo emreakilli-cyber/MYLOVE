@@ -14,6 +14,12 @@
   font-size: var(--text-small);
 }
 
+/* Hata bildirimi başarı yeşiliyle karışmasın — kırmızı (AA metin: ~4.6:1). */
+.ayar-mesaj[data-hata='true'] {
+  background: var(--cat-red-bg);
+  color: var(--cat-red-text);
+}
+
 .ayar-profil + .ayar-profil {
   margin-top: var(--space-3);
   padding-top: var(--space-3);
