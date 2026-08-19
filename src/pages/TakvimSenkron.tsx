@@ -100,7 +100,11 @@ export function TakvimSenkron() {
           />
           Takvim dosyasını indir (.ics)
         </button>
-        {durum ? <p className="ayar-mesaj">{durum}</p> : null}
+        {durum ? (
+          <p className="ayar-mesaj" role="status" aria-live="polite">
+            {durum}
+          </p>
+        ) : null}
       </section>
 
       {rehber.map((r) => (

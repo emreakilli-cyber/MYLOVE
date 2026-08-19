@@ -349,7 +349,11 @@ function BelgeSekmesi({ detay }: { detay: Detay }) {
       </button>
 
       {hata ? (
-        <p className="field-error" style={{ padding: '0 var(--space-1)' }}>
+        <p
+          className="field-error"
+          role="alert"
+          style={{ padding: '0 var(--space-1)' }}
+        >
           {hata}
         </p>
       ) : null}
