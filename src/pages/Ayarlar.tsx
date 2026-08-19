@@ -203,7 +203,9 @@ export function Ayarlar() {
     setPin1('')
     setPin2('')
     setPinHata(null)
-    bildir('Uygulama kilidi açıldı.')
+    // "kuruldu" — düğme "Kilidi kur" ile uyumlu; "açıldı" bir kilit için
+    // "kilidi açmak = kilidi çözmek" çağrışımıyla yanıltıcıydı.
+    bildir('Uygulama kilidi kuruldu.')
   }
 
   const kilidiKaldir = async () => {
@@ -212,7 +214,9 @@ export function Ayarlar() {
       pinOzeti: undefined,
       biyometriKimlikB64: undefined,
     })
-    bildir('Uygulama kilidi kapatıldı.')
+    // "kaldırıldı" — düğme "Kilidi kaldır" ile uyumlu; "kapatıldı" bir kilit
+    // için "kilidi kapatmak = kilitlemek" çağrışımıyla ters okunuyordu.
+    bildir('Uygulama kilidi kaldırıldı.')
   }
 
   const biyometriAc = async () => {
