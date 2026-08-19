@@ -89,4 +89,25 @@ describe('raporCsv — Türkçe ondalık', () => {
     expect(csv).toContain(`"'=HYPERLINK(""http://x"")";0,00;0,00`)
     expect(csv).not.toContain('\n=HYPERLINK')
   })
+
+  it('=, dışındaki formül öneklerini (-, +, @) de etkisizler', () => {
+    // `-`, `@` gerçekçi dosya adı başlangıçlarıdır (ör. "- Kapatıldı", "@ref");
+    // özel karakter içermediklerinden yalnızca baştaki tırnakla korunur,
+    // ayrıca tırnaklanmazlar — satır ham olarak `'…` ile başlamalı.
+    const csv = raporCsv(
+      veri({
+        dosyaBakiye: [
+          { dosyaId: 'd1', baslik: '-Acil Dava', gelir: 0, gider: 0 },
+          { dosyaId: 'd2', baslik: '@ref-2025', gelir: 0, gider: 0 },
+          { dosyaId: 'd3', baslik: '+1 Numara', gelir: 0, gider: 0 },
+        ],
+      }),
+    )
+    expect(csv).toContain(`\n'-Acil Dava;0,00;0,00`)
+    expect(csv).toContain(`\n'@ref-2025;0,00;0,00`)
+    expect(csv).toContain(`\n'+1 Numara;0,00;0,00`)
+    // Ham (tırnaklanmamış) formül satırı başlamamalı.
+    expect(csv).not.toContain('\n-Acil')
+    expect(csv).not.toContain('\n@ref')
+  })
 })
