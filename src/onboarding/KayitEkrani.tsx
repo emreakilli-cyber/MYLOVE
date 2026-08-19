@@ -98,7 +98,9 @@ export function KayitEkrani({ onTamam }: KayitEkraniProps) {
               Apple ile devam et
             </button>
             {saglayiciNotu ? (
-              <p className="field-hint kayit-not">{saglayiciNotu}</p>
+              <p className="field-hint kayit-not" role="status" aria-live="polite">
+                {saglayiciNotu}
+              </p>
             ) : null}
             <p className="field-hint kayit-not">
               Bilgileriniz yalnızca bu cihazda saklanır.
