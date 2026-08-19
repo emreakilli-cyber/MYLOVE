@@ -184,7 +184,8 @@ export const SURE_KATALOGU: readonly SureKurali[] = [
     esas: 'teblig',
     adliTatileTabi: false,
     kol: 'icra',
-    aciklama: 'Haczin öğrenilmesinden itibaren yedi gün.',
+    aciklama:
+      'Huzurda yapılan hacizde haczin uygulanmasından, aksi hâlde haciz tutanağının tebliğinden itibaren yedi gün.',
   },
   {
     id: 'itirazin-iptali-iik-67',
