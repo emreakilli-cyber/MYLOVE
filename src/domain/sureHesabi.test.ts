@@ -134,6 +134,14 @@ describe('süre hesabı', () => {
     expect(s.hamSonTarih).toBe('2027-03-16')
   })
 
+  it('yıl süresi 29 Şubatta başlarsa hedef yılda karşılığı yoksa 28 Şubata sabitler', () => {
+    // İtirazın iptali 1 yıl, 29 Şubat 2024 (artık yıl) → 2025'te 29 Şubat yok
+    // → 28 Şubat 2025 (Cuma; hafta sonu/adli tatil değil, kaydırma da olmaz).
+    const s = sureHesapla(kural('itirazin-iptali-iik-67'), '2024-02-29')
+    expect(s.hamSonTarih).toBe('2025-02-28')
+    expect(s.sonTarih).toBe('2025-02-28')
+  })
+
   it('genişletilmiş katalog: yeni kuralların ham son günü doğru', () => {
     // Kambiyo ödeme emrine itiraz: 5 gün.
     expect(sureHesapla(kural('kambiyo-itiraz-iik-168'), '2026-03-16').hamSonTarih)
