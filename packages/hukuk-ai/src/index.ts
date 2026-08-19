@@ -47,6 +47,22 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export {
+  CASE_SUMMARY_TOKEN_BUDGET,
+  CaseSummaryTooLongError,
+  DEFAULT_RELATE_LIMIT,
+  DOCUMENT_TOKEN_BUDGET,
+  relateDocumentsToCase,
+  summarizeDocument,
+  summarizeDocuments,
+} from './research/relate'
+export type {
+  CaseRelevance,
+  DocumentSummary,
+  RelateOptions,
+  SummaryBackend,
+} from './research/relate'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
@@ -75,3 +91,45 @@ export type {
   JobEstimate,
   ThermalState,
 } from './handoff/threshold'
+
+export { extractStructure } from './write/structure'
+export type { HeadingInfo, NumberingStyle, PetitionStructure } from './write/structure'
+
+export {
+  addDocumentToProfile,
+  buildStyleProfile,
+  emptyStyleProfile,
+  mergeStyleProfiles,
+} from './write/styleProfile'
+export type {
+  FrequencyMap,
+  LengthBucket,
+  LengthHistogram,
+  StyleProfile,
+} from './write/styleProfile'
+
+export {
+  FEW_SHOT_MAX_EXAMPLES,
+  FEW_SHOT_TOKEN_BUDGET,
+  selectFewShotExamples,
+} from './write/fewShot'
+export type { FewShotCandidate, FewShotOptions, FewShotSelection } from './write/fewShot'
+
+export {
+  CONSISTENCY_SUMMARY_BUDGET,
+  ConsistencySummaryTooLongError,
+  SECTION_TOKEN_BUDGET,
+  generateDraft,
+} from './write/draft'
+export type {
+  ConsistencyIssue,
+  ConsistencyReport,
+  DraftBackend,
+  DraftInput,
+  DraftResult,
+  DraftSection,
+  DraftSkeleton,
+  SectionContext,
+  SectionPlan,
+  SectionSummary,
+} from './write/draft'
