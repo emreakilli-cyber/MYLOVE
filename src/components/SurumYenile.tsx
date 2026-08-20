@@ -33,6 +33,20 @@ export function SurumYenile() {
   const [mesaj, setMesaj] = useState<string | null>(null)
 
   const yenile = async () => {
+    // Çevrimdışıyken yenileme yapma: `onbellekleriBosalt` precache'i siler, ama
+    // ardından gelen reload ağ olmadığı için kabuğu getiremez → uygulama beyaz
+    // ekrana düşerdi (veri IndexedDB'de güvende ama açılmaz). Zaten çevrimdışı
+    // yeni sürüm de gelmez. Bağlanınca denensin.
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+      setDurum('hata')
+      setMesaj('Çevrimdışısınız; yeni sürüm için önce bağlanın.')
+      window.setTimeout(() => {
+        setDurum('hazir')
+        setMesaj(null)
+      }, 4000)
+      return
+    }
+
     setDurum('kontrol')
     setMesaj('Yeni sürüm aranıyor…')
 
