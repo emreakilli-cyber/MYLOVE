@@ -279,15 +279,19 @@
   opacity: 0.9;
 }
 
-/* Kayan düğmenin son satırı kapatmaması için bırakılan boşluk. */
+/* Kayan düğmenin son satırı kapatmaması için bırakılan boşluk. Düğmenin
+   `bottom` ofseti `--safe-bottom` içerdiğinden (çentikli iPhone ana çubuğu)
+   boşluk da onu eklemeli; aksi hâlde ~34px inset'te son satır kümenin altında
+   kalırdı (sabit 76px yetmezdi). */
 .fab-spacer {
-  height: 76px;
+  height: calc(76px + var(--safe-bottom));
 }
 
 /* İki düğmeli kayan küme (Takvim) tek FAB'den yüksektir; son satırın (ör.
-   ajandadaki olay) sağ kenarını kapatmasın diye daha yüksek boşluk. */
+   ajandadaki olay) sağ kenarını kapatmasın diye daha yüksek boşluk. Küme
+   `bottom`'u `--safe-bottom` içerdiğinden burada da eklenir (bkz. yukarı). */
 .fab-spacer-cluster {
-  height: 140px;
+  height: calc(140px + var(--safe-bottom));
 }
 
 /* Süre hesabı sonuç kartı */
