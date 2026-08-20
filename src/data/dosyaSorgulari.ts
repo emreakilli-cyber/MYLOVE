@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
 import { hazirlikHesapla } from '../domain/hazirlik'
+import { turkceKarsilastir } from '../domain/metin'
 import { yerelGun } from '../domain/tarih'
 import type {
   Belge,
@@ -149,7 +150,7 @@ export function useDosyaListesi(
         // Yakın işi olan üstte; sonra alfabetik.
         const aGun = a.sonrakiIs?.gun ?? '9999'
         const bGun = b.sonrakiIs?.gun ?? '9999'
-        return aGun.localeCompare(bGun) || a.dosya.baslik.localeCompare(b.dosya.baslik, 'tr')
+        return aGun.localeCompare(bGun) || turkceKarsilastir(a.dosya.baslik, b.dosya.baslik)
       })
       .map(({ durusmasiYakin: _yakin, ...satir }) => satir)
   }, [arama, suzgec])

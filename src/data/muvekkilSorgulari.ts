@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
 import { finansOzeti } from './dosyaSorgulari'
+import { turkceKarsilastir } from '../domain/metin'
 import type { Dosya, FinansKaydi, Muvekkil, Not } from '../domain/types'
 
 /*
@@ -67,7 +68,7 @@ export function useMuvekkilListesi(
           bekleyenOdeme: bekleyenBazMuvekkil.get(muvekkil.id) ?? 0,
         }
       })
-      .sort((a, b) => a.muvekkil.ad.localeCompare(b.muvekkil.ad, 'tr'))
+      .sort((a, b) => turkceKarsilastir(a.muvekkil.ad, b.muvekkil.ad))
   }, [arama])
 }
 
