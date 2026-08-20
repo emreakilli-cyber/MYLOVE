@@ -108,3 +108,31 @@ alternatiflerine sıfırsız sabit hat deseni eklenir.
 **Not:** `Egeperla AVM sahibi Ahmet Yılmaz` örneği bundan farklıdır — orada
 aralıklar kesişmiyor, ikisi de ayrı ayrı maskeleniyor.
 **Değiştirmek gerekirse:** `src/mask/overlap.ts` içindeki `compare` sıralaması.
+
+---
+
+## S8 — Üslup profilindeki örnek paragraflar sınırsız mı büyür?
+
+**Bağlam:** `CAPABILITIES.md` A8, "her belgeden 2-3 temsilî paragraf örneklenip
+profile iliştirilir" derken profili "birkaç KB'lık" olarak tanımlıyor. 200
+belgelik bir korpusta belge başına 2-3 paragraf tutulursa (600 paragraf ≈
+100+ KB) bu iki cümle birbiriyle çelişiyor: literal biriktirme "birkaç KB"
+sınırını kolayca aşıyor.
+
+| Seçenek | Sonuç |
+|---|---|
+| **A (seçildi)** | `sampleParagraphs` en son eklenen **24** paragrafla sınırlı (kayan pencere); eskiler düşer |
+| B | Sınırsız biriktirme; "birkaç KB" ifadesi yalnız sayısal alanlar için geçerli sayılır |
+| C | Paragraflar profilden ayrı, sınırsız büyüyebilen bir korpusta tutulur; profil yalnız sayısal alanları taşır |
+
+**Varsayım:** A. "Birkaç KB" sınırını profilin TAMAMI için (paragraflar dâhil)
+ciddiye almak, tek bir `StyleProfile` nesnesinin bellek/depolama ayak izini
+öngörülebilir tutuyor. Kayan pencere, en güncel yazım alışkanlığını da temsil
+ediyor — eski bir üslubun kalıcı olarak ağırlık taşıması istenmez.
+**Bedeli:** Az sayıda belge işlendiğinde (< 8 belge) tüm örnekler tutulur; ondan
+sonra en eski örnekler M8.5 few-shot seçiminden düşer.
+**Değiştirmek gerekirse:** `src/write/style.ts` içindeki `MAX_SAMPLE_PARAGRAPHS`
+sabiti; C seçeneği için `sampleParagraphs` alanı `StyleProfile`'dan çıkarılıp
+ayrı bir `FewShotCorpus` deposuna taşınmalı (paket dışına, kalıcı depolama
+katmanına).
+**Cevap:** _(boş bırak)_
