@@ -12,12 +12,17 @@ import type { Belge, Dosya, Gorev, Muvekkil } from '../domain/types'
 
 const MIN_UZUNLUK = 2
 
-/** Türkçe küçük harfe indirger; boşları güvenli geçer. */
-function nrm(metin: string | undefined): string {
+/**
+ * Türkçe küçük harfe indirger; boşları güvenli geçer. `toLocaleLowerCase('tr')`
+ * ZORUNLU: düz `toLowerCase()` "İ"yi birleşik noktalı "i̇"ye, "I"yı "i"ye çevirip
+ * "İstanbul"/"ışık" aramalarını sessizce eşleşmez yapardı.
+ */
+export function nrm(metin: string | undefined): string {
   return (metin ?? '').toLocaleLowerCase('tr')
 }
 
-function eslesir(sorgu: string, ...alanlar: (string | undefined)[]): boolean {
+/** `sorgu` (önceden `nrm`'lenmiş) alanların herhangi birinde geçiyor mu. */
+export function eslesir(sorgu: string, ...alanlar: (string | undefined)[]): boolean {
   return alanlar.some((a) => nrm(a).includes(sorgu))
 }
 
