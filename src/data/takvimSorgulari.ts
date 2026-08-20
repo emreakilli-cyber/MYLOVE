@@ -33,20 +33,31 @@ export interface GunGrubu {
   readonly ogeler: TakvimOgesi[]
 }
 
+/**
+ * Yerel gün aralığını, olay sorgusunda kullanılacak UTC zaman-damgası sınırlarına
+ * çevirir. Olaylar UTC damgası tutar ama takvim YEREL güne kovalar; aralık
+ * sınırlarını da yerel gün başlangıç/bitişinden türetmeliyiz. Naif
+ * `${gun}T00:00:00.000Z` yerel gece yarısını UTC sayardı; UTC+3'te ilk günün
+ * tüm-gün olayları (yerel gece yarısı = önceki gün 21:00Z) `basGunT00:00Z`'nin
+ * ÖNCESİNE düşüp aralık dışında kalır, takvimden kaybolurdu. `new Date(...T00:00:00)`
+ * (Z'siz) yerel yorumlanır → toISOString doğru UTC anını verir.
+ */
+export function gunAraligiUtcSinirlari(
+  basGun: IsoDate,
+  sonGun: IsoDate,
+): { basDamga: string; sonDamga: string } {
+  return {
+    basDamga: new Date(`${basGun}T00:00:00`).toISOString(),
+    sonDamga: new Date(`${sonGun}T23:59:59.999`).toISOString(),
+  }
+}
+
 /** Verilen ISO gün aralığındaki her şeyi güne göre gruplanmış döndürür. */
 async function araliktakiOgeler(
   basGun: IsoDate,
   sonGun: IsoDate,
 ): Promise<TakvimOgesi[]> {
-  // Olaylar UTC damgası tutuyor ama YEREL güne kovalanıyor (aşağıda
-  // `dateToIsoDate`). Aralık sınırlarını da yerel gün başlangıç/bitişinden
-  // türetmeliyiz. Naif `${gun}T00:00:00.000Z` yerel gece yarısını UTC sayardı;
-  // UTC+3'te ilk günün tüm-gün olayları (yerel gece yarısı = önceki gün
-  // 21:00Z) `basGunT00:00Z`'nin ÖNCESİNE düşüp aralık dışında kalır, takvimden
-  // kaybolurdu. `new Date(...T00:00:00)` (Z'siz) yerel yorumlanır → toISOString
-  // doğru UTC anını verir.
-  const basDamga = new Date(`${basGun}T00:00:00`).toISOString()
-  const sonDamga = new Date(`${sonGun}T23:59:59.999`).toISOString()
+  const { basDamga, sonDamga } = gunAraligiUtcSinirlari(basGun, sonGun)
 
   const [olaylar, sureler] = await Promise.all([
     db.olaylar.where('baslangic').between(basDamga, sonDamga, true, true).toArray(),
