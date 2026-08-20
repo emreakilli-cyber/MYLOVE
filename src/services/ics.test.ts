@@ -105,6 +105,28 @@ describe('ICS üretimi', () => {
     expect(ics).toContain('DTEND;VALUE=DATE:20260807') // ertesi gün
   })
 
+  it('tüm gün olayı YEREL güne yazılır: UTC gün sınırını geçen başlangıç bir gün erken kaymaz', () => {
+    // 2026-08-05T22:00:00Z = İstanbul'da (UTC+3) 6 Ağustos 01:00 → yerel gün
+    // 6 Ağustos. Ham `baslangic.slice(0,10)` UTC gününü (5 Ağustos) verip olayı
+    // takvim uygulamasında bir gün ERKEN gösterirdi; yerelGun bunu engeller.
+    // (Testler vite.config `test.env.TZ` ile Europe/Istanbul'da koşar; bu sınır
+    // yalnız hedef saat diliminde görünür.)
+    const sinirdaTumGun: Olay = {
+      ...tumGunOlay,
+      id: 'o-sinir',
+      baslangic: '2026-08-05T22:00:00.000Z',
+    }
+    const ics = icsUret({
+      olaylar: [sinirdaTumGun],
+      sureler: [],
+      dosyaAdlari: new Map(),
+      simdi: SIMDI,
+    })
+    expect(ics).toContain('DTSTART;VALUE=DATE:20260806')
+    expect(ics).toContain('DTEND;VALUE=DATE:20260807')
+    expect(ics).not.toContain('VALUE=DATE:20260805') // UTC gününe kaymamalı
+  })
+
   it('hukuki süreyi tüm gün son-tarih olarak yazar', () => {
     const ics = uret()
     expect(ics).toContain('SUMMARY:Son gün: İstinaf başvuru süresi — Yılmaz / Arslan')

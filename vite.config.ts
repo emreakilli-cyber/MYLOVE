@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -78,5 +78,15 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: false,
+  },
+  test: {
+    // Uygulama Türkiye'yi (Europe/Istanbul, UTC+3, yaz saati yok) hedefliyor ve
+    // tarih mantığı büyük ölçüde YEREL gün semantiğine dayanıyor (yerelGun, tüm
+    // gün olayları, "bugün" kovaları). Testleri UTC'de değil hedef saat
+    // diliminde çalıştırırsak, gerçek kullanıcıdaki gibi UTC↔yerel gün sınırı
+    // hataları (ör. gece yarısına yakın olayın takvimde bir gün kayması)
+    // yakalanabilir; aksi hâlde UTC'de yerel-gün == UTC-gün olduğundan bu sınıf
+    // sessizce test dışı kalır.
+    env: { TZ: 'Europe/Istanbul' },
   },
 })
