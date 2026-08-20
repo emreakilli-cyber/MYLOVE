@@ -107,6 +107,14 @@ export function Finans() {
                         bekliyor && kayit.vadeTarihi
                           ? `vade ${kisaTarih(kayit.vadeTarihi)}`
                           : kisaTarih(kayit.tarih),
+                        // Kısmi ile bekleyen aynı amber renkte görünür; kısmen
+                        // ödenmiş kalem tam tutarla listelendiğinden durumu
+                        // yazıyla ayırırız (dosya detayıyla tutarlı).
+                        kayit.odemeDurumu === 'kismi'
+                          ? 'kısmi'
+                          : kayit.odemeDurumu === 'bekliyor'
+                            ? 'bekliyor'
+                            : null,
                       ]
                         .filter(Boolean)
                         .join(' · ')}
