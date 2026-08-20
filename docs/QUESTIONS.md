@@ -108,3 +108,35 @@ alternatiflerine sıfırsız sabit hat deseni eklenir.
 **Not:** `Egeperla AVM sahibi Ahmet Yılmaz` örneği bundan farklıdır — orada
 aralıklar kesişmiyor, ikisi de ayrı ayrı maskeleniyor.
 **Değiştirmek gerekirse:** `src/mask/overlap.ts` içindeki `compare` sıralaması.
+
+---
+
+## S7 — Üslup profiline giren örnek paragraflar ham mı, maskeli mi olmalı?
+
+**Durum:** M8.4 — `addDocument`, `docs/CAPABILITIES.md` A8'in tarif ettiği
+"2–3 temsilî paragraf örneklenip profile iliştirilir" davranışını uygularken.
+
+**Soru:** Profil kalıcı saklanan bir yapı; A8'in istediği ham örnek paragraf,
+görev talimatının değişmez kuralı "ham kişisel veri diske hiç yazılmaz — log
+dahil, 'yaz sonra sil' değil, 'hiç yazma'" ile çelişiyor. Hangisi kazanır?
+
+**Seçenekler:**
+A) Profile giren her metin parçası (örnek paragraf, hitap, kapanış) önce
+   `mask()`'tan geçirilir; A8'in "temsilî paragraf" isteği maskeli biçimde
+   karşılanır.
+B) A8'e birebir uyulur, paragraflar ham saklanır; değişmez kural yalnız
+   araştırma katmanının ağ çıkışı (A6) için geçerli sayılır.
+C) Örnek paragraf özelliği hiç uygulanmaz, yalnız sayısal istatistikler
+   (cümle/paragraf uzunluğu, terim sıklığı) tutulur.
+
+**Şimdilik seçtiğim:** A — çünkü değişmez kural hiçbir istisna listelemiyor ve
+"log dahil" ifadesi kapsamı disk üzerindeki HER yapıya genişletiyor; profil
+diske yazılacak kalıcı bir dosya. Maskeleme zaten geri dönüşsüz bir kayıp
+değil — üslup (cümle uzunluğu, kalıp ifade, numaralandırma) maskeli metinde de
+korunur, yalnız kimlik verisi `[KISI_1]` gibi token'a döner. C'yi seçmedim
+çünkü A8'in sözleşmesini gereksiz yere daraltırdı; A hem A8'i hem değişmez
+kuralı karşılıyor.
+
+**Etkilenecek dosyalar:** `src/write/styleProfile.ts` (`addDocument`).
+
+**Cevap:** _(boş bırak)_

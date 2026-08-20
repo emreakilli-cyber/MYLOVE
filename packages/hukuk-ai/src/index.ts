@@ -47,6 +47,16 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export { correlateResults, summarizeResults } from './research/correlate'
+export type {
+  CorrelationBackend,
+  DocumentCorrelation,
+  DocumentSummary,
+  SummaryBackend,
+  TopKOptions,
+  TopKResult,
+} from './research/correlate'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
@@ -75,3 +85,44 @@ export type {
   JobEstimate,
   ThermalState,
 } from './handoff/threshold'
+
+export { estimateTokens } from './write/types'
+export type { GenerateOptions, WriteBackend } from './write/types'
+
+export { extractSkeleton } from './write/skeleton'
+export type { DocumentSkeleton, NumberingScheme, SkeletonSection } from './write/skeleton'
+
+export { addDocument, createEmptyProfile, stdDev } from './write/styleProfile'
+export type {
+  AddDocumentOptions,
+  Distribution,
+  StyleProfile,
+  WeightedPhrase,
+} from './write/styleProfile'
+
+export { selectFewShot } from './write/fewShot'
+export type {
+  FewShotExample,
+  FewShotOptions,
+  FewShotSelection,
+  PetitionExample,
+} from './write/fewShot'
+
+export {
+  checkConsistency,
+  reviewSectionConsistency,
+  TokenBudgetExceededError,
+  writeSection,
+  writeStaged,
+} from './write/staged'
+export type {
+  CheckConsistencyOptions,
+  ConsistencyIssue,
+  ConsistencyIssueKind,
+  ConsistencyReview,
+  ConsistencyReviewBackend,
+  SectionResult,
+  SectionSpec,
+  SectionSummary,
+  WriteContext,
+} from './write/staged'
