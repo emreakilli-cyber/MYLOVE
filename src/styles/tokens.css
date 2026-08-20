@@ -180,6 +180,11 @@
   --z-scrim: 50;
   --z-drawer: 60;
   --z-toast: 70;
+  /* Uygulama kilidi ve arka plan maskesi her katmanın ÜSTÜNDE durmalı: erişim
+   * kapısı hiçbir katmanca (toast, rehberli tur z-toast+2, skip-link z-toast+5)
+   * örtülmemeli. Aksi hâlde tur açıkken kilitlenen uygulamada tur perdesi kilit
+   * ekranını boyar — güvenlik kapısı görsel olarak gizlenirdi. */
+  --z-lock: 90;
 }
 
 @media (prefers-reduced-motion: reduce) {

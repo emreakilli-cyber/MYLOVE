@@ -10,7 +10,7 @@
 .kilit-maske {
   position: fixed;
   inset: 0;
-  z-index: var(--z-toast);
+  z-index: var(--z-lock);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,7 +23,7 @@
 
 .kilit-maske {
   /* İçerik gizli; yalnızca marka. Uygulama değiştirici önizlemesi için. */
-  z-index: calc(var(--z-toast) + 1);
+  z-index: calc(var(--z-lock) + 1);
 }
 
 .kilit-maske-mark,
