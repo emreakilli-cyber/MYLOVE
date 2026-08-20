@@ -82,9 +82,7 @@ export function Muvekkiller() {
                   </span>
                 </span>
                 {bekleyenOdeme > 0 ? (
-                  <span className="tag accent-amber" style={{ background: 'var(--cat-amber-bg)', color: 'var(--cat-amber-text)' }}>
-                    {tutarKisa(bekleyenOdeme)}
-                  </span>
+                  <span className="tag accent-amber">{tutarKisa(bekleyenOdeme)}</span>
                 ) : null}
                 <Icon name="chevron-right" size={16} className="row-chevron" />
               </Link>
