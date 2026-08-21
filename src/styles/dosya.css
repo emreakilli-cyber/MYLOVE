@@ -263,6 +263,22 @@
   padding: var(--card-padding);
 }
 
+/* Künye iki sütunlu; .field-row / .money-grid ile aynı iki durumda tek sütuna
+   iner. Dar ekranda (ör. 320px) uzun mahkeme/taraf adları yarım sütuna sıkışırdı. */
+@media (max-width: 360px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* En büyük yazı ölçeğinde (%125) künye değerleri (tam mahkeme adı, karşı taraf)
+   ~138px'lik yarım sütunda 3 satıra sarıp okunmaz hâle geliyordu; medya sorguları
+   kök font ölçeğini göremediğinden kökteki veri özniteliğine bakıp tek sütuna
+   iniyoruz — .field-row / .stat-grid ile aynı davranış (değerler tam genişlik). */
+:root[data-yazi-olcegi='cokBuyuk'] .info-grid {
+  grid-template-columns: 1fr;
+}
+
 .info-item {
   min-width: 0;
 }
@@ -391,6 +407,13 @@
   .money-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* En büyük yazı ölçeğinde (%125) yedi haneli tutar yarım sütuna sığmayıp
+   sarıyordu; dar-ekran kuralıyla aynı gerekçe, tek sütuna in (medya sorgusu
+   kök font ölçeğini göremez). */
+:root[data-yazi-olcegi='cokBuyuk'] .money-grid {
+  grid-template-columns: 1fr;
 }
 
 .money-cell {
