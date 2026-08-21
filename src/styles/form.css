@@ -206,8 +206,14 @@
 }
 
 /* Alt eylem çubuğu */
+/* Seri silme onayında iki "flex: none" tehlike düğmesi ("Yalnızca bu" +
+   "Tüm seri (60)") tek satıra sığmayınca (büyük yazı %125 veya dar 320px)
+   kabı ~27px taşırıyordu; `flex-wrap` ile ikinci düğme alt satıra iner
+   (etiketler kırpılmadan tam kalır, düğmeler içerik-boyutunda). Sığan tek/çift
+   düğme durumlarını etkilemez — yalnız taşınca sarar. */
 .form-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-3);
   align-items: center;
 }
