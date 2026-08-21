@@ -6,6 +6,14 @@
   gap: var(--space-3);
 }
 
+/* En büyük yazı ölçeğinde (%125) "Müvekkil görüşmesi" / "Tamamlanan görev"
+   etiketleri üç dar sütunda sözcük-içi kırılıyordu (ör. "Tamamla"/"nan");
+   .stat-grid / .type-grid-3 ile aynı biçimde tek sütuna in (medya sorgusu kök
+   font ölçeğini göremez). */
+:root[data-yazi-olcegi='cokBuyuk'] .rapor-stats {
+  grid-template-columns: 1fr;
+}
+
 .rapor-stat {
   padding: var(--space-4) var(--space-3);
   text-align: center;
