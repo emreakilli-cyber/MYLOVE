@@ -27,6 +27,8 @@
   .page-back,
   .detail-edit,
   .cal-export-link,
+  .export-button,
+  .rapor-aralik,
   .no-print {
     display: none !important;
   }
