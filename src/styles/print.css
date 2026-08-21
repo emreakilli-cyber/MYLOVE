@@ -25,6 +25,7 @@
   .tur,
   .cevrimdisi,
   .page-back,
+  .detail-edit,
   .cal-export-link,
   .no-print {
     display: none !important;
@@ -45,6 +46,15 @@
 
   .shell-content {
     padding: 0 !important;
+  }
+
+  /* Sekme şeridi ekranda `.shell-content` iç boşluğunu negatif margin ile taşıp
+     kenara yaslanır; baskıda o boşluk 0 olduğundan negatif margin sayfayı 16px
+     taşırıyordu. Baskıda tam-taşma sıfırlanır (sekme etiketleri/sayıları içerik
+     özeti olarak kalır). */
+  .tab-row {
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
   }
 
   /* Gölge/degrade mürekkep yemesin; kart sayfa arasında ikiye bölünmesin. */
