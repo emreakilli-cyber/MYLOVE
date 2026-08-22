@@ -47,6 +47,23 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export { createExtractiveSummaryBackend, summarizeDocuments } from './research/summarize'
+export type {
+  AsyncSummaryBackend,
+  DocumentSummary,
+  ExtractiveSummaryOptions,
+  SummaryBackend,
+} from './research/summarize'
+
+export { correlateDocuments } from './research/correlate'
+export type {
+  AsyncCorrelationBackend,
+  CorrelateOptions,
+  CorrelationBackend,
+  CorrelationResult,
+  CorrelationVerdict,
+} from './research/correlate'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
@@ -75,3 +92,37 @@ export type {
   JobEstimate,
   ThermalState,
 } from './handoff/threshold'
+
+export { extractStructure } from './write/structure'
+export type { DocumentStructure, NumberingStyle } from './write/structure'
+
+export { StyleProfileBuilder, mergeState } from './write/styleProfile'
+export type {
+  CaseOrder,
+  CitationStyleStats,
+  DistributionStats,
+  PhraseFrequency,
+  RepresentativeExcerpt,
+  StyleProfile,
+  StyleProfileBuilderState,
+} from './write/styleProfile'
+
+export { selectFewShot } from './write/fewShot'
+export type { FewShotOptions, FewShotSelection } from './write/fewShot'
+
+export { generateDraft } from './write/generate'
+export type {
+  ConsistencyBackend,
+  ConsistencyIssue,
+  ConsistencyRequest,
+  DraftOutline,
+  DraftResult,
+  DraftSection,
+  GenerateDraftOptions,
+  OutlineBackend,
+  OutlineRequest,
+  OutlineSection,
+  SectionBackend,
+  SectionRequest,
+  SectionSummary,
+} from './write/generate'

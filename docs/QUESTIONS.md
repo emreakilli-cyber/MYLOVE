@@ -108,3 +108,35 @@ alternatiflerine sıfırsız sabit hat deseni eklenir.
 **Not:** `Egeperla AVM sahibi Ahmet Yılmaz` örneği bundan farklıdır — orada
 aralıklar kesişmiyor, ikisi de ayrı ayrı maskeleniyor.
 **Değiştirmek gerekirse:** `src/mask/overlap.ts` içindeki `compare` sıralaması.
+
+---
+
+## S7 — Kalıp ifade / terim tercihi sözlüğü sabit mi, büroya göre mi?
+
+**Durum:** M8.3, üslup profili şeması. "Kalıp ifadeler" ve "terim tercihleri"
+alanları için bir başlangıç kelime dağarcığı gerekiyordu ama her hukuk
+bürosunün kendi kalıpları farklıdır; kullanıcıya soru sorulamadı.
+
+**Soru:** Kalıp ifade/terim listesi kodda sabit mi tutulsun, yoksa ilk
+sürümden itibaren kullanıcı tanımlı bir sözlükle mi açılsın?
+
+**Seçenekler:**
+A) Kodda sabit, yaygın TR dilekçe kalıplarından oluşan küçük bir liste
+   (`FORMULAIC_PHRASES`, `TERM_VARIANTS` — `write/styleProfile.ts`); profil
+   yalnız bu listede geçenleri sayar, listede olmayan kalıplar görünmez.
+B) Baştan kullanıcı tanımlı/genişletilebilir sözlük; daha doğru ama paket
+   sıfır bağımlılık + model yok ilkesiyle çelişmeyen bir yapılandırma arayüzü
+   gerektirir, kapsam büyür.
+C) NER/model tabanlı otomatik kalıp keşfi (n-gram sıklığı); veri az olduğunda
+   (birkaç dilekçe) gürültülü sonuç verir.
+
+**Şimdilik seçtiğim:** A — çünkü M8, "modelsiz varsayılan uygulama çalışsın"
+ilkesini (M3.3 ile aynı) izliyor; sabit liste hem deterministik hem test
+edilebilir. Liste eksik kalır ama yanlış pozitif üretmez, yalnızca bazı
+kalıpları kaçırır — bu, M1.5 "bilinen sınırlar" ruhuyla tutarlı.
+
+**Etkilenecek dosyalar:** `packages/hukuk-ai/src/write/styleProfile.ts`
+(`FORMULAIC_PHRASES`, `TERM_VARIANTS` sabitleri; kod içinde `// SORU: S7`
+işaretli).
+
+**Cevap:** _(boş bırak)_
