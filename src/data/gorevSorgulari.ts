@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
 import { bugunIso, gunFarki } from '../domain/tarih'
-import type { Dosya, Gorev, Kullanici } from '../domain/types'
+import type { Dosya, Gorev, IsoDate, Kullanici } from '../domain/types'
 
 /*
  * Görev listesi. Görevler zaman durumuna göre gruplanır (gecikmiş, bugün,
@@ -50,14 +50,43 @@ const GRUP_SIRASI: GorevGrupAnahtari[] = [
   'tamamlanan',
 ]
 
-function grupAnahtari(gorev: Gorev): GorevGrupAnahtari {
+/**
+ * Bir görevi zaman durumuna göre gruplar. `bugun` enjekte edilebilir
+ * (varsayılan bugün) — böylece sınıflandırma deterministik test edilebilir.
+ */
+export function grupAnahtari(
+  gorev: Gorev,
+  bugun: IsoDate = bugunIso(),
+): GorevGrupAnahtari {
   if (gorev.durum === 'tamamlandi') return 'tamamlanan'
   if (!gorev.vadeTarihi) return 'vadesiz'
-  const fark = gunFarki(gorev.vadeTarihi, bugunIso())
+  const fark = gunFarki(gorev.vadeTarihi, bugun)
   if (fark < 0) return 'gecikmis'
   if (fark === 0) return 'bugun'
   if (fark === 1) return 'yarin'
   return 'yaklasan'
+}
+
+const ONCELIK_DEGER: Record<Gorev['oncelik'], number> = {
+  yuksek: 0,
+  normal: 1,
+  dusuk: 2,
+}
+
+/**
+ * Grup içi sıralama: önce vade tarihi (erken → geç, vadesiz en sona),
+ * eşitlikte öncelik (yüksek → düşük).
+ */
+export function karsilastirGorevSatiri(
+  a: GorevSatiri,
+  b: GorevSatiri,
+): number {
+  const va = a.gorev.vadeTarihi ?? '9999-12-31'
+  const vb = b.gorev.vadeTarihi ?? '9999-12-31'
+  return (
+    va.localeCompare(vb) ||
+    ONCELIK_DEGER[a.gorev.oncelik] - ONCELIK_DEGER[b.gorev.oncelik]
+  )
 }
 
 export interface GorevGrubu {
@@ -113,16 +142,8 @@ export function useGorevListesi(
     }
 
     // Her grup içinde vade/öncelik sırala.
-    const oncelikDeger = { yuksek: 0, normal: 1, dusuk: 2 }
     for (const liste of gruplar.values()) {
-      liste.sort((a, b) => {
-        const va = a.gorev.vadeTarihi ?? '9999-12-31'
-        const vb = b.gorev.vadeTarihi ?? '9999-12-31'
-        return (
-          va.localeCompare(vb) ||
-          oncelikDeger[a.gorev.oncelik] - oncelikDeger[b.gorev.oncelik]
-        )
-      })
+      liste.sort(karsilastirGorevSatiri)
     }
 
     return GRUP_SIRASI.filter((a) => gruplar.has(a)).map((anahtar) => ({
