@@ -260,10 +260,36 @@ adımları gerektirir; otonom döngü bunları `[!]` sayıp atlar.
 
 ---
 
+## Doğrulama durumu (özet)
+
+> **Kısa hâli:** Tüm F0–F23 özellikleri `[x]` tamamlandı; geriye yalnızca yukarıdaki
+> `[!]` **kullanıcı-kapılı** maddeler kaldı (hukuki metin, OAuth, senkron altyapısı,
+> App Store, geçici sürüm düğmesi). **Açık tasarım/işlevsel hata YOK.** Otonom döngü
+> (tur-334→366) uygulamanın her boyutunu runtime + kod düzeyinde denetledi; hepsi sağlam:
+>
+> - **Görsel/tasarım:** tüm sayfalar + formlar + detay sekmeleri + boş durumlar + onboarding
+>   + rehberli tur + mobil & masaüstü yerleşim, DESIGN-REFERENCE.md §2–§5 + JPG'lerle birebir.
+> - **Erişilebilirlik:** WCAG AA kontrast (ölçüldü), klavye odak halkası, semantik/ARIA DOM,
+>   reduced-motion, büyük yazı, azami-stres taşma süpürmesi (%125 @320px) — hepsi temiz.
+> - **Çekirdek hukuki motor:** süre kataloğu (31 kural) hukuki doğruluk, gün/ay/yıl aritmetiği,
+>   tüm tatil kaydırmaları (hafta sonu / millî / dinî / adli tatil / kapsam sınırı uyarısı).
+> - **Veri & mantık:** tüm CRUD + tekrar üretimi + edit-koruma (veri kaybı yok) + dosya-kapat/
+>   müvekkil-arşiv yaşam döngüsü; para ayrıştırma, Türkçe harmanlama, yerel-gün kovalaması,
+>   hatırlatma ofset türetme, ödeme yaşam döngüsü, çok-alanlı arama, görev süzgeçleri.
+> - **Altyapı/güvenlik:** PWA/çevrimdışı/iOS kurulum, base yolu, CSV/ICS dışa aktarım (enjeksiyon
+>   güvenli), şifreli yedek turu, dürüst-kapsamlı PIN/kilit modeli, LLM varsayılan-kapalı.
+> - **Regresyon ağı:** `npm run build` (tsc+vite) + `npx vitest run` → **42 dosya / 402 test** yeşil.
+>
+> Bir sonraki oturum: yukarıdaki `[!]` maddeler kullanıcı girdisi gelmeden ilerletilemez;
+> girdi yoksa döngü kalite-doğrulama/regresyon modunda kalır (yeni köşe bulunursa denetler).
+
+---
+
 ## Oturum günlüğü
 
 | # | Tarih (UTC) | Yapılan |
 |---|---|---|
+| 367 | 2026-08-25 10:40 | **Döngü-hafızası bakımı: "Doğrulama durumu (özet)" bölümü eklendi.** 33 tur (334→366) her boyutu doğruladı ve hepsi sağlam çıktı; session-log 360+ satıra ulaştı. Yeni bir oturum (ya da konteyner sıfırlaması sonrası) bu tabloyu baştan sona okumadan durumu kavrayabilsin diye, kullanıcı-kapılı bölüm ile Oturum günlüğü arasına özlü bir **Doğrulama durumu** özeti eklendi: F0–F23 tamam, açık hata yok, denetlenen boyutlar (görsel/erişilebilirlik/hukuki motor/veri&mantık/altyapı-güvenlik) ve regresyon ağı (`npm run build` + `npx vitest run` = 42/402) tek bakışta; kalan `[!]` maddeler kullanıcı girdisi gerektiriyor. Geçmiş kaybı yok (yalnız eklendi). "Bu dosya döngünün hafızasıdır" ilkesine hizmet eden tek seferlik bakım. Kod değişmedi; tam paket **42 dosya / 402 test** + build (tsc+vite) geçerli. |
 | 366 | 2026-08-25 09:40 | **Ajanda takvim görünümü (3. sekme) — kronolojik zaman çizelgesi, SAĞLAM.** Ay + Hafta görünümleri doğrulanmıştı ama 3. sekme "Ajanda" hiç görülmemişti. `AjandaGorunumu` `useAjanda(45)` (45 gün) ile gün-gruplu render. **Runtime:** 7 gün-grubu, ilk tarihler 23/24/25/26 Ağustos — **kronolojik artan sıra** ✅, `overX=0` ✅. **Görsel (ekran görüntüsü):** gün başlıkları serif tarih + mono göreli etiket (BUGÜN/YARIN/SALI); olay satırları kategori-renkli sol aksan (kırmızı duruşma / mavi görüşme / yeşil keşif) + mono saat + serif tür + müvekkil + 📍 yer + tür ikonu; **hukuki süreler de aynı çizelgeye entegre** ("İstinaf başvuru süresi" + "son gün" etiketi). Bu, referans §5.12'nin Takvim vaadini ("Duruşmalar, son tarihler ve önemli hatırlatmalar tek bir zaman çizelgesinde") karşılıyor. Üç takvim modu da (Ay/Hafta/Ajanda) doğrulandı; görsel dil tutarlı. Yeni tasarım hatası yok, tam paket **42 dosya / 402 test** + build (tsc+vite) geçerli. |
 | 365 | 2026-08-25 08:40 | **Güvenlik modeli denetimi (PIN kaba-kuvvet + ifşa tutarlılığı) — dürüst kapsamlı, SAĞLAM (bilinçli kilitleme EKLENMEDİ).** Yanlış-PIN hatası (tur-326) doğrulanmıştı ama kaba-kuvvet direnci hiç incelenmemişti. **Bulgular:** PIN `pinDogrula` = **PBKDF2 210.000 iterasyon** SHA-256 (OWASP düzeyi; deneme başına yüksek maliyet, kaba-kuvveti doğal yavaşlatır). Uygulama-düzeyi deneme-kilidi YOK — ama bu, tasarımın dürüst "erişim kapısı" modeliyle TUTARLI: Ayarlar metni kilidi "**bir engeldir**" diye çerçeveliyor (kasa değil), açılış+arka plan sonrası PIN sorar, **arka planda içerik maskelenir** (app-switcher/omuz-sörfü sızıntısını önler); katmanlar: **oturum zaman aşımı** (varsayılan 5 dk) + **biyometri (WebAuthn)** alternatifi; gerçek at-rest koruma cihaz-disk şifrelemesi (ifşa edilmiş); onay ekranı kullanıcıya "**cihazımın güvenliği benim sorumluluğumdadır**" onaylatıyor; KVKK — veri cihazdan çıkmaz. **Karar: kilitleme eklenmedi** — dürüst "bir engel" çerçevesiyle çelişir (PIN'i olduğundan güçlü bir sınır gibi gösterirdi) ve tasarım gerçek güvenliği bilinçle cihaz düzeyine koyuyor. Güvenlik modeli tutarlı, dürüst kapsamlı, abartılmamış (sahte "askeri şifreleme" iddiası yok); PBKDF2+maskeleme+zaman aşımı+biyometri+cihaz-sorumluluğu ifşası uyumlu. Yeni tasarım hatası yok, tam paket **42 dosya / 402 test** + build (tsc+vite) geçerli. |
 | 364 | 2026-08-25 07:40 | **Görev süzgeç çipleri (Açık/Öncelikli/Tamamlanan/Bana atanan) — DB yüklemiyle birebir, SAĞLAM.** Görevler gün-gruplaması (Bugün/Yarın/Yaklaşan) doğrulanmıştı ama çiplerin DOĞRU filtreleyip filtrelemediği hiç test edilmemişti; bozuk süzgeç yanlış görev gösterirdi. **Kod (`gorevSorgulari.ts`):** aktif=`durum==='bekliyor'`; bana=`bekliyor && atananKullaniciId===ben`; oncelikli=`bekliyor && oncelik==='yuksek'`; tamamlanan=`durum==='tamamlandi'`. **Runtime (render sayısı ↔ DB predikatı):** "Açık" → **17** = DB bekliyor 17 ✅; "Öncelikli" → **4** = DB bekliyor+yüksek 4 ✅; "Tamamlanan" → **4** = DB tamamlandı 4 ✅; değişmez: öncelikli(4) ⊆ açık(17) ✅. Her çip predikatına tam uyan görevleri gösteriyor (bekleyen / yüksek-öncelikli-bekleyen / tamamlanan). ("Bana atanan" aynı-şekil `bekliyor && atanan===ben` predikatı — kod ile doğrulandı.) Gün-gruplama + süzgeçler birlikte Görevler sayfası sağlam. Yeni tasarım hatası yok, tam paket **42 dosya / 402 test** + build (tsc+vite) geçerli. |
