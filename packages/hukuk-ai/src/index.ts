@@ -47,6 +47,25 @@ export type {
 export { UnmaskedContentError, assertMasked, findUnmaskedContent } from './research/guard'
 export type { GuardFinding, GuardOptions } from './research/guard'
 
+export {
+  correlateWithEvent,
+  DEFAULT_CORRELATION_LIMIT,
+  DocumentTooLongForSummaryError,
+  EventSummaryTooLongError,
+  MAX_DOCUMENT_TOKENS_FOR_SUMMARY,
+  MAX_EVENT_SUMMARY_TOKENS,
+  summarizeDocument,
+  summarizeDocuments,
+} from './research/correlate'
+export type {
+  CorrelateOptions,
+  CorrelationBackend,
+  CorrelationBatchResult,
+  CorrelationVerdict,
+  DocumentSummary,
+  SummaryBackend,
+} from './research/correlate'
+
 export { nameKey, splitName } from './turkish/suffix'
 export type { SplitName } from './turkish/suffix'
 
@@ -75,3 +94,43 @@ export type {
   JobEstimate,
   ThermalState,
 } from './handoff/threshold'
+
+export { extractSkeleton } from './write/skeleton'
+export type { DocumentSkeleton, NumberingStyle, SkeletonSection } from './write/skeleton'
+
+export {
+  aggregateMean,
+  aggregateMedian,
+  buildStyleProfile,
+  emptyStyleProfile,
+  extractStyleFeatures,
+  mergeStyleProfiles,
+} from './write/style'
+export type { LengthAggregate, PhraseFrequency, StyleProfile } from './write/style'
+
+export { FEW_SHOT_MAX_CONTEXT_TOKENS, FEW_SHOT_MAX_EXAMPLES, jaccardSimilarity, selectFewShot } from './write/fewshot'
+export type { FewShotCandidate, FewShotExample, SelectFewShotOptions } from './write/fewshot'
+
+export {
+  checkNumberingConsistency,
+  ConsistencyReviewInputTooLongError,
+  CONSISTENCY_PASS_MAX_TOKENS,
+  planSkeleton,
+  reviewNarrativeConsistency,
+  SECTION_MAX_CONTEXT_TOKENS,
+  SkeletonPlanningInputTooLongError,
+  SKELETON_MAX_CONTEXT_TOKENS,
+  writeSections,
+} from './write/generate'
+export type {
+  ConsistencyIssue,
+  ConsistencyReviewer,
+  DocumentPlan,
+  GeneratedSection,
+  SectionPlan,
+  SectionSummary,
+  SectionWriter,
+  SectionWritingContext,
+  SkeletonPlanner,
+  SkeletonPlanningContext,
+} from './write/generate'
