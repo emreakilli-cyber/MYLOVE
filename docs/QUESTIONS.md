@@ -124,6 +124,13 @@ kabul eder (bkz. `finansSorgulari.test.ts` başlığı: "ödeme = gider, tahsila
 gelir"). Yani alan adı ("ödeme") ile içerik (gelir+gider) ve genel özetle
 tutarlılık arasında bir gerilim var.
 
+**Ek bilgi:** Aynı "gelir+gider birlikte" konvansiyonu dosya düzeyinde de
+mevcut (`finansOzeti(...).bekleyen` — dosya detayı + müvekkil profili özeti).
+Yani bu tek bir yerdeki kaza değil, **tutarlı bir varlık-bazlı konvansiyon**;
+yalnız büro geneli (`finansGenelOzetHesapla`) gider-only. Karar hem
+`bekleyenOdemeHaritasi` hem `finansOzeti.bekleyen`'i etkiler — B/C seçilirse
+ikisi birlikte değiştirilmeli.
+
 | Seçenek | Sonuç |
 |---|---|
 | **A (mevcut — korundu)** | Gelir+gider tüm açık kalemler toplanır → "müvekkile bağlı toplam açık tutar". Basit ama alan adı ve genel özetle çelişir |
