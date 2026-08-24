@@ -115,3 +115,75 @@ describe('tohum verisi referans panelini karşılıyor', () => {
     }
   })
 })
+
+describe('tohum verisi — bütünsel çapraz referans bütünlüğü', () => {
+  /*
+   * Kimlikler string; tip sistemi çapraz referansları (finans→dosya vb.)
+   * zorlamıyor. Sarkan tek bir referans demo'da yetim kayıt üretir (ör. hiçbir
+   * dosyaya bağlanmayan finans satırı, eksik müvekkilli belge). Yukarıdaki blok
+   * yalnız dosya→müvekkil, olay/görev→dosya'yı kapsıyordu; bu blok KALAN tüm
+   * referansları da kapsayıp sarkan referansı derleme sırasında yakalar.
+   */
+  const {
+    muvekkiller,
+    dosyalar,
+    olaylar,
+    sureler,
+    gorevler,
+    finans,
+    belgeler,
+    hareketler,
+    kullanicilar,
+  } = tohumVerisi
+  const dosyaId = new Set(dosyalar.map((d) => d.id))
+  const muvekkilId = new Set(muvekkiller.map((m) => m.id))
+  const kullaniciId = new Set(kullanicilar.map((k) => k.id))
+  const finansId = new Set(finans.map((f) => f.id))
+  const sureId = new Set(sureler.map((s) => s.id))
+
+  /** İsteğe bağlı referans: yoksa geçerli, varsa kümede bulunmalı. */
+  const gecerli = (kume: Set<string>, deger: string | undefined) =>
+    deger === undefined || kume.has(deger)
+
+  it('her süre var olan bir dosyaya bağlı', () => {
+    for (const s of sureler) {
+      expect(dosyaId.has(s.dosyaId), s.kuralAdi).toBe(true)
+    }
+  })
+
+  it('her finans kaydı var olan dosya ve (varsa) müvekkile bağlı', () => {
+    for (const f of finans) {
+      expect(dosyaId.has(f.dosyaId), f.baslik).toBe(true)
+      expect(gecerli(muvekkilId, f.muvekkilId), f.baslik).toBe(true)
+    }
+  })
+
+  it('her belge (varsa) var olan dosya/müvekkil/finans kaydına bağlı', () => {
+    for (const b of belgeler) {
+      expect(gecerli(dosyaId, b.dosyaId), b.ad).toBe(true)
+      expect(gecerli(muvekkilId, b.muvekkilId), b.ad).toBe(true)
+      expect(gecerli(finansId, b.finansKaydiId), b.ad).toBe(true)
+    }
+  })
+
+  it('görevlerin (varsa) müvekkil ve atanan kullanıcısı var olan kayıt', () => {
+    for (const g of gorevler) {
+      expect(gecerli(muvekkilId, g.muvekkilId), g.baslik).toBe(true)
+      expect(gecerli(kullaniciId, g.atananKullaniciId), g.baslik).toBe(true)
+    }
+  })
+
+  it('olayların (varsa) müvekkil ve süre referansı var olan kayıt', () => {
+    for (const o of olaylar) {
+      expect(gecerli(muvekkilId, o.muvekkilId), o.baslik).toBe(true)
+      expect(gecerli(sureId, o.sureId), o.baslik).toBe(true)
+    }
+  })
+
+  it('her hareket (varsa) var olan dosya/müvekkile bağlı', () => {
+    for (const h of hareketler) {
+      expect(gecerli(dosyaId, h.dosyaId), h.id).toBe(true)
+      expect(gecerli(muvekkilId, h.muvekkilId), h.id).toBe(true)
+    }
+  })
+})
