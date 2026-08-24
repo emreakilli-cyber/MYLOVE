@@ -22,6 +22,28 @@ function kucuk(metin: string): string {
   return metin.toLocaleLowerCase('tr')
 }
 
+/**
+ * Müvekkil kimliğine göre bekleyen ödeme (kuruş) haritası: ödemesi
+ * tamamlanmamış (`odendi` olmayan) ve bir müvekkile bağlı tüm finans
+ * kayıtlarının kalanı (`tutar - odenenTutar`) toplanır. Not: bu toplam hem
+ * gelir hem gider açık kalemlerini içerir (müvekkil-bazlı toplam açık tutar);
+ * genel finans özetindeki "bekleyen ödeme" ise yalnız gideri sayar (büro nakit
+ * yükümlülüğü). Bu semantik farkın müvekkil listesinde doğru anlam olup olmadığı
+ * bir ürün kararı gerektiriyor — bkz. docs/QUESTIONS.md SORU: S7. Yanıt gelene
+ * dek mevcut davranış (gelir+gider toplamı) korunuyor.
+ */
+export function bekleyenOdemeHaritasi(
+  finans: FinansKaydi[],
+): Map<string, number> {
+  const harita = new Map<string, number>()
+  for (const f of finans) {
+    if (!f.muvekkilId || f.odemeDurumu === 'odendi') continue
+    const kalan = f.tutar - f.odenenTutar
+    harita.set(f.muvekkilId, (harita.get(f.muvekkilId) ?? 0) + kalan)
+  }
+  return harita
+}
+
 export function useMuvekkilListesi(
   arama: string,
 ): MuvekkilSatiri[] | undefined {
@@ -39,15 +61,7 @@ export function useMuvekkilListesi(
       dosyaBazMuvekkil.set(d.muvekkilId, liste)
     }
 
-    const bekleyenBazMuvekkil = new Map<string, number>()
-    for (const f of finans) {
-      if (!f.muvekkilId || f.odemeDurumu === 'odendi') continue
-      const kalan = f.tutar - f.odenenTutar
-      bekleyenBazMuvekkil.set(
-        f.muvekkilId,
-        (bekleyenBazMuvekkil.get(f.muvekkilId) ?? 0) + kalan,
-      )
-    }
+    const bekleyenBazMuvekkil = bekleyenOdemeHaritasi(finans as FinansKaydi[])
 
     const hedef = kucuk(arama.trim())
     return muvekkiller

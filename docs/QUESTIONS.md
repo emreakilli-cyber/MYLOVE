@@ -108,3 +108,33 @@ alternatiflerine sıfırsız sabit hat deseni eklenir.
 **Not:** `Egeperla AVM sahibi Ahmet Yılmaz` örneği bundan farklıdır — orada
 aralıklar kesişmiyor, ikisi de ayrı ayrı maskeleniyor.
 **Değiştirmek gerekirse:** `src/mask/overlap.ts` içindeki `compare` sıralaması.
+
+---
+
+## S7 — Müvekkil listesindeki "bekleyen ödeme" tutarı neyi saymalı?
+
+**Bağlam:** Müvekkiller sayfasında her müvekkilin yanında amber bir tutar
+rozeti (`MuvekkilSatiri.bekleyenOdeme`) gösteriliyor. Şu an bu tutar, o
+müvekkile bağlı **tüm** ödemesi tamamlanmamış finans kayıtlarının kalanını
+(`tutar - odenenTutar`) topluyor — hem **gelir** (müvekkilin borcu, ör. vekâlet
+ücreti) hem **gider** (harç, bilirkişi, tebligat) birlikte. Oysa büro genel
+finans özeti (`finansGenelOzetHesapla`) "bekleyen ödeme"yi **yalnız gider**
+sayar; tahsil edilmemiş geliri ise ayrı bir kavram olan "bekleyen tahsilat"
+kabul eder (bkz. `finansSorgulari.test.ts` başlığı: "ödeme = gider, tahsilat =
+gelir"). Yani alan adı ("ödeme") ile içerik (gelir+gider) ve genel özetle
+tutarlılık arasında bir gerilim var.
+
+| Seçenek | Sonuç |
+|---|---|
+| **A (mevcut — korundu)** | Gelir+gider tüm açık kalemler toplanır → "müvekkile bağlı toplam açık tutar". Basit ama alan adı ve genel özetle çelişir |
+| B | Yalnız tahsil edilmemiş **gelir** (müvekkilin borcu). Muhtemelen en anlamlısı; alan `bekleyenTahsilat` olarak yeniden adlandırılır ve rozet "tahsilat" olarak etiketlenir |
+| C | Yalnız **gider** (alan adının sözlük anlamı; genel özetle bire bir tutarlı) ama müvekkil listesinde pek işe yaramaz |
+
+**Varsayım:** A (mevcut davranış). Bir para göstergesini tahminle yeniden
+tanımlamak riskli olduğundan davranış **değiştirilmedi**; yalnız saf fonksiyon
+olarak çıkarılıp `bekleyenOdemeHaritasi` testleriyle kilitlendi ve karar
+kullanıcıya bırakıldı. Ürün amacı netleşince B en olası doğru seçenek.
+**Değiştirmek gerekirse:** `src/data/muvekkilSorgulari.ts` içindeki
+`bekleyenOdemeHaritasi` — B için `f.yon === 'gelir'`, C için `f.yon === 'gider'`
+filtresi eklenir; B'de alan/rozet adı da güncellenir. Test:
+`muvekkilSorgulari.test.ts`.
