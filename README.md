@@ -36,8 +36,16 @@ hatırlatır ve her dosyanın eksiğini önünüze koyar.
 
 ## Durum
 
-Geliştirme sürüyor. Güncel ilerleme ve sıradaki iş: **[`docs/PLAN.md`](docs/PLAN.md)**.
-Arayüzün tasarım kaynağı: **[`docs/DESIGN-REFERENCE.md`](docs/DESIGN-REFERENCE.md)**.
+Çekirdek ürün tamamlandı: planlanan tüm özellikler (F0–F23) yazıldı, uygulama
+GitHub Pages'te yayında ve iPhone ana ekranına kurulabilir. Kapsamlı test ve
+kod incelemesi altında (432 birim testi). Geriye yalnızca **kullanıcı girdisi
+gerektiren** adımlar kaldı: hukuki metin içerikleri (avukat hazırlar),
+Google/Apple OAuth kimlik bilgileri, cihazlar arası senkron altyapısı ve App
+Store yayını.
+
+Güncel ilerleme ve açık ürün kararları: **[`docs/PLAN.md`](docs/PLAN.md)** ·
+**[`docs/QUESTIONS.md`](docs/QUESTIONS.md)**. Arayüzün tasarım kaynağı:
+**[`docs/DESIGN-REFERENCE.md`](docs/DESIGN-REFERENCE.md)**.
 
 ## Teknik
 
