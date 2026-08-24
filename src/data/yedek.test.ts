@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
   YEDEK_SURUMU,
+  YEDEK_TABLOLARI,
   YedekHatasi,
   dogrula,
   sifreliMi,
   yedekOzeti,
   type Yedek,
 } from './yedek'
+import { db } from './db'
 
 /*
  * Yedekleme, local-first uygulamada verinin tek güvencesi; bu iki saf yardımcı
@@ -152,5 +154,19 @@ describe('yedekOzeti', () => {
     for (const [, sayi] of yedekOzeti(eksik)) {
       expect(sayi).toBe(0)
     }
+  })
+})
+
+describe('yedek kapsamı — şema/yedek kayması koruması', () => {
+  /*
+   * Local-first uygulamada yedek, verinin tek güvencesi. Geri yükleme önce TÜM
+   * `db.tables`'ı `clear()` edip sonra YEDEK_TABLOLARI'nı yeniden yazar; şemaya
+   * eklenip yedeğe eklenmeyen bir tablo geri yüklemede sessizce SİLİNİR. Bu
+   * test, YEDEK_TABLOLARI'nın şemadaki tüm tablolarla birebir eşleşmesini
+   * zorlar — şema büyüyünce (yedek güncellenmezse) kırmızıya döner.
+   */
+  it('YEDEK_TABLOLARI, şemadaki tüm db.tables ile birebir eşleşir', () => {
+    const semaTablolari = db.tables.map((t) => t.name).sort()
+    expect([...YEDEK_TABLOLARI].sort()).toEqual(semaTablolari)
   })
 })

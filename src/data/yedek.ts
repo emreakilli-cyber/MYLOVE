@@ -31,6 +31,30 @@ import type {
 
 export const YEDEK_SURUMU = 1
 
+/**
+ * Yedeğe giren tabloların adları — kapsam sözleşmesi. Şemaya (`db.ts`) yeni bir
+ * tablo eklenince BURAYA ekle **ve** `yedekOlustur` + `yedektenGeriYukle` içine
+ * doldurma satırını ekle. Aksi hâlde geri yükleme o tabloyu `clear()` eder
+ * (tüm `db.tables` temizlenir) ama yeniden yazmaz → sessiz veri kaybı.
+ * `yedek.test.ts` içindeki guard testi bu listenin şemadaki `db.tables` ile
+ * birebir eşleşmesini zorlar; şema büyüyünce test kırmızıya döner.
+ */
+export const YEDEK_TABLOLARI = [
+  'kullanicilar',
+  'muvekkiller',
+  'dosyalar',
+  'olaylar',
+  'sureler',
+  'gorevler',
+  'finans',
+  'belgeler',
+  'kisiler',
+  'notlar',
+  'hatirlatmalar',
+  'hareketler',
+  'ayarlar',
+] as const
+
 interface YedekBelgesi extends Omit<Belge, 'icerik'> {
   /** Blob içeriğinin base64 karşılığı. */
   icerikBase64: string
