@@ -296,6 +296,7 @@ adımları gerektirir; otonom döngü bunları `[!]` sayıp atlar.
 
 | # | Tarih (UTC) | Yapılan |
 |---|---|---|
+| 402 | 2026-08-24 21:23 | **Nabız (tam paket) — YEŞİL.** `npm run build` + `npx vitest run` → **45 dosya / 432 test HEP geçti** (deterministik, kayma yok). Bakım modu; tek açık karar S7, diğerleri `[!]` kullanıcı-kapılı. |
 | 401 | 2026-08-24 20:23 | **Nabız — YEŞİL.** Build (tsc+vite) geçerli, ağaç temiz. Kaynak değişmedi (**45 dosya / 432 test** deterministik yeşil). Bakım modu; tek açık karar S7, diğerleri `[!]` kullanıcı-kapılı. |
 | 400 | 2026-08-24 19:23 | **Nabız — YEŞİL.** `npm run build` (tsc+vite) geçerli, ağaç temiz, HEAD senkron. Kaynak değişmedi; test paketi row-398'den beri deterministik yeşil (**45 dosya / 432 test**). Uygulama tam/yayında; tek açık karar S7 (`docs/QUESTIONS.md`), diğerleri `[!]` kullanıcı-kapılı. |
 | 399 | 2026-08-24 18:23 | **Canlı dağıtım teyidi — arşivleme dâhil son push'lar YEŞİL indi.** MCP ile: deploy #402 (row-398 `a8f88a1`) ve #401 (PLAN arşivleme `e1c4c37`, büyük içerik taşıması) `conclusion=success` ✅. Yani arşivleme CI'ı bozmadı, canlı site HEAD ile eşit; kullanıcı güncel uygulamayı kurabilir. Kaynak değişmedi; gate row-398'den yeşil (**45 dosya / 432 test**). Tek açık karar S7; diğerleri `[!]` kullanıcı-kapılı. |
