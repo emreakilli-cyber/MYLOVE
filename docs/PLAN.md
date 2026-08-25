@@ -296,6 +296,7 @@ adımları gerektirir; otonom döngü bunları `[!]` sayıp atlar.
 
 | # | Tarih (UTC) | Yapılan |
 |---|---|---|
+| 404 | 2026-08-25 15:24 | **Nabız — YEŞİL.** Build (tsc+vite) geçerli, ağaç temiz; test paketi row-403'ten deterministik yeşil (**45 dosya / 432 test**). Bakım modu; tek açık karar S7, diğerleri `[!]` kullanıcı-kapılı. |
 | 403 | 2026-08-25 14:27 | **Toplu nabız — 17 birikmiş tetikleme tek turda birleştirildi; gün değişti (08-24→08-25) ama tarih-kayması YOK.** Oturum ~16 saat boşta kalınca aynı saatlik döngü tetiklemesi 17 kez kuyruğa girdi (22:23→14:27); 17 ayrı commit gürültü olurdu, tek turda birleştirildi. Gerçek gün bir tam gün ilerledi (08-25, tohum referansı 08-22'nin epey ötesi) — bu yüzden tarih-duyarlı test kayması için tam paket çalıştırıldı: `npm run build` (tsc+vite) geçerli, `npx vitest run` → **45 dosya / 432 test HEP geçti** (deterministik, kaymadı → TZ-sabitli/seed-göreli testler gün değişse de sağlam). Ağaç temiz, HEAD senkron. Uygulama tam/doğru/güvenli/yayında. Tek açık karar S7 (`docs/QUESTIONS.md`); diğerleri `[!]` kullanıcı-kapılı. Bakım modu sürüyor. |
 | 402 | 2026-08-24 21:23 | **Nabız (tam paket) — YEŞİL.** `npm run build` + `npx vitest run` → **45 dosya / 432 test HEP geçti** (deterministik, kayma yok). Bakım modu; tek açık karar S7, diğerleri `[!]` kullanıcı-kapılı. |
 | 401 | 2026-08-24 20:23 | **Nabız — YEŞİL.** Build (tsc+vite) geçerli, ağaç temiz. Kaynak değişmedi (**45 dosya / 432 test** deterministik yeşil). Bakım modu; tek açık karar S7, diğerleri `[!]` kullanıcı-kapılı. |
