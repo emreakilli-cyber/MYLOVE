@@ -149,25 +149,25 @@ varsayımla devam edilir.
 - [x] M7.4 Test: maskelenmemiş metinle çağrı **her zaman** hata verir (kaçış yolu yok)
 - [x] M7.5 Test: ağ katmanı yalnız bu modülden erişilebilir; başka modülde ağ
       çağrısı yok
-- [ ] M7.6 Sonuç özetleme ve olayla ilişkilendirme (`CAPABILITIES.md` A6):
+- [x] M7.6 Sonuç özetleme ve olayla ilişkilendirme (`CAPABILITIES.md` A6):
       K bağımsız kısa geçiş, uzun bağlam yok
 - [x] M7.7 Çevrimdışı davranış: ağ yoksa yerel dizinden cevap, hata değil
 
 ## M8 — Yazma katmanı (lokal model, internet YOK)
 
-- [ ] M8.1 Ağ erişimi yasağı: modülde ağ çağrısı bulunmadığını doğrulayan test
-- [ ] M8.2 **(a) Yapı/iskelet çıkarma:** eski dilekçelerden başlık düzeni,
+- [x] M8.1 Ağ erişimi yasağı: modülde ağ çağrısı bulunmadığını doğrulayan test
+- [x] M8.2 **(a) Yapı/iskelet çıkarma:** eski dilekçelerden başlık düzeni,
       numaralandırma şeması, bölüm sırası
-- [ ] M8.3 **(b) Üslup profili JSON şeması:** cümle uzunluğu dağılımı, paragraf
+- [x] M8.3 **(b) Üslup profili JSON şeması:** cümle uzunluğu dağılımı, paragraf
       uzunluğu, kalıp ifadeler, numaralandırma biçimi, hitap/kapanış biçimi,
       atıf biçimi, terim tercihleri
-- [ ] M8.4 Profil **artımlı** üretilir: belge belge, birleştirilebilir
+- [x] M8.4 Profil **artımlı** üretilir: belge belge, birleştirilebilir
       (`CAPABILITIES.md` A8)
-- [ ] M8.5 **(c) Few-shot seçimi:** en benzer 2–3 dilekçeyi bağlama koyma;
+- [x] M8.5 **(c) Few-shot seçimi:** en benzer 2–3 dilekçeyi bağlama koyma;
       benzerlik ölçütü ve bağlam bütçesi (≤ 2.000 token) belgelenmiş
-- [ ] M8.6 **Fine-tuning ile başlanmaz.** Bu karar koda yorum olarak değil,
+- [x] M8.6 **Fine-tuning ile başlanmaz.** Bu karar koda yorum olarak değil,
       `MODEL.md` ve `TRAINING.md`'ye gerekçesiyle yazılır
-- [ ] M8.7 Üretim aşamalı: iskelet → bölüm bölüm → tutarlılık geçişi
+- [x] M8.7 Üretim aşamalı: iskelet → bölüm bölüm → tutarlılık geçişi
       (`CAPABILITIES.md` A13)
 
 ## M9 — `docs/TRAINING.md` *(B listesi — en sona)*
@@ -231,11 +231,11 @@ varsayımla devam edilir.
 
 - [x] M13.1 Dışa açılan yüzey tek dosyada toplanır (`src/index.ts`); iç modüller
       dışarı sızmaz
-- [ ] M13.2 Her public fonksiyon: imza, parametreler, dönüş, fırlatabileceği
+- [x] M13.2 Her public fonksiyon: imza, parametreler, dönüş, fırlatabileceği
       hatalar, örnek
-- [ ] M13.3 Hata tipleri kataloğu
-- [ ] M13.4 `docs/API.md` üretilir ve `SPEC.md`/`PROTOCOL.md` ile çapraz bağlanır
-- [ ] M13.5 Kararlılık sözü: hangi API'ler kararlı, hangileri deneysel
+- [x] M13.3 Hata tipleri kataloğu
+- [x] M13.4 `docs/API.md` üretilir ve `SPEC.md`/`PROTOCOL.md` ile çapraz bağlanır
+- [x] M13.5 Kararlılık sözü: hangi API'ler kararlı, hangileri deneysel
 
 ---
 
@@ -256,3 +256,6 @@ varsayımla devam edilir.
 | 11 | 2026-08-07 | Kaçak kimlik yakalama (`preflightCheck`) | M11.1–M11.6 | Ağ hedefinde "maskesiz gönder" seçeneği hiç üretilmiyor |
 | 12 | 2026-08-07 | Devir eşiği motoru + sınır değeri testleri | M12.9 | Eşik altında `offer` üretilmediği kapsamlı taramayla doğrulandı |
 | 13 | 2026-08-07 | Belirsiz soyisim isaretleme, sifreli tablo saklama, ayni dizge iki tip testi | M5.3, M5.7, M12.7 | Guard da artik cakisma cozumu kosuyor; SPEC'e S7 degismezi eklendi |
+| 14 | 2026-08-23 | Sonuç özetleme + olayla ilişkilendirme (`research/correlate.ts`): K bağımsız geçiş her adaya TEK belge veren fonksiyon imzasıyla mimari olarak zorlandı | M7.6 | Token bütçesi kaba `~4 kar./token` tahminiyle uygulandı; ölçüm mevcut değil, gerekirse `shared/tokenEstimate.ts`'te kalibre edilir |
+| 15 | 2026-08-23 | Yazma katmanı (`packages/hukuk-ai/src/write/`): iskelet çıkarma, üslup profili (JSON şema + artımlı birleştirme), few-shot seçimi (Jaccard benzerliği), A13'ün 3 aşaması (`planSkeleton`/`writeSections`/tutarlılık geçişi) ayrı fonksiyonlar olarak — hiçbiri tek "üret" fonksiyonuna gizlenmedi ki bölüm bölüm onay mümkün kalsın | M8.1–M8.7 | M8.6 kararı zaten `MODEL.md` §4'te vardı; eksik olan `docs/TRAINING.md` M9 kapsamını genişletmeden yalnız bu tek kararla stub olarak açıldı |
+| 16 | 2026-08-23 | `docs/API.md`: pakedin tüm public yüzeyi için imza/parametre/dönüş/hata/örnek + hata kataloğu + kararlılık tablosu | M13.2–M13.5 | Maskeleme/araştırma-kapısı/devir "kararlı", M7.6 ve M8 yüzeyi "deneysel" işaretlendi — bütçe sabitleri henüz gerçek model ölçümüyle doğrulanmadı |
